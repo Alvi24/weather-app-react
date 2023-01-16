@@ -4,3 +4,6 @@ body{
 *{
   margin: 0;
 }
+ .NavBar{
+    background-color: rgb(31,29,38);
+ }
