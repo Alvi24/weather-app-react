@@ -1,11 +1,11 @@
 import React, { Component } from 'react'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+
 export default class NavBar extends Component {
   
   render() {
     return (
-      <nav>
-        <FontAwesomeIcon icon="faHouse" /><p>Aisha</p>
+      <nav className='NavBar'>
+       <img src='https://upload.wikimedia.org/wikipedia/commons/thumb/a/a7/React-icon.svg/70px-React-icon.svg.png' alt='react-icon not loaded'/>
       </nav>
     )
   }
