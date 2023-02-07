@@ -1,0 +1,72 @@
+body {
+  width: 100vw;
+  height: 100vh;
+  /* background-color: rgb(100, 189, 189); */
+  background-color: rgb(100, 189, 219);
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center;
+  backdrop-filter: blur(10px);
+}
+* {
+  margin: 0;
+  color: black;
+  transition: filter 0.5s;
+}
+.Body {
+  width: 80%;
+  min-height: 100px;
+}
+.navBar{
+   background-color: blue;
+   width:15%;
+   margin-inline-start: 10%;
+}
+ .navBar input{
+  width: 10%;
+     border-radius: 20px;
+     background-color: red;
+     outline:transparent;
+     border: none;
+     transition: .5s;
+ }
+ .navBar input:hover,.navBar input:focus,.navBar input:not(:placeholder-shown){
+    width:100%;
+ }
+.Hero {
+  width: 100%;
+  transition: filter 0.5s;
+  background: rgba(216, 216, 216, 0.3);
+  border-radius: 16px;
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.2);
+  backdrop-filter: blur(4.1px);
+  -webkit-backdrop-filter: blur(4.1px);
+  border: 1px solid rgba(216, 216, 216, 0.65);
+  transform: translate(10%, 40%);
+  /* box-shadow: 0 0 8px 8px rgb(100, 189, 219) inset; */ /*faded edges*/
+}
+:global(.blur) {
+  filter: blur(2px);
+  pointer-events: none; 
+}
+:global(.blur) * {
+  user-select: none; /*make the elements behind unselectable*/
+}
+.tempIcon {
+  font-size: 3rem;
+}
+.tempIcon > path {
+  fill: red;
+}
+.heroTemp {
+  width: fit-content;
+  font-size: 4.5em;
+  padding-right: 2%;
+  border-image: linear-gradient(to top, rgba(255, 255, 255, 0.7), transparent) 2;
+  border-right: 3px solid;
+}
+@media (max-width: 800px) {
+  :global(.blur) {
+    filter: blur(20px);
+  }
+}

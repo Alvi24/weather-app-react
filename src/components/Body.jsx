@@ -1,29 +1,65 @@
-import React, { Component } from "react";
-export default class Body extends Component {
-  state = {
-    li: [
-      { text: "Was firs released in 2013", id: "1" },
-      { text: "Was originally created by Jordan Walke", id: "2" },
-      { text: "Has well over 100K stars on GitHub", id: "3" },
-      { text: "is maintained by Facebook", id: "4" },
-      {
-        text: "Powes thousands of enterprise apps,including mobile apps",
-        id: "5",
-      },
-    ],
-  };
-  render() {
-    return (
-      <>
-        <div className="hero">
-          <h1 className="White-title">Fun facts about react</h1>
-          <ul>
-            {this.state.li.map((el) => (
-              <li key={el.id}>{el.text}</li>
-            ))}
-          </ul>
-        </div>
-      </>
-    );
-  }
+import React, { useEffect, useState } from "react";
+import WeatherData from "../API.mjs";
+// ./ means current directory  ../ means parent of current directory and / means root directory
+import styles from "../styles/App.module.css";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faLocationDot } from "@fortawesome/free-solid-svg-icons";
+export default function Body() {
+  let [currentWeather, setCurrentWeather] = useState({});
+  let [dailyWeather, setdailyWeather] = useState({});
+  let [city, setCityname] = useState();
+  useEffect(() => {
+    navigator.geolocation.getCurrentPosition(getCoords);
+    let lat, long;
+    function getCoords(position) {
+      const { latitude, longitude } = position.coords;
+      lat = latitude;
+      long = longitude;
+      WeatherData(
+        lat,
+        long,
+        Intl.DateTimeFormat().resolvedOptions().timeZone
+      ).then(setData);
+    }
+    function setData(data) {
+      const { dailyWeather } = data;
+      setCurrentWeather({ ...data.currentWeather });
+      setdailyWeather([...data.dailyWeather]);
+      data.cityName.then((promiseCity) => {
+        setCityname(promiseCity);
+      });
+    }
+  }, []);
+  useEffect(() => {
+    // console.log("weather   ", currentWeather);
+  }, [currentWeather]);
+  useEffect(() => {
+    // console.log("daily   ", dailyWeather);
+  }, [dailyWeather]);
+
+  return (
+    <div className={styles.Body}>
+      <div className={styles.navBar}>
+        <input
+          type="text"
+          name=""
+          id=""
+          placeholder=" "
+          onChange={(e) => {
+            console.log(e.target.value !== "" ? e.target.value : "empty");
+          }}
+        />
+      </div>
+      <div className={styles.Hero}>
+        {/*use the ?  */}
+        <h1>time: {currentWeather?.currentTime}</h1>
+        <h1>
+          city:
+          <FontAwesomeIcon icon={faLocationDot} /> {city}{" "}
+        </h1>
+        <h1>mintemp: {dailyWeather[0]?.minTemp + "°"} </h1>
+        <p className={styles.heroTemp}> {currentWeather?.temperature}°</p>
+      </div>
+    </div>
+  );
 }
