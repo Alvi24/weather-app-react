@@ -43,13 +43,20 @@ async function getLatAndLong(searchText) {
   // await page.click("button#gls_map");
   await page.waitForSelector("#gls_map");
   await page.click("#gls_map");
-  await page.type("input#gls", "berlin", { delay: 100 });
+  await page.type("input#gls", "berlin");
   // const a = await page.$eval(".locationname-inside", (el) => el.innerHTML);
   // console.log(a);
-  const a = await page.$$eval(".locationname-inside", (el) =>
-    el.map((el) => el.innerHTML)
-  );
-  console.log(a);
+  const locationNames = await page.$$eval("tr.loc", (locations) => {
+    let array = locations.map((location) => {
+      return {
+        cityName: location.querySelector(".locationname-inside").innerHTML,
+        latitude: location.querySelector("td.lat").innerHTML,
+        longitude: location.querySelector("td.lon").innerHTML,
+      };
+    });
+    return array;
+  });
+  console.log(locationNames);
   // const locationNames = await page.$$eval("tr.loc", (locations) => {
   //   page.waitForNavigation();
   //   locations.map((location) => {
