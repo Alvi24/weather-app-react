@@ -4,7 +4,13 @@ import axios from "axios";
 function WeatherData(latitude, longitude, timezone) {
   return axios
     .get(
-      ` https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&daily=weathercode,temperature_2m_max,temperature_2m_min,sunrise,sunset&current_weather=true&timeformat=unixtime&timezone=${timezone}`
+      ` https://api.open-meteo.com/v1/forecast?daily=weathercode,temperature_2m_max,temperature_2m_min,sunrise,sunset&current_weather=true&timeformat=unixtime&timezone=${timezone}`,
+      {
+        params: {
+          latitude: latitude,
+          longitude: longitude,
+        },
+      }
     )
     .then(({ data }) => {
       return {
@@ -18,7 +24,13 @@ function WeatherData(latitude, longitude, timezone) {
 function getCityName(lat, long) {
   return axios
     .get(
-      ` https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${lat}&longitude=${long}&localityLanguage=en`
+      ` https://api.bigdatacloud.net/data/reverse-geocode-client?localityLanguage=en`,
+      {
+        params: {
+          latitude: lat,
+          longitude: long,
+        },
+      }
     )
     .then(({ data }) => {
       return data.city;
@@ -81,4 +93,12 @@ const object = {
 };
 const { hello: value } = object;
 console.log("value " + value);
-export default WeatherData;
+function fetchLocations(input) {
+  return axios
+    .post("http://localhost:5000/", {
+      input,
+    })
+    .then((res) => res.data)
+}
+
+export { WeatherData, fetchLocations };

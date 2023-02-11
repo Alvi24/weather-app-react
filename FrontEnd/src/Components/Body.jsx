@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
-import WeatherData from "../API.mjs";
+import SearchBar from "./SearchBar.jsx";
+import { WeatherData } from "../API.mjs";
 // ./ means current directory  ../ means parent of current directory and / means root directory
 import styles from "../styles/App.module.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -39,18 +40,9 @@ export default function Body() {
 
   return (
     <div className={styles.Body}>
-      <div className={styles.navBar}>
-        <input
-          type="text"
-          name=""
-          id=""
-          placeholder=" "
-          onChange={(e) => {
-            console.log(e.target.value !== "" ? e.target.value : "empty");
-          }}
-        />
-      </div>
+      <SearchBar/>
       <div className={styles.Hero}>
+        {/* <button onClick={() => getLocations()}>Press</button> */}
         {/*use the ?  */}
         <h1>time: {currentWeather?.currentTime}</h1>
         <h1>

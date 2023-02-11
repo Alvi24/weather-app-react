@@ -17,22 +17,32 @@ body {
   width: 80%;
   min-height: 100px;
 }
-.navBar{
-   background-color: blue;
-   width:15%;
-   margin-inline-start: 10%;
+.searchBar {
+  background-color: blue;
+  width: 15%;
+  margin-inline-start: 10%;
 }
- .navBar input{
+.searchBar input {
   width: 10%;
-     border-radius: 20px;
-     background-color: red;
-     outline:transparent;
-     border: none;
-     transition: .5s;
- }
- .navBar input:hover,.navBar input:focus,.navBar input:not(:placeholder-shown){
-    width:100%;
- }
+  border-radius: 20px;
+  background-color: red;
+  outline: transparent;
+  border: none;
+  transition: 0.5s;
+}
+.searchBar input:hover,
+.searchBar input:focus,
+.searchBar input:not(:placeholder-shown) {
+  width: 100%;
+}
+input:focus ~ ul{
+  z-index: 2;
+  background-color: yellow;
+    position:absolute;
+}
+input:not(:focus) ~ ul {
+  display: none; /* or visibility:hidden*/
+}
 .Hero {
   width: 100%;
   transition: filter 0.5s;
@@ -47,7 +57,7 @@ body {
 }
 :global(.blur) {
   filter: blur(2px);
-  pointer-events: none; 
+  pointer-events: none;
 }
 :global(.blur) * {
   user-select: none; /*make the elements behind unselectable*/
