@@ -101,12 +101,94 @@ const object = {
 };
 const { hello: value } = object;
 console.log("value " + value);
-function fetchLocations(input) {
+function fetchLocations(e) {
+  console.log(e);
+  const { value: input } = e.target;
   return axios
     .post("http://localhost:5000/", {
       input,
     })
-    .then((res) => res.data);
+    .then((res) => {
+      console.log(bigDatacityName(res.data, e));
+    });
+}
+function bigDatacityName(data, e) {
+  if (e.target.value.length < 2) {
+    return;
+  }
+  let filteredLocations = filterLocations(data);
+  // console.log("filtered", filteredLocations);
+  // console.log(data);
+
+  let cloneLocations = [...filteredLocations];
+  filteredLocations.forEach((location, index) => {
+    getcityName(location.latitude, location.longitude).then(
+      ({ city, region }) => {
+        let cityFromBigData = city,
+          regionFromBigData = region;
+        if (cityFromBigData !== "") {
+          // console.log(city);
+          cloneLocations[index].cityName = cityFromBigData;
+          cloneLocations[index].region = regionFromBigData;
+          // setLocations([...cloneLocations]);
+          // console.log("locations");
+        }
+      }
+    );
+  });
+  console.log(cloneLocations);
+  return cloneLocations
+  // setLocations(data.map(location)=>);
+}
+function filterLocations(locations) {
+  console.log(locations);
+  // console.log(
+  //   cloneLocation.cityName,
+  //   cloneLocations[index + 1].cityName
+  // );
+  // console.log(
+  //   cloneLocation.countryFlag,
+  //   cloneLocations[index + 1].countryFlag
+  // );
+  // console.log("index", index);
+  let filteredLocations = [];
+  locations.forEach((location, index) => {
+    // console.log(index);
+    if (index === locations.length - 1) {
+      filteredLocations.push({ ...location });
+      return;
+    }
+    if (
+      location.cityName !== locations[index + 1].cityName ||
+      location.region !== locations[index + 1].region
+    ) {
+      console.log(
+        "cityName",
+        location.cityName !== locations[index + 1].cityName,
+        location.cityName,
+        locations[index + 1].cityName
+      );
+      console.log(
+        "region",
+        location.region !== locations[index + 1].region,
+        location.region,
+        locations[index + 1].region
+      );
+      console.log(" ");
+      filteredLocations.push({ ...location });
+    }
+  });
+
+  // console.log(
+  //   "cityName",
+  //   firstLocation.cityName === secondLocation.cityName
+  // );
+  // console.log(
+  //   "flag",
+  //   firstLocation.countryFlag === secondLocation.countryFlag
+  // )
+  // console.log(filteredLocations);
+  return filteredLocations;
 }
 
 export { WeatherData, fetchLocations, getcityName };
