@@ -106,7 +106,7 @@ function fetchLocations(input) {
     .post("http://localhost:5000/", {
       input,
     })
-    .then((res) => res.data);
+    .then((res) => res.data)
 }
 
 export { WeatherData, fetchLocations, getcityName };

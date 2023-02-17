@@ -60,25 +60,29 @@ export default function SearchBar(props) {
     if (e.target.value.length < 2) {
       return;
     }
-    let filteredLocations = filterLocations(data);
+
     // console.log("filtered", filteredLocations);
     // console.log(data);
-
-    let cloneLocations = [...filteredLocations];
-    filteredLocations.forEach((location, index) => {
-      getcityName(location.latitude, location.longitude).then(
-        ({ city, region }) => {
+    // let filteredLocations = ;
+    let cloneLocations = [...data];
+    cloneLocations.forEach((location, index) => {
+      getcityName(location.latitude, location.longitude)
+        .then(({ city, region }) => {
+          console.log("changing");
           let cityFromBigData = city,
             regionFromBigData = region;
           if (cityFromBigData !== "") {
             // console.log(city);
             cloneLocations[index].cityName = cityFromBigData;
             cloneLocations[index].region = regionFromBigData;
-            setLocations([...cloneLocations]);
+            // setLocations([...cloneLocations]);
             // console.log("locations");
           }
-        }
-      );
+        })
+        .finally(() => {
+          console.log("finished");
+          setLocations(filterLocations(cloneLocations));
+        });
     });
     // setLocations(data.map(location)=>);
   }
