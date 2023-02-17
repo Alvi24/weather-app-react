@@ -52,7 +52,7 @@ async function getLatAndLong(searchText) {
   // await page.click("button#gls_map");
   // await page.waitForSelector("#gls_map");
   // await page.click("#gls_map");
- 
+
   await page.$eval(
     "input#gls",
     (el, searchText) => {
@@ -62,7 +62,9 @@ async function getLatAndLong(searchText) {
   );
   // await page.type("input#gls", searchText);
   // await page.waitForSelector(".results.paginate");
-  await page.waitForSelector(".search-results:not(.multiple,.lastvis-only)");
+  try {
+    await page.waitForSelector(".search-results:not(.multiple,.lastvis-only)",{timeout:2000});
+  } catch {}
   await page.waitForTimeout(500);
   // await page.waitForSelector(`document.querySelector("input#gls").value=="berlin"`,{timeout:2000});
   // const text = await page.$eval("input#gls", (el) => el.value);
@@ -73,6 +75,7 @@ async function getLatAndLong(searchText) {
         latitude: location.querySelector("td.lat").innerHTML,
         longitude: location.querySelector("td.lon").innerHTML,
         countryFlag: location.querySelector("img").src,
+        region: location.querySelector("td.admin1").innerHTML,
       };
     });
     return array;

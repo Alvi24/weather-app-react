@@ -18,8 +18,9 @@ body {
   min-height: 100px;
 }
 .searchBar {
-  background-color: blue;
+  background-color: white;
   width: 15%;
+  height: 20%;
   margin-inline-start: 10%;
 }
 .searchBar input {
@@ -35,13 +36,20 @@ body {
 .searchBar input:not(:placeholder-shown) {
   width: 100%;
 }
-input:focus ~ ul{
+ ul{
+    display: none;
+ }
+input:focus ~ ul,ul:has(li:active) {
   z-index: 2;
-  background-color: yellow;
-    position:absolute;
+  position:absolute;
+
+       display: inline-block;
 }
-input:not(:focus) ~ ul {
-  display: none; /* or visibility:hidden*/
+li{
+   background-color: white;
+}
+li:hover{
+   background-color: red;
 }
 .Hero {
   width: 100%;

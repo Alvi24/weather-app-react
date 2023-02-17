@@ -1,3 +1,4 @@
+// npm run dev
 import React, { useEffect, useState } from "react";
 import SearchBar from "./SearchBar.jsx";
 import { WeatherData } from "../API.mjs";
@@ -5,30 +6,44 @@ import { WeatherData } from "../API.mjs";
 import styles from "../styles/App.module.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faLocationDot } from "@fortawesome/free-solid-svg-icons";
+
 export default function Body() {
   let [currentWeather, setCurrentWeather] = useState({});
   let [dailyWeather, setdailyWeather] = useState({});
-  let [city, setCityname] = useState();
+  let [city, setcityName] = useState();
+  function callWeatherData(lat, long, cityName) {
+    WeatherData(
+      lat,
+      long,
+      cityName,
+      Intl.DateTimeFormat().resolvedOptions().timeZone
+    ).then(setData);
+  }
+  function setData(data) {
+    const { dailyWeather } = data;
+    setCurrentWeather({ ...data.currentWeather });
+    setdailyWeather([...data.dailyWeather]);
+
+    if (
+      typeof data.cityName === "object" &&
+      typeof data.cityName.then === "function"
+    ) {
+      //check if cityName is promise or not
+      data.cityName.then(({city}) => {
+        setcityName(city);
+      });
+    } else {
+      setcityName(data.cityName);
+    }
+  }
   useEffect(() => {
-    navigator.geolocation.getCurrentPosition(getCoords);
+    navigator.geolocation.getCurrentPosition(defaultCoords);
     let lat, long;
-    function getCoords(position) {
+    function defaultCoords(position) {
       const { latitude, longitude } = position.coords;
       lat = latitude;
       long = longitude;
-      WeatherData(
-        lat,
-        long,
-        Intl.DateTimeFormat().resolvedOptions().timeZone
-      ).then(setData);
-    }
-    function setData(data) {
-      const { dailyWeather } = data;
-      setCurrentWeather({ ...data.currentWeather });
-      setdailyWeather([...data.dailyWeather]);
-      data.cityName.then((promiseCity) => {
-        setCityname(promiseCity);
-      });
+      callWeatherData(lat, long);
     }
   }, []);
   useEffect(() => {
@@ -40,7 +55,7 @@ export default function Body() {
 
   return (
     <div className={styles.Body}>
-      <SearchBar/>
+      <SearchBar handleLocationClick={callWeatherData} />
       <div className={styles.Hero}>
         {/* <button onClick={() => getLocations()}>Press</button> */}
         {/*use the ?  */}

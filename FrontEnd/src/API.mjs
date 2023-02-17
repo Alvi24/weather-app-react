@@ -1,7 +1,8 @@
+// npm run dev
 import axios from "axios";
 // import { lookUp } from "geojson-places";
 
-function WeatherData(latitude, longitude, timezone) {
+function WeatherData(latitude, longitude, cityNameFromBodyComponent, timezone) {
   return axios
     .get(
       ` https://api.open-meteo.com/v1/forecast?daily=weathercode,temperature_2m_max,temperature_2m_min,sunrise,sunset&current_weather=true&timeformat=unixtime&timezone=${timezone}`,
@@ -14,17 +15,20 @@ function WeatherData(latitude, longitude, timezone) {
     )
     .then(({ data }) => {
       return {
-        cityName: getCityName(latitude, longitude),
+        cityName:
+          cityNameFromBodyComponent === undefined
+            ? getcityName(latitude, longitude)
+            : cityNameFromBodyComponent,
         currentWeather: handleCurrentWeatherData(data),
         dailyWeather: handleDailyWeatherData(data),
       };
     });
 }
 
-function getCityName(lat, long) {
+function getcityName(lat, long) {
   return axios
     .get(
-      ` https://api.bigdatacloud.net/data/reverse-geocode-client?localityLanguage=en`,
+      `https://api.bigdatacloud.net/data/reverse-geocode?localityLanguage=en&key=bdc_ee65efb4989c4d09a3f21513083e269d`, //server-side big data
       {
         params: {
           latitude: lat,
@@ -33,7 +37,11 @@ function getCityName(lat, long) {
       }
     )
     .then(({ data }) => {
-      return data.city;
+      // console.log(data);
+      return {
+        city: data.city,
+        region: data.principalSubdivision,
+      };
     });
 }
 
@@ -98,7 +106,7 @@ function fetchLocations(input) {
     .post("http://localhost:5000/", {
       input,
     })
-    .then((res) => res.data)
+    .then((res) => res.data);
 }
 
-export { WeatherData, fetchLocations };
+export { WeatherData, fetchLocations, getcityName };
