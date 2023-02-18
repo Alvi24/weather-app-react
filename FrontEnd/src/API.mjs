@@ -113,6 +113,10 @@ function fetchLocations(e) {
         console.log(data);
       });
       return bigDatacityName(res.data, e);
+    })
+    .catch((error) => {
+      console.log(error.response);
+      return Promise.reject("No location found"); //or use throw
     });
 }
 function bigDatacityName(data, e) {

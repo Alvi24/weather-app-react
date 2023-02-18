@@ -18,15 +18,19 @@ export default function SearchBar(props) {
 
       return;
     }
-    fetchLocations(e).then((data) => {
-      // console.log(data);
-      console.log(data);
-      if (e.target.value.length >= 2) {
-        console.log("target value", e.target.value.length);
-        setLocations(data);
-        // setLocations(data);
-      }
-    });
+    fetchLocations(e)
+      .then((data) => {
+        // console.log(data);
+        console.log(data);
+        if (e.target.value.length >= 2) {
+          console.log("target value", e.target.value.length);
+          setLocations(data);
+          // setLocations(data);
+        }
+      })
+      .catch((errotText) => {
+        setLocations(errotText);
+      });
   }
   return (
     <div className={styles.searchBar}>
