@@ -109,7 +109,9 @@ function fetchLocations(e) {
       input,
     })
     .then((res) => {
-      console.log(bigDatacityName(res.data, e));
+      bigDatacityName(res.data, e).then((data) => {
+        console.log(data);
+      });
       return bigDatacityName(res.data, e);
     });
 }
@@ -139,7 +141,8 @@ function bigDatacityName(data, e) {
       )
     );
   });
-  return Promise.all(promises).then(() => {  //Promise.all(arrayPromise name) wait till all promises are resolved or rejected
+  return Promise.all(promises).then(() => {
+    //Promise.all(arrayPromise name) wait till all promises are resolved or rejected
     return cloneLocations;
   });
   // console.log(cloneLocations);
@@ -168,19 +171,6 @@ function filterLocations(locations) {
       location.cityName !== locations[index + 1].cityName ||
       location.region !== locations[index + 1].region
     ) {
-      console.log(
-        "cityName",
-        location.cityName !== locations[index + 1].cityName,
-        location.cityName,
-        locations[index + 1].cityName
-      );
-      console.log(
-        "region",
-        location.region !== locations[index + 1].region,
-        location.region,
-        locations[index + 1].region
-      );
-      console.log(" ");
       filteredLocations.push({ ...location });
     }
   });
