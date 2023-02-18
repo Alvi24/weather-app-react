@@ -1,5 +1,5 @@
 // npm run dev
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { fetchLocations, getcityName } from "../API.mjs";
 import styles from "../styles/App.module.css";
 
@@ -81,7 +81,9 @@ export default function SearchBar(props) {
         })
         .finally(() => {
           console.log("finished");
-          setLocations(filterLocations(cloneLocations));
+          if (e.target.value.length >= 2) {
+            setLocations(filterLocations(cloneLocations));
+          }
         });
     });
     // setLocations(data.map(location)=>);
@@ -100,14 +102,18 @@ export default function SearchBar(props) {
 
       return;
     }
-    fetchLocations(e.target.value).then((data) => {
-      // console.log(data);
-      if (e.target.value.length >= 2) {
-        console.log("target value", e.target.value.length);
-        bigDatacityName(data, e);
-        // setLocations(data);
-      }
-    });
+    fetchLocations(e.target.value)
+      .then((data) => {
+        // console.log(data);
+        if (e.target.value.length >= 2) {
+          console.log("target value", e.target.value.length);
+          bigDatacityName(data, e);
+          // setLocations(data);
+        }
+      })
+      .catch((errotText) => {
+        setLocations(errotText);
+      });
   }
   return (
     <div className={styles.searchBar}>
@@ -123,21 +129,23 @@ export default function SearchBar(props) {
       />
 
       <ul>
-        {locations?.map((location) => (
-          <li
-            key={location.latitude}
-            onClick={() =>
-              props.handleLocationClick(
-                location.latitude,
-                location.longitude,
-                location.cityName
-              )
-            }
-          >
-            {location.cityName} <br />
-            Region: {location.region}
-          </li>
-        ))}
+        {Array.isArray(locations)
+          ? locations?.map((location) => (
+              <li
+                key={location.latitude}
+                onClick={() =>
+                  props.handleLocationClick(
+                    location.latitude,
+                    location.longitude,
+                    location.cityName
+                  )
+                }
+              >
+                {location.cityName} <br />
+                Region: {location.region}
+              </li>
+            ))
+          : locations}
       </ul>
     </div>
   );

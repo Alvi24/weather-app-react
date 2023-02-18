@@ -7,6 +7,7 @@ app.use(express.json()); //use this if you want to use data that comes as JSON o
 const cors = require("cors");
 const { resolveObjectURL } = require("buffer");
 const { endianness } = require("os");
+const { rejects } = require("assert");
 const corsOptions = {
   //use corsOptions an app.use(cors to fix the cost error)
   origin: "*",
@@ -16,11 +17,18 @@ const corsOptions = {
 app.use(cors(corsOptions)); // Use this after the variable declaration
 app.post("/", (req, res) => {
   console.log(req.body);
-  getLatAndLong(req.body.input).then((coords) => {
-    //req.body.searchText
-    // the song_iframe is the returned value from Scraper
-    res.send(JSON.stringify(coords));
-  });
+  getLatAndLong(req.body.input)
+    .then((coords) => {
+      //req.body.searchText
+      // the song_iframe is the returned value from Scraper
+      res.send(JSON.stringify(coords));
+    })
+    .catch(() => {
+      res.status("400").send(new Error('No location found with this input text'));
+      // console.log(err);
+      // console.log("error");
+      // res.send(JSON.stringify(Promise.reject()));
+    });
   // res.send("hello page");
 });
 
@@ -63,25 +71,33 @@ async function getLatAndLong(searchText) {
   // await page.type("input#gls", searchText);
   // await page.waitForSelector(".results.paginate");
   try {
-    await page.waitForSelector(".search-results:not(.multiple,.lastvis-only)",{timeout:2000});
-  } catch {}
-  await page.waitForTimeout(500);
-  // await page.waitForSelector(`document.querySelector("input#gls").value=="berlin"`,{timeout:2000});
-  // const text = await page.$eval("input#gls", (el) => el.value);
-  const locationNames = await page.$$eval("tr.loc", (locations) => {
-    let array = locations.map((location) => {
-      return {
-        cityName: location.querySelector(".locationname-inside").innerHTML,
-        latitude: location.querySelector("td.lat").innerHTML,
-        longitude: location.querySelector("td.lon").innerHTML,
-        countryFlag: location.querySelector("img").src,
-        region: location.querySelector("td.admin1").innerHTML,
-      };
+    await page.waitForSelector(".search-results:not(.multiple,.lastvis-only)", {
+      timeout: 1000,
     });
-    return array;
-  });
-  console.log(locationNames);
+
+    await page.waitForTimeout(500);
+    // await page.waitForSelector(`document.querySelector("input#gls").value=="berlin"`,{timeout:2000});
+    // const text = await page.$eval("input#gls", (el) => el.value);
+    const locationNames = await page.$$eval("tr.loc", (locations) => {
+      let array = locations.map((location) => {
+        return {
+          cityName: location.querySelector(".locationname-inside").innerHTML,
+          latitude: location.querySelector("td.lat").innerHTML,
+          longitude: location.querySelector("td.lon").innerHTML,
+          countryFlag: location.querySelector("img").src,
+          region: location.querySelector("td.admin1").innerHTML,
+        };
+      });
+      return array;
+    });
+    console.log(locationNames);
+  console.log(locationNames.length);
   return locationNames;
+  } catch (err) {
+    console.log("rejectiong")
+    return Promise.reject(err);
+  }
+  
   // const locationNames = await page.$$eval("tr.loc", (locations) => {
   //   page.waitForNavigation();
   //   locations.map((location) => {

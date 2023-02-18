@@ -107,6 +107,10 @@ function fetchLocations(input) {
       input,
     })
     .then((res) => res.data)
+    .catch((error) => {
+      console.log(error.response)
+      return Promise.reject("No location found");   //or use throw
+    });
 }
 
 export { WeatherData, fetchLocations, getcityName };
