@@ -24,7 +24,9 @@ app.post("/", (req, res) => {
       res.send(JSON.stringify(coords));
     })
     .catch(() => {
-      res.status("400").send(new Error('No location found with this input text'));
+      res
+        .status("400")
+        .send(new Error("No location found with this input text"));
       // console.log(err);
       // console.log("error");
       // res.send(JSON.stringify(Promise.reject()));
@@ -91,13 +93,16 @@ async function getLatAndLong(searchText) {
       return array;
     });
     console.log(locationNames);
-  console.log(locationNames.length);
-  return locationNames;
+    console.log(locationNames.length);
+    if (locationNames.length === 0) {
+      return Promise.reject();
+    }
+    return locationNames;
   } catch (err) {
-    console.log("rejectiong")
+    console.log("rejectiong");
     return Promise.reject(err);
   }
-  
+
   // const locationNames = await page.$$eval("tr.loc", (locations) => {
   //   page.waitForNavigation();
   //   locations.map((location) => {

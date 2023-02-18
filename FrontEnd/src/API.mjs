@@ -102,7 +102,6 @@ const object = {
 const { hello: value } = object;
 console.log("value " + value);
 function fetchLocations(e) {
-  console.log(e);
   const { value: input } = e.target;
   return axios
     .post("http://localhost:5000/", {
