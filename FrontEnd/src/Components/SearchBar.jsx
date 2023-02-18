@@ -46,21 +46,23 @@ export default function SearchBar(props) {
       />
 
       <ul>
-        {locations?.map((location) => (
-          <li
-            key={location.latitude}
-            onClick={() =>
-              props.handleLocationClick(
-                location.latitude,
-                location.longitude,
-                location.cityName
-              )
-            }
-          >
-            {location.cityName} <br />
-            Region: {location.region}
-          </li>
-        ))}
+        {Array.isArray(locations)
+          ? locations?.map((location) => (
+              <li
+                key={location.latitude}
+                onClick={() =>
+                  props.handleLocationClick(
+                    location.latitude,
+                    location.longitude,
+                    location.cityName
+                  )
+                }
+              >
+                {location.cityName} <br />
+                Region: {location.region}
+              </li>
+            ))
+          : locations}
       </ul>
     </div>
   );
