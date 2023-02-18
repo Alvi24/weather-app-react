@@ -123,12 +123,12 @@ function bigDatacityName(data, e) {
   if (e.target.value.length < 2) {
     return;
   }
-  let filteredLocations = filterLocations(data);
+  // let filteredLocations = filterLocations(data);
   // console.log("filtered", filteredLocations);
   // console.log(data);
   const promises = [];
-  let cloneLocations = [...filteredLocations];
-  filteredLocations.forEach((location, index) => {
+  let cloneLocations = [...data];
+  cloneLocations.forEach((location, index) => {
     promises.push(
       getcityName(location.latitude, location.longitude).then(
         ({ city, region }) => {
@@ -147,7 +147,7 @@ function bigDatacityName(data, e) {
   });
   return Promise.all(promises).then(() => {
     //Promise.all(arrayPromise name) wait till all promises are resolved or rejected
-    return cloneLocations;
+    return filterLocations(cloneLocations);
   });
   // console.log(cloneLocations);
   // return cloneLocations;
