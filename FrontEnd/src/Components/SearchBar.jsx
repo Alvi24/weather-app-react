@@ -20,6 +20,7 @@ export default function SearchBar(props) {
     }
     fetchLocations(e).then((data) => {
       // console.log(data);
+      console.log(data);
       if (e.target.value.length >= 2) {
         console.log("target value", e.target.value.length);
         setLocations(data);

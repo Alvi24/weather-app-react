@@ -110,6 +110,7 @@ function fetchLocations(e) {
     })
     .then((res) => {
       console.log(bigDatacityName(res.data, e));
+      return bigDatacityName(res.data, e);
     });
 }
 function bigDatacityName(data, e) {
@@ -119,25 +120,30 @@ function bigDatacityName(data, e) {
   let filteredLocations = filterLocations(data);
   // console.log("filtered", filteredLocations);
   // console.log(data);
-
+  const promises = [];
   let cloneLocations = [...filteredLocations];
   filteredLocations.forEach((location, index) => {
-    getcityName(location.latitude, location.longitude).then(
-      ({ city, region }) => {
-        let cityFromBigData = city,
-          regionFromBigData = region;
-        if (cityFromBigData !== "") {
-          // console.log(city);
-          cloneLocations[index].cityName = cityFromBigData;
-          cloneLocations[index].region = regionFromBigData;
-          // setLocations([...cloneLocations]);
-          // console.log("locations");
+    promises.push(
+      getcityName(location.latitude, location.longitude).then(
+        ({ city, region }) => {
+          let cityFromBigData = city,
+            regionFromBigData = region;
+          if (cityFromBigData !== "") {
+            // console.log(city);
+            cloneLocations[index].cityName = cityFromBigData;
+            cloneLocations[index].region = regionFromBigData;
+            // setLocations([...cloneLocations]);
+            // console.log("locations");
+          }
         }
-      }
+      )
     );
   });
-  console.log(cloneLocations);
-  return cloneLocations
+  return Promise.all(promises).then(() => {  //Promise.all(arrayPromise name) wait till all promises are resolved or rejected
+    return cloneLocations;
+  });
+  // console.log(cloneLocations);
+  // return cloneLocations;
   // setLocations(data.map(location)=>);
 }
 function filterLocations(locations) {
