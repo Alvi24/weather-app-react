@@ -1,3 +1,5 @@
+/*use position absolute and right,left,top,bottom to flow the element out of page*/
+/* #root and .App can be styled only inline not from a module */
 body {
   width: 100vw;
   height: 100vh;
@@ -7,24 +9,41 @@ body {
   background-size: cover;
   background-position: center;
   backdrop-filter: blur(10px);
-}
-* {
   margin: 0;
+  padding: 0;
+}
+
+.Body {
+  position: relative;
+  min-width: 90%;
+  min-height: 100px;
+  margin: 0;
+  transition: 0.5s;
+}
+.Body * {
+  margin: 0;
+  box-sizing: border-box;
   color: black;
   transition: filter 0.5s;
 }
-.Body {
-  width: 80%;
-  min-height: 100px;
-}
+/* .Body > :not(.Hero) {
+  align-self: auto;
+} */
+/*SearchBar.jsx*/
+
 .searchBar {
+  position: relative;
+  z-index: 1;
   background-color: white;
-  width: 15%;
-  height: 20%;
-  margin-inline-start: 10%;
+  width: 300px;
+  height: 30px;
+  transform: translate(20%, 60%);
+  /* margin-inline-start: 10%; */
 }
 .searchBar input {
+  margin-right: auto; /*overide justify content on parent*/
   width: 10%;
+  height: 100%;
   border-radius: 20px;
   background-color: red;
   outline: transparent;
@@ -36,23 +55,37 @@ body {
 .searchBar input:not(:placeholder-shown) {
   width: 100%;
 }
- ul{
-    display: none;
- }
-input:focus ~ ul,ul:has(li:active) {
-  z-index: 2;
-  position:absolute;
+.searchBar p {
+  font-size: 3.5em;
+  position: absolute;
+  background-color: red;
+}
+table {
+  position: absolute;
+  display: none;
+  top: 35px;
+  left: 0;
+  background-color: white;
+}
 
-       display: inline-block;
+input:focus ~ table:has(.location),
+table:has(tr:active) {
+  /* tr:active when a location is clicked*/
+  z-index: 2;
+ 
+  display: inline-block;
 }
-li{
-   background-color: white;
+tr img {
+  width: 50px;
+  height: 30px;
 }
-li:hover{
-   background-color: red;
+.location:hover {
+  cursor: pointer;
+  background-color: red;
 }
 .Hero {
-  width: 100%;
+  width: 60px;
+  width: clamp(600px, 8vw, 200px);
   transition: filter 0.5s;
   background: rgba(216, 216, 216, 0.3);
   border-radius: 16px;
@@ -60,12 +93,37 @@ li:hover{
   backdrop-filter: blur(4.1px);
   -webkit-backdrop-filter: blur(4.1px);
   border: 1px solid rgba(216, 216, 216, 0.65);
-  transform: translate(10%, 40%);
+  transform: translateY(70%);
+  margin-inline-start: auto;
+  margin-inline-end: auto;
+
   /* box-shadow: 0 0 8px 8px rgb(100, 189, 219) inset; */ /*faded edges*/
+}
+.mainWeatherInfo {
+  width: 100%;
+  display: inline-flex;
+  align-items: center;
+  background-color: red;
+}
+.mainWeatherInfo p {
+  display: inline-block;
+}
+.currentLocationAndTime {
+  display: inline-flex;
+  flex-direction: column;
+  width: fit-content;
+  margin-inline-start: 20px;
+  background-color: green;
+}
+.currentLocationAndTime p {
+  font-size: 1.3em;
+}
+.currentLocationAndTime p svg {
+  height: 2.2vh;
 }
 :global(.blur) {
   filter: blur(2px);
-  pointer-events: none;
+  pointer-events: none; /*disable hovering selecting and other interactable things*/
 }
 :global(.blur) * {
   user-select: none; /*make the elements behind unselectable*/
@@ -86,5 +144,29 @@ li:hover{
 @media (max-width: 800px) {
   :global(.blur) {
     filter: blur(20px);
+  }
+}
+@media (max-width: 700px) {
+  .Hero {
+    flex: 0 0 auto; /*display flex of parent(.Body) dictates the width of child width, adding this property removes its dependency*/
+    width: 90%;
+
+    background-color: rgb(114, 94, 94);
+  }
+  .searchBar {
+    background-color: black;
+  }
+}
+@media (max-width: 500px) {
+  .Hero {
+    flex: 0 0 auto; /*display flex of parent(.Body) dictates the width of child width, adding this property removes its dependency*/
+    width: 90%;
+
+    background-color: rgb(114, 94, 94);
+  }
+  .searchBar {
+    background-color: black;
+    right: 10%;
+    width: 70%;
   }
 }

@@ -1,12 +1,15 @@
 .Options {
   /* height: 8vh; */
-  height: 99.7vh;
+
+  width: 100%;
+
   display: flex;
   justify-content: flex-end;
   align-items: flex-start;
   float: right;
 }
 .optionsHamburger {
+  position: absolute;
   width: 30px;
   height: 30px;
   padding: 10px;
@@ -16,9 +19,11 @@
   -webkit-backdrop-filter: blur(5.9px);
   border: 1px solid rgba(255, 255, 255, 0.31);
   border-radius: 8px;
-  margin-inline-end: 10%;
-  margin-block-start: 10px;
-  transition: background-color 0.5s;
+  right: 1%;
+  top: 1%;
+  z-index: 1;
+  /* transform: translate(-50%,20%); */
+  transition: background-color 0.5s, opacity 0.5s;
 }
 .optionsHamburger * {
   color: black;
@@ -26,12 +31,22 @@
 .optionsHamburger:hover {
   background: rgba(255, 255, 255, 0.52);
 }
+
+/* :global(.clicked).optionsHamburger {
+  opacity: 0;
+  outline: none;
+} */
+:global(.App:has(.blur)) .optionsHamburger {
+  opacity: 0;
+  outline: none;
+}
 .sidePanel {
   position: absolute;
+  height: 100vh;
   overflow: hidden;
-  background-color: rgb(235, 235, 235);
-  height: 100%;
-  transition: 0.5s;
+  background-color: rgba(235, 235, 235, 0.8);
+  backdrop-filter: blur(10px);
+  transition: width 0.5s;
   z-index: 1;
 }
 
@@ -47,7 +62,6 @@
 .poweredBy p {
   display: inline-block;
   white-space: nowrap;
-
   margin-inline-start: 15px;
 }
 .poweredBy svg {
@@ -59,5 +73,9 @@
   }
   .optionsHamburger {
     z-index: 2;
+  }
+  :global(.App:has(.blur)) .optionsHamburger {
+    opacity: 1;
+    outline: none;
   }
 }

@@ -5,7 +5,7 @@ import { WeatherData } from "../API.mjs";
 // ./ means current directory  ../ means parent of current directory and / means root directory
 import styles from "../styles/App.module.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faLocationDot } from "@fortawesome/free-solid-svg-icons";
+import { faLocationDot, faCloudSun } from "@fortawesome/free-solid-svg-icons";
 
 export default function Body() {
   let [currentWeather, setCurrentWeather] = useState({});
@@ -21,6 +21,7 @@ export default function Body() {
   }
   function setData(data) {
     const { dailyWeather } = data;
+    // console.log(data);
     setCurrentWeather({ ...data.currentWeather });
     setdailyWeather([...data.dailyWeather]);
 
@@ -29,7 +30,7 @@ export default function Body() {
       typeof data.cityName.then === "function"
     ) {
       //check if cityName is promise or not
-      data.cityName.then(({city}) => {
+      data.cityName.then(({ city }) => {
         setcityName(city);
       });
     } else {
@@ -50,22 +51,26 @@ export default function Body() {
     // console.log("weather   ", currentWeather);
   }, [currentWeather]);
   useEffect(() => {
-    // console.log("daily   ", dailyWeather);
+    console.log("daily   ", dailyWeather);
   }, [dailyWeather]);
-
+  // console.log(faCloudSun);
+  // let icon = ["fas", "fa-coffee"];
   return (
     <div className={styles.Body}>
       <SearchBar handleLocationClick={callWeatherData} />
       <div className={styles.Hero}>
         {/* <button onClick={() => getLocations()}>Press</button> */}
         {/*use the ?  */}
-        <h1>time: {currentWeather?.currentTime}</h1>
-        <h1>
-          city:
-          <FontAwesomeIcon icon={faLocationDot} /> {city}{" "}
-        </h1>
-        <h1>mintemp: {dailyWeather[0]?.minTemp + "°"} </h1>
-        <p className={styles.heroTemp}> {currentWeather?.temperature}°</p>
+        <div className={styles.mainWeatherInfo}>
+          <p className={styles.heroTemp}> {currentWeather?.temperature}°</p>
+          <div className={styles.currentLocationAndTime}>
+            <p>time: {currentWeather?.currentTime}</p>
+            <p>
+              <FontAwesomeIcon icon={faLocationDot} /> {city}{" "}
+            </p>
+          </div>
+        </div>
+        <p>mintemp: {dailyWeather[0]?.minTemp + "°"} </p>
       </div>
     </div>
   );

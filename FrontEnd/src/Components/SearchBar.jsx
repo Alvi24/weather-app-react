@@ -1,11 +1,14 @@
 // npm run dev
 import React, { useEffect, useState } from "react";
-import { fetchLocations, getcityName } from "../API.mjs";
+import { fetchLocations } from "../API.mjs";
 import styles from "../styles/App.module.css";
 
 export default function SearchBar(props) {
   let [locations, setLocations] = useState();
 
+  useEffect(() => {
+    console.log(locations);
+  }, [locations]);
   // useEffect(() => {
   //   console.log(locations);
   // }, [locations]);
@@ -14,22 +17,25 @@ export default function SearchBar(props) {
     if (e.target.value.length < 2) {
       // console.log(document.querySelector("li"));
       console.log("remove");
+      // if (document.querySelector("table")) {
+      //   document.querySelector("table").style.display = "none";
+      // }
       setLocations([]);
 
       return;
     }
+
     fetchLocations(e)
       .then((data) => {
-        // console.log(data);
-        console.log(data);
         if (e.target.value.length >= 2) {
           console.log("target value", e.target.value.length);
+          console.log(data);
           setLocations(data);
           // setLocations(data);
         }
       })
       .catch((errotText) => {
-        setLocations(errotText);
+        if (e.target.value.length >= 2) setLocations(errotText);
       });
   }
   return (
@@ -45,10 +51,17 @@ export default function SearchBar(props) {
         }}
       />
 
-      <ul>
-        {Array.isArray(locations)
-          ? locations?.map((location) => (
-              <li
+      {typeof locations === "object" ? (
+        <table border={3}>
+          <tbody>
+            <tr>
+              <th>Flag</th>
+              <th>Location</th>
+              <th>Region</th>
+            </tr>
+            {locations?.map((location) => (
+              <tr
+                className={styles.location}
                 key={location.latitude}
                 onClick={() =>
                   props.handleLocationClick(
@@ -58,12 +71,18 @@ export default function SearchBar(props) {
                   )
                 }
               >
-                {location.cityName} <br />
-                Region: {location.region}
-              </li>
-            ))
-          : locations}
-      </ul>
+                <td>
+                  <img src={location.countryFlag} alt="" />
+                </td>
+                <td>{location.cityName}</td>
+                <td>{location.region}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      ) : (
+        locations
+      )}
     </div>
   );
 }

@@ -2,10 +2,16 @@
 import axios from "axios";
 // import { lookUp } from "geojson-places";
 
-function WeatherData(latitude, longitude, cityNameFromBodyComponent, timezone) {
+async function WeatherData(
+  latitude,
+  longitude,
+  cityNameFromBodyComponent,
+  timezone
+) {
   return axios
+
     .get(
-      ` https://api.open-meteo.com/v1/forecast?daily=weathercode,temperature_2m_max,temperature_2m_min,sunrise,sunset&current_weather=true&timeformat=unixtime&timezone=${timezone}`,
+      `  https://api.open-meteo.com/v1/forecast?&hourly=temperature_2m,weathercode&daily=weathercode,temperature_2m_max,temperature_2m_min,sunrise,sunset&current_weather=true&timeformat=unixtime&timezone=${timezone}`,
       {
         params: {
           latitude: latitude,
@@ -14,6 +20,7 @@ function WeatherData(latitude, longitude, cityNameFromBodyComponent, timezone) {
       }
     )
     .then(({ data }) => {
+      console.log(data);
       return {
         cityName:
           cityNameFromBodyComponent === undefined
@@ -21,11 +28,12 @@ function WeatherData(latitude, longitude, cityNameFromBodyComponent, timezone) {
             : cityNameFromBodyComponent,
         currentWeather: handleCurrentWeatherData(data),
         dailyWeather: handleDailyWeatherData(data),
+        hourlyWeather: handleHourlyWeatherData(data),
       };
     });
 }
 
-function getcityName(lat, long) {
+async function getcityName(lat, long) {
   return axios
     .get(
       `https://api.bigdatacloud.net/data/reverse-geocode?localityLanguage=en&key=bdc_ee65efb4989c4d09a3f21513083e269d`, //server-side big data
@@ -47,7 +55,9 @@ function getcityName(lat, long) {
 
 function handleCurrentWeatherData({ current_weather }) {
   let currentTime = new Date();
+  console.log(currentTime.getDate(), currentTime.getDay()); //WHEN WORKING WITH HOURLY WEATHER
   currentTime = currentTime.getHours() + ":" + currentTime.getMinutes();
+
   // console.log(Math.round(37 / 10) * 10); //for weathercode
   // console.log(current_weather);
   return {
@@ -58,6 +68,34 @@ function handleCurrentWeatherData({ current_weather }) {
     windDirection: current_weather.winddirection,
   };
 }
+function convertUnixTimeToNormalTime(arrayOfUnixTime) {
+  return arrayOfUnixTime.map((el) =>
+    new Date(el * 1000).toLocaleTimeString("it-IT")
+  );
+}
+function roundTemperatureNumber(arrayOfTemperature) {
+  arrayOfTemperature = arrayOfTemperature.map((el) => {
+    if (Math.round(el) === -0 && el < 0) {
+      return Math.round(el) * -1;
+    } else {
+      return Math.round(el);
+    }
+  });
+  return arrayOfTemperature;
+}
+function convertUnixTimeToDay(unixTime) {
+  const dayOfWeek = {
+    0: "Sunday",
+    1: "Monday",
+    2: "Tuesday",
+    3: "Wednesday",
+    4: "Thursday",
+    5: "Friday",
+    6: "Saturday",
+  };
+  const day = dayOfWeek[new Date(unixTime * 1000).getDay()];
+  return day;
+}
 function handleDailyWeatherData({ daily }) {
   let {
     sunrise: sunRise,
@@ -65,29 +103,32 @@ function handleDailyWeatherData({ daily }) {
     temperature_2m_max: maxTemp,
     temperature_2m_min: minTemp,
     weathercode: weatherCodeDaily,
+    time,
   } = daily;
-  sunRise = sunRise.map((el) =>
-    new Date(el * 1000).toLocaleTimeString("it-IT")
-  );
-  sunSet = sunSet.map((el) => new Date(el * 1000).toLocaleTimeString("it-IT"));
-  maxTemp = maxTemp.map((el) => Math.round(el));
-  minTemp = minTemp.map((el) => {
-    if (Math.round(el) === -0 && el < 0) {
-      return Math.round(el) * -1;
-    } else {
-      return Math.round(el);
-    }
-  });
+  console.log(daily);
+  sunRise = convertUnixTimeToNormalTime(sunRise);
+  sunSet = convertUnixTimeToNormalTime(sunSet);
+  // sunRise = sunRise.map((el) =>
+  //   new Date(el * 1000).toLocaleTimeString("it-IT")
+  // );
+  // sunSet = sunSet.map((el) => new Date(el * 1000).toLocaleTimeString("it-IT"));
+  maxTemp = roundTemperatureNumber(maxTemp);
+  minTemp = roundTemperatureNumber(minTemp);
   weatherCodeDaily = weatherCodeDaily.map((el) => Math.round(el / 10) * 10);
-  let days = [
-    { day: "Monday" },
-    { day: "Tuesday" },
-    { day: "Wednesday" },
-    { day: "Thursday" },
-    { day: "Saturday" },
-    { day: "Sunday" },
-  ];
-  for (let i = 0; i < days.length; i++) {
+  const dayOfWeek = {
+    0: "Sunday",
+    1: "Monday",
+    2: "Tuesday",
+    3: "Wednesday",
+    4: "Thursday",
+    5: "Friday",
+    6: "Saturday",
+  };
+  const dayOfWeekLength = Object.keys(dayOfWeek).length; //number of properties
+  let days = [];
+  for (let i = 0; i < dayOfWeekLength; i++) {
+    days[i] = {};
+    days[i].day = convertUnixTimeToDay(time[i]);
     days[i].sunRise = sunRise[i];
     days[i].sunSet = sunSet[i];
     days[i].maxTemp = maxTemp[i];
@@ -96,12 +137,54 @@ function handleDailyWeatherData({ daily }) {
   }
   return days;
 }
+
+function handleHourlyWeatherData({ hourly }) {
+  const dayOfWeek = {
+    0: "Sunday",
+    1: "Monday",
+    2: "Tuesday",
+    3: "Wednesday",
+    4: "Thursday",
+    5: "Friday",
+    6: "Saturday",
+  };
+  // console.log(dayOfWeek[0]);
+  // console.log(hourly);
+  let hourlyLimit = hourly.time.length;
+  let {
+    time: timeHourly,
+    temperature_2m: tempHourly,
+    weathercode: weatherCodeHourly,
+  } = hourly;
+  let hourlyDataClone = []; // or  let hourlyDataClone = [{},{},{},{},{},{},{}];
+  let hourlyIterator = 0;
+  tempHourly = roundTemperatureNumber(tempHourly);
+  timeHourly = convertUnixTimeToNormalTime(timeHourly);
+  weatherCodeHourly = weatherCodeHourly.map((el) => Math.round(el / 10) * 10);
+
+  for (let i = 24; i <= hourlyLimit; i += 24) {
+    hourlyDataClone[hourlyIterator] = {};
+    hourlyDataClone[hourlyIterator].day = convertUnixTimeToDay(
+      hourly.time[i - 23]
+    );
+
+    hourlyDataClone[hourlyIterator].time = timeHourly.slice(i - 24, i); //0-23
+    hourlyDataClone[hourlyIterator].temp = tempHourly.slice(i - 24, i);
+    hourlyDataClone[hourlyIterator].weathercode = weatherCodeHourly.slice(
+      i - 24,
+      i
+    );
+    hourlyIterator++;
+  }
+  // console.log(hourlyDataClone);
+  return hourlyDataClone;
+}
 const object = {
   hello: 30,
 };
 const { hello: value } = object;
 console.log("value " + value);
-function fetchLocations(e) {
+async function fetchLocations(e) {
   const { value: input } = e.target;
   return axios
     .post("http://localhost:5000/", {
@@ -109,7 +192,7 @@ function fetchLocations(e) {
     })
     .then((res) => {
       bigDatacityName(res.data, e).then((data) => {
-        console.log(data);
+        // console.log(data);
       });
       return bigDatacityName(res.data, e);
     })
@@ -119,6 +202,17 @@ function fetchLocations(e) {
     });
 }
 function bigDatacityName(data, e) {
+  //   console.log("data before sort", data);
+  //  data.sort((a, b) => {
+  //     if (a.cityName < b.cityName) {
+  //       return -1;
+  //     }
+  //     if (a.cityName > b.cityName) {
+  //       return 1;
+  //     }
+  //     return 0;
+  //   });
+  //   console.log("data after sort",data);
   if (e.target.value.length < 2) {
     return;
   }
@@ -153,7 +247,7 @@ function bigDatacityName(data, e) {
   // setLocations(data.map(location)=>);
 }
 function filterLocations(locations) {
-  console.log(locations);
+  // console.log(locations);
   // console.log(
   //   cloneLocation.cityName,
   //   cloneLocations[index + 1].cityName
@@ -187,7 +281,30 @@ function filterLocations(locations) {
   //   firstLocation.countryFlag === secondLocation.countryFlag
   // )
   // console.log(filteredLocations);
+
   return filteredLocations;
+}
+function weatherCodeToIcon(weatherCode) {
+  switch (weatherCode) {
+    case 0:
+      break;
+    case 10:
+      break;
+    case 20:
+      break;
+    case 30:
+      break;
+    case 40:
+      break;
+    case 50:
+      break;
+    case 60:
+      break;
+    case 70:
+      break;
+    default:
+      break;
+  }
 }
 
 export { WeatherData, fetchLocations, getcityName };
