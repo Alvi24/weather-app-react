@@ -7,7 +7,7 @@ export default function SearchBar(props) {
   let [locations, setLocations] = useState();
 
   useEffect(() => {
-    console.log(locations);
+    // console.log(locations);
   }, [locations]);
   // useEffect(() => {
   //   console.log(locations);
@@ -29,7 +29,7 @@ export default function SearchBar(props) {
       .then((data) => {
         if (e.target.value.length >= 2) {
           console.log("target value", e.target.value.length);
-          console.log(data);
+          // console.log(data);
           setLocations(data);
           // setLocations(data);
         }
@@ -81,7 +81,7 @@ export default function SearchBar(props) {
           </tbody>
         </table>
       ) : (
-        locations
+        <p className={styles.noLocationFoundText}>{locations}</p>
       )}
     </div>
   );

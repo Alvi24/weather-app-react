@@ -20,7 +20,7 @@ async function WeatherData(
       }
     )
     .then(({ data }) => {
-      console.log(data);
+      // console.log(data);
       return {
         cityName:
           cityNameFromBodyComponent === undefined
@@ -55,7 +55,7 @@ async function getcityName(lat, long) {
 
 function handleCurrentWeatherData({ current_weather }) {
   let currentTime = new Date();
-  console.log(currentTime.getDate(), currentTime.getDay()); //WHEN WORKING WITH HOURLY WEATHER
+  // console.log(currentTime.getDate(), currentTime.getDay()); //WHEN WORKING WITH HOURLY WEATHER
   currentTime = currentTime.getHours() + ":" + currentTime.getMinutes();
 
   // console.log(Math.round(37 / 10) * 10); //for weathercode
@@ -105,7 +105,7 @@ function handleDailyWeatherData({ daily }) {
     weathercode: weatherCodeDaily,
     time,
   } = daily;
-  console.log(daily);
+  // console.log(daily);
   sunRise = convertUnixTimeToNormalTime(sunRise);
   sunSet = convertUnixTimeToNormalTime(sunSet);
   // sunRise = sunRise.map((el) =>
@@ -202,7 +202,7 @@ async function fetchLocations(e) {
     });
 }
 function bigDatacityName(data, e) {
-  //   console.log("data before sort", data);
+  // console.log("data before sort", data);
   //  data.sort((a, b) => {
   //     if (a.cityName < b.cityName) {
   //       return -1;
@@ -238,73 +238,92 @@ function bigDatacityName(data, e) {
       )
     );
   });
+
   return Promise.all(promises).then(() => {
-    //Promise.all(arrayPromise name) wait till all promises are resolved or rejected
-    return filterLocations(cloneLocations);
+    // data.sort((a, b) => {  //sort an array of objects
+    //   if (a.cityName < b.cityName) {
+    //     return -1;
+    //   }
+    //   if (a.cityName > b.cityName) {
+    //     return 1;
+    //   }
+    //   return 0;
+    // });
+    console.log("final", cloneLocations);
+    return filterDuplicateLocations(cloneLocations);
   });
-  // console.log(cloneLocations);
-  // return cloneLocations;
-  // setLocations(data.map(location)=>);
 }
-function filterLocations(locations) {
-  // console.log(locations);
-  // console.log(
-  //   cloneLocation.cityName,
-  //   cloneLocations[index + 1].cityName
-  // );
-  // console.log(
-  //   cloneLocation.countryFlag,
-  //   cloneLocations[index + 1].countryFlag
-  // );
-  // console.log("index", index);
-  let filteredLocations = [];
-  locations.forEach((location, index) => {
-    // console.log(index);
-    if (index === locations.length - 1) {
-      filteredLocations.push({ ...location });
-      return;
-    }
-    if (
-      location.cityName !== locations[index + 1].cityName ||
-      location.region !== locations[index + 1].region
-    ) {
-      filteredLocations.push({ ...location });
-    }
-  });
+function filterDuplicateLocations(arrayOfLocations) {
+  return arrayOfLocations.filter(
+    (location, index, self) =>
+      index ===
+      self.findIndex(
+        (cloneLocationElement) =>
+          cloneLocationElement.cityName === location.cityName &&
+          cloneLocationElement.region === location.region
+      )
+  );
 
-  // console.log(
-  //   "cityName",
-  //   firstLocation.cityName === secondLocation.cityName
-  // );
-  // console.log(
-  //   "flag",
-  //   firstLocation.countryFlag === secondLocation.countryFlag
-  // )
-  // console.log(filteredLocations);
-
-  return filteredLocations;
+  //   // console.log(locations);
+  //   // console.log(
+  //   //   cloneLocation.cityName,
+  //   //   cloneLocations[index + 1].cityName
+  //   // );
+  //   // console.log(
+  //   //   cloneLocation.countryFlag,
+  //   //   cloneLocations[index + 1].countryFlag
+  //   // );
+  //   // console.log("index", index);
+  //   let filteredLocations = [];
+  //   locations.forEach((location, index) => {
+  //     // console.log(index);
+  //     if (index === locations.length - 1) {
+  //       filteredLocations.push({ ...location });
+  //       return;
+  //     }
+  //     if (
+  //       location.cityName !== locations[index + 1].cityName ||
+  //       location.region !== locations[index + 1].region
+  //     ) {
+  //       filteredLocations.push({ ...location });
+  //     }
+  //   });
+  //   // console.log(
+  //   //   "cityName",
+  //   //   firstLocation.cityName === secondLocation.cityName
+  //   // );
+  //   // console.log(
+  //   //   "flag",
+  //   //   firstLocation.countryFlag === secondLocation.countryFlag
+  //   // )
+  //   // console.log(filteredLocations);
+  //   return filteredLocations;
 }
+
 function weatherCodeToIcon(weatherCode) {
   switch (weatherCode) {
     case 0:
-      break;
+      return "fa-sun";
     case 10:
-      break;
+      return "fa-smog";
     case 20:
-      break;
+      return "fa-cloud-sun";
     case 30:
-      break;
+      return "fa-cloud-showers-heavy";
     case 40:
-      break;
+      return "fa-smog";
     case 50:
-      break;
+      return "fa-cloud-sun-rain";
     case 60:
-      break;
+      return "fa-cloud-meatball";
     case 70:
-      break;
+      return "fa-snowflake";
+    case 80:
+      return "fa-cloud-rain";
     default:
-      break;
+      //invalid weatherCode
+      return "fa-sun";
   }
 }
 
-export { WeatherData, fetchLocations, getcityName };
+export { WeatherData, fetchLocations, getcityName, weatherCodeToIcon };

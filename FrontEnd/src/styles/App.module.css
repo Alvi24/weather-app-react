@@ -55,10 +55,10 @@ body {
 .searchBar input:not(:placeholder-shown) {
   width: 100%;
 }
-.searchBar p {
-  font-size: 3.5em;
+.searchBar .noLocationFoundText {
+  font-size: 1.8em;
   position: absolute;
-  background-color: red;
+  transform: translate(10%);
 }
 table {
   position: absolute;
