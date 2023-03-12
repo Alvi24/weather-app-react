@@ -1,6 +1,5 @@
 // npm run dev
 import axios from "axios";
-// import { lookUp } from "geojson-places";
 
 async function WeatherData(
   latitude,
@@ -20,7 +19,6 @@ async function WeatherData(
       }
     )
     .then(({ data }) => {
-      // console.log(data);
       return {
         locationName:
           locationNameFromBodyComponent === undefined
@@ -45,7 +43,6 @@ async function getLocationName(lat, long) {
       }
     )
     .then(({ data }) => {
-      // console.log(data);
       return {
         location: data.city, // .city not .location
         region: data.principalSubdivision,
@@ -54,15 +51,8 @@ async function getLocationName(lat, long) {
 }
 
 function handleCurrentWeatherData({ current_weather }) {
-  let currentTime = new Date();
-  // console.log(currentTime.getDate(), currentTime.getDay()); //WHEN WORKING WITH HOURLY WEATHER
-  currentTime = currentTime.getHours() + ":" + currentTime.getMinutes();
-
-  // console.log(Math.round(37 / 10) * 10); //for weathercode
-  // console.log(current_weather);
   return {
-    currentTime,
-    weatherCode: Math.round(current_weather.weathercode / 10) * 10,
+    weatherCode: Math.round(current_weather.weathercode / 10) * 10, //round to neart 10,20,30 etc
     temperature: Math.round(current_weather.temperature),
     windSpeed: Math.round(current_weather.windspeed),
     windDirection: current_weather.winddirection,
@@ -105,13 +95,8 @@ function handleDailyWeatherData({ daily }) {
     weathercode: weatherCodeDaily,
     time,
   } = daily;
-  // console.log(daily);
   sunRise = convertUnixTimeToNormalTime(sunRise);
   sunSet = convertUnixTimeToNormalTime(sunSet);
-  // sunRise = sunRise.map((el) =>
-  //   new Date(el * 1000).toLocaleTimeString("it-IT")
-  // );
-  // sunSet = sunSet.map((el) => new Date(el * 1000).toLocaleTimeString("it-IT"));
   maxTemp = roundTemperatureNumber(maxTemp);
   minTemp = roundTemperatureNumber(minTemp);
   weatherCodeDaily = weatherCodeDaily.map((el) => Math.round(el / 10) * 10);
@@ -140,7 +125,6 @@ function handleDailyWeatherData({ daily }) {
 
 function handleHourlyWeatherData({ hourly }) {
   // console.log(dayOfWeek[0]);
-  // console.log(hourly);
   let hourlyLimit = hourly.time.length;
   let {
     time: timeHourly,
@@ -167,7 +151,6 @@ function handleHourlyWeatherData({ hourly }) {
     );
     hourlyIterator++;
   }
-  // console.log(hourlyDataClone);
   return hourlyDataClone;
 }
 const object = {
@@ -182,9 +165,6 @@ async function fetchLocations(e) {
       input,
     })
     .then((res) => {
-      // bigDataLocationName(res.data, e).then((data) => {
-      //   console.log(data);
-      // });
       return bigDataLocationName(res.data, e);
     })
     .catch((error) => {
@@ -196,9 +176,6 @@ function bigDataLocationName(data, e) {
   if (e.target.value.length < 2) {
     return;
   }
-  // let filteredLocations = filterLocations(data);
-  // console.log("filtered", filteredLocations);
-  // console.log(data);
   const promises = [];
   let cloneLocations = [...data];
   cloneLocations.forEach((location, index) => {
@@ -208,11 +185,8 @@ function bigDataLocationName(data, e) {
           let locationFromBigData = location,
             regionFromBigData = region;
           if (locationFromBigData !== "") {
-            // console.log(location);
             cloneLocations[index].locationName = locationFromBigData;
             cloneLocations[index].region = regionFromBigData;
-            // setLocations([...cloneLocations]);
-            // console.log("locations");
           }
         }
       )
@@ -243,41 +217,6 @@ function filterDuplicateLocations(arrayOfLocations) {
           cloneLocationElement.region === location.region
       )
   );
-
-  //   // console.log(locations);
-  //   // console.log(
-  //   //   cloneLocation.locationName,
-  //   //   cloneLocations[index + 1].locationName
-  //   // );
-  //   // console.log(
-  //   //   cloneLocation.countryFlag,
-  //   //   cloneLocations[index + 1].countryFlag
-  //   // );
-  //   // console.log("index", index);
-  //   let filteredLocations = [];
-  //   locations.forEach((location, index) => {
-  //     // console.log(index);
-  //     if (index === locations.length - 1) {
-  //       filteredLocations.push({ ...location });
-  //       return;
-  //     }
-  //     if (
-  //       location.locationName !== locations[index + 1].locationName ||
-  //       location.region !== locations[index + 1].region
-  //     ) {
-  //       filteredLocations.push({ ...location });
-  //     }
-  //   });
-  //   // console.log(
-  //   //   "locationName",
-  //   //   firstLocation.locationName === secondLocation.locationName
-  //   // );
-  //   // console.log(
-  //   //   "flag",
-  //   //   firstLocation.countryFlag === secondLocation.countryFlag
-  //   // )
-  //   // console.log(filteredLocations);
-  //   return filteredLocations;
 }
 
 function weatherCodeToIcon(weatherCode) {

@@ -2,7 +2,7 @@
 import React, { useCallback, useEffect, useState } from "react";
 import SearchBar from "./SearchBar.jsx";
 import { weatherCodeToIcon, WeatherData } from "../API.mjs";
-import parse from "html-react-parser";
+// import parse from "html-react-parser";
 // ./ means current directory  ../ means parent of current directory and / means root directory
 import styles from "../styles/App.module.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -66,14 +66,6 @@ export default function Body() {
     const interval = setInterval(updateTime, 1000);
     return () => clearInterval(interval);
   });
-  useEffect(() => {
-    // console.log("weather   ", currentWeather);
-  }, [currentWeather]);
-  useEffect(() => {
-    // console.log("daily   ", dailyWeather);
-  }, [dailyWeather]);
-  // console.log(faCloudSun);
-  // let icon = ["fas", "fa-coffee"];
   return (
     <div className={styles.Body}>
       <SearchBar handleLocationClick={callWeatherData} />
@@ -99,21 +91,12 @@ export default function Body() {
         />
         {/* <p>mintemp: {dailyWeather[0]?.minTemp + "°"} </p> */}
       </div>
-      <div className="weather" style={{ marginBlockStart: "300px" }}>
-        <FontAwesomeIcon icon="fa-sun" fontSize="100px" />
-        <FontAwesomeIcon icon="fa-cloud-sun" fontSize="100px" />
-        <FontAwesomeIcon icon={"fa-smog"} fontSize="100px" />
-        <FontAwesomeIcon icon="fa-cloud-rain" fontSize="100px" />
-        <FontAwesomeIcon icon="fa-cloud-sun-rain" fontSize="100px" />
-        <FontAwesomeIcon icon="fa-cloud-meatball" fontSize="100px" />
-        <FontAwesomeIcon icon="fa-snowflake" fontSize="100px" />
-        <FontAwesomeIcon icon="fa-cloud-showers-heavy" fontSize="100px" />
-        {/* <img
+
+      {/* <img
           src="https://cdn.iconscout.com/icon/premium/png-512-thumb/weather-36-89515.png?f=avif&w=256"
           alt=""
           style={{ background: "white" }}
         /> */}
-      </div>
     </div>
   );
 }

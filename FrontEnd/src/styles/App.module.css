@@ -105,8 +105,8 @@ table:has(tr:active) {
   z-index: 2;
   display: inline-block;
 }
-th{
-    background-color:  rgba(195, 195, 195, 0.8);
+th {
+  background-color: rgba(195, 195, 195, 0.8);
 }
 tr img {
   width: 40px;
@@ -166,7 +166,6 @@ td.countryFlag img {
 .currentLocationAndTime {
   /* flex-shrink: 0;  allow width to work (overflow the container)*/
   display: inline-flex;
-  height: 300px;
   flex-direction: column;
   align-items: flex-start;
   justify-content: space-between;

@@ -59,7 +59,7 @@
 }
 .poweredBy * {
   color: black;
-  font-size: 1w;
+  /* font-size: 1w; */
 }
 .poweredBy p {
   display: inline-block;

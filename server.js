@@ -1,6 +1,6 @@
 // npm run dev
-var express = require("express");
-var app = express();
+const express = require("express");
+const app = express();
 app.use(express.urlencoded({ extended: false })); //use this if you want to use data that comes from a Form(input)
 app.use(express.json()); //use this if you want to use data that comes as JSON or use both
 
@@ -23,15 +23,12 @@ app.post("/", (req, res) => {
       // the song_iframe is the returned value from Scraper
       res.send(JSON.stringify(coords));
     })
-    .catch(() => {
+    .catch((error) => {
       res
         .status("400")
         .send(new Error("No location found with this input text"));
-      // console.log(err);
-      // console.log("error");
-      // res.send(JSON.stringify(Promise.reject()));
+      console.log("error");
     });
-  // res.send("hello page");
 });
 
 let browser, page;
@@ -57,12 +54,6 @@ async function getLatAndLong(searchText) {
     return;
   }
 
-  // await page.waitForNavigation({ waitUntil: "networkidle2" });
-
-  // await page.click("button#gls_map");
-  // await page.waitForSelector("#gls_map");
-  // await page.click("#gls_map");
-
   await page.$eval(
     "input#gls",
     (el, searchText) => {
@@ -70,16 +61,12 @@ async function getLatAndLong(searchText) {
     },
     searchText
   );
-  // await page.type("input#gls", searchText);
-  // await page.waitForSelector(".results.paginate");
   try {
     await page.waitForSelector(".search-results:not(.multiple,.lastvis-only)", {
       timeout: 1000,
     });
 
     await page.waitForTimeout(500);
-    // await page.waitForSelector(`document.querySelector("input#gls").value=="berlin"`,{timeout:2000});
-    // const text = await page.$eval("input#gls", (el) => el.value);
     const locationNames = await page.$$eval("tr.loc", (locations) => {
       let array = locations.map((location) => {
         return {
@@ -104,17 +91,6 @@ async function getLatAndLong(searchText) {
     return Promise.reject(err);
   }
 
-  // const locationNames = await page.$$eval("tr.loc", (locations) => {
-  //   page.waitForNavigation();
-  //   locations.map((location) => {
-  //     return document.querySelector("div.locationname-inside").innerHTML;
-  //   });
-  // });
-  // console.log(locationNames);
-  // return {
-  //   latitude: 20,
-  //   longitude: 30,
-  // };
 }
 getLatAndLong();
 app.listen("5000", () => {
