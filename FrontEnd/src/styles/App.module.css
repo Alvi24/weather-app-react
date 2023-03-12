@@ -1,5 +1,7 @@
 /*use position absolute and right,left,top,bottom to flow the element out of page*/
 /* #root and .App can be styled only inline not from a module */
+@import url("https://fonts.googleapis.com/css2?family=Golos+Text&display=swap");
+
 body {
   width: 100vw;
   height: 100vh;
@@ -12,7 +14,9 @@ body {
   margin: 0;
   padding: 0;
 }
-
+* {
+  font-family: "Golos Text", sans-serif;
+}
 .Body {
   position: relative;
   min-width: 90%;
@@ -31,61 +35,100 @@ body {
 } */
 /*SearchBar.jsx*/
 
-.searchBar {
+.searchBarAndLocationContainer {
+  display: flex;
+  justify-content: center;
   position: relative;
   z-index: 1;
-  background-color: white;
   width: 300px;
-  height: 30px;
+  height: 35px;
   transform: translate(20%, 60%);
   /* margin-inline-start: 10%; */
 }
-.searchBar input {
+.searchBarAndLocationContainer .searchBar {
+  display: flex;
+  justify-content: center;
+  align-items: center;
   margin-right: auto; /*overide justify content on parent*/
-  width: 10%;
+  width: 12%;
   height: 100%;
+  background: rgba(216, 216, 216, 0.3);
   border-radius: 20px;
-  background-color: red;
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.2);
+  backdrop-filter: blur(4.1px);
+  -webkit-backdrop-filter: blur(4.1px);
+  border: 1px solid rgba(216, 216, 216, 0.65);
   outline: transparent;
-  border: none;
-  transition: 0.5s;
+  /* border: none; */
+  transition: 1s;
 }
-.searchBar input:hover,
-.searchBar input:focus,
-.searchBar input:not(:placeholder-shown) {
+.searchBarAndLocationContainer .searchBar input {
+  width: 90%;
+  background-color: transparent;
+  border: none;
+  outline: none;
+}
+.searchBarAndLocationContainer .searchBar .searchIcon {
+  transform: translateX(-50%);
+}
+.searchBarAndLocationContainer .searchBar:hover,
+.searchBarAndLocationContainer .searchBar:has(input:hover),
+.searchBarAndLocationContainer .searchBar:has(input:focus),
+.searchBarAndLocationContainer .searchBar:has(input:not(:placeholder-shown)) {
   width: 100%;
 }
-.searchBar .noLocationFoundText {
+.searchBarAndLocationContainer .noLocationFoundText {
   font-size: 1.8em;
   position: absolute;
-  transform: translate(10%);
+  top: 100%;
 }
 table {
   position: absolute;
   display: none;
-  top: 35px;
-  left: 0;
-  background-color: white;
+  top: 40px;
+  /* From https://css.glass */
+  background: rgba(255, 255, 255, 0.8);
+  border-radius: 10px;
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: none;
+  border-spacing: 0; /*remove gaps between borders*/
+  overflow: hidden;
 }
-
-input:focus ~ table:has(.location),
+table * {
+  border: none;
+}
+.searchBar:has(input:focus) ~ table:has(.location),
 table:has(tr:active) {
   /* tr:active when a location is clicked*/
   z-index: 2;
- 
   display: inline-block;
 }
+th{
+    background-color:  rgba(195, 195, 195, 0.8);
+}
 tr img {
-  width: 50px;
+  width: 40px;
   height: 30px;
+}
+td.locationName {
+  padding-inline: 20px;
+}
+td.countryFlag img {
+  background-color: red;
+  display: block;
 }
 .location:hover {
   cursor: pointer;
   background-color: red;
+  background-color: rgba(195, 195, 195, 0.8);
 }
 .Hero {
-  width: 60px;
-  width: clamp(600px, 8vw, 200px);
+  display: flex;
+  align-items: center;
+  width: 600px;
+  /* width: clamp(600px, 8vw, 200px); */
   transition: filter 0.5s;
   background: rgba(216, 216, 216, 0.3);
   border-radius: 16px;
@@ -100,26 +143,49 @@ tr img {
   /* box-shadow: 0 0 8px 8px rgb(100, 189, 219) inset; */ /*faded edges*/
 }
 .mainWeatherInfo {
-  width: 100%;
+  width: calc(100% - 20%); /*operator + or - should always have space around*/
   display: inline-flex;
+  min-height: 100px;
   align-items: center;
-  background-color: red;
 }
 .mainWeatherInfo p {
   display: inline-block;
 }
-.currentLocationAndTime {
-  display: inline-flex;
-  flex-direction: column;
+.heroTemp {
   width: fit-content;
+  font-size: 4.5em;
+  padding-right: 2%;
+  border-image: linear-gradient(to top, rgba(255, 255, 255, 0.7), transparent) 2;
+  border-right: 3px solid;
+  margin-inline-start: 8%;
+}
+.currentWeatherIcon {
+  width: 20%;
+  margin-inline-end: 10px;
+}
+.currentLocationAndTime {
+  /* flex-shrink: 0;  allow width to work (overflow the container)*/
+  display: inline-flex;
+  height: 300px;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: space-between;
+  height: 60px;
   margin-inline-start: 20px;
-  background-color: green;
 }
 .currentLocationAndTime p {
+  /* white-space: nowrap; */
   font-size: 1.3em;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+  width: 320px; /* some width */
+}
+.currentLocationAndTime p:first-child {
+  transform: translateX(-1%);
 }
 .currentLocationAndTime p svg {
-  height: 2.2vh;
+  height: 1em;
 }
 :global(.blur) {
   filter: blur(2px);
@@ -134,39 +200,78 @@ tr img {
 .tempIcon > path {
   fill: red;
 }
-.heroTemp {
-  width: fit-content;
-  font-size: 4.5em;
-  padding-right: 2%;
-  border-image: linear-gradient(to top, rgba(255, 255, 255, 0.7), transparent) 2;
-  border-right: 3px solid;
-}
+
 @media (max-width: 800px) {
   :global(.blur) {
-    filter: blur(20px);
+    filter: blur(15px);
+    opacity: 0.4;
   }
 }
 @media (max-width: 700px) {
   .Hero {
     flex: 0 0 auto; /*display flex of parent(.Body) dictates the width of child width, adding this property removes its dependency*/
     width: 90%;
-
-    background-color: rgb(114, 94, 94);
   }
-  .searchBar {
-    background-color: black;
+  .mainWeatherInfo {
+    font-size: 1em;
+  }
+
+  .heroTemp {
+    margin-inline-start: 0;
+  }
+  .currentLocationAndTime p {
+    font-size: 1.5em;
   }
 }
-@media (max-width: 500px) {
+@media (max-width: 580px) {
   .Hero {
     flex: 0 0 auto; /*display flex of parent(.Body) dictates the width of child width, adding this property removes its dependency*/
     width: 90%;
-
-    background-color: rgb(114, 94, 94);
   }
-  .searchBar {
-    background-color: black;
+  .searchBarAndLocationContainer {
     right: 10%;
-    width: 70%;
+  }
+  .heroTemp {
+    font-size: 4rem;
+  }
+  .currentLocationAndTime p {
+    font-size: 1.2em;
+    width: 210px;
+  }
+}
+
+@media (max-width: 450px) {
+  .Hero {
+    width: 98%;
+  }
+
+  .mainWeatherInfo {
+    font-size: 1em;
+  }
+  .currentLocationAndTime {
+    justify-content: space-evenly;
+  }
+  .currentLocationAndTime p {
+    font-size: 1.2em;
+  }
+  .heroTemp {
+    font-size: 3em;
+    margin-inline-start: 0;
+  }
+  .currentWeatherIcon {
+    margin: 0;
+  }
+}
+@media (max-width: 380px) {
+  .currentLocationAndTime {
+    margin-inline-start: 5px;
+  }
+  .currentLocationAndTime p {
+    width: 200px;
+    font-size: 1em;
+  }
+  .searchBarAndLocationContainer {
+    right: 15%;
+    width: 80%;
   }
 }

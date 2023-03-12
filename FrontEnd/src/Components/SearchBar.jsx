@@ -2,7 +2,8 @@
 import React, { useEffect, useState } from "react";
 import { fetchLocations } from "../API.mjs";
 import styles from "../styles/App.module.css";
-
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faMagnifyingGlass } from "@fortawesome/free-solid-svg-icons";
 export default function SearchBar(props) {
   let [locations, setLocations] = useState();
 
@@ -39,18 +40,23 @@ export default function SearchBar(props) {
       });
   }
   return (
-    <div className={styles.searchBar}>
-      <input
-        type="text"
-        name="searchBar"
-        id="searchBar"
-        placeholder=" "
-        autoComplete="off"
-        onChange={(e) => {
-          getLocations(e);
-        }}
-      />
-
+    <div className={styles.searchBarAndLocationContainer }>
+      <div className={styles.searchBar}>
+        <input
+          type="text"
+          name="searchBar"
+          id="searchBar"
+          placeholder=" "
+          autoComplete="off"
+          onChange={(e) => {
+            getLocations(e);
+          }}
+        />
+        <FontAwesomeIcon
+          icon={faMagnifyingGlass}
+          className={styles.searchIcon}
+        />
+      </div>
       {typeof locations === "object" ? (
         <table border={3}>
           <tbody>
@@ -67,14 +73,14 @@ export default function SearchBar(props) {
                   props.handleLocationClick(
                     location.latitude,
                     location.longitude,
-                    location.cityName
+                    location.locationName
                   )
                 }
               >
-                <td>
-                  <img src={location.countryFlag} alt="" />
+                <td className={styles.countryFlag}>
+                  <img src={location.countryFlag} alt="no flag found" />
                 </td>
-                <td>{location.cityName}</td>
+                <td className={styles.locationName}>{location.locationName}</td>
                 <td>{location.region}</td>
               </tr>
             ))}

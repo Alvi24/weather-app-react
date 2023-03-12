@@ -83,7 +83,8 @@ async function getLatAndLong(searchText) {
     const locationNames = await page.$$eval("tr.loc", (locations) => {
       let array = locations.map((location) => {
         return {
-          cityName: location.querySelector(".locationname-inside").innerHTML,
+          locationName: location.querySelector(".locationname-inside")
+            .innerHTML,
           latitude: location.querySelector("td.lat").innerHTML,
           longitude: location.querySelector("td.lon").innerHTML,
           countryFlag: location.querySelector("img").src,

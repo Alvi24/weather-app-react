@@ -5,7 +5,7 @@ import axios from "axios";
 async function WeatherData(
   latitude,
   longitude,
-  cityNameFromBodyComponent,
+  locationNameFromBodyComponent,
   timezone
 ) {
   return axios
@@ -22,10 +22,10 @@ async function WeatherData(
     .then(({ data }) => {
       // console.log(data);
       return {
-        cityName:
-          cityNameFromBodyComponent === undefined
-            ? getcityName(latitude, longitude)
-            : cityNameFromBodyComponent,
+        locationName:
+          locationNameFromBodyComponent === undefined
+            ? getLocationName(latitude, longitude)
+            : locationNameFromBodyComponent,
         currentWeather: handleCurrentWeatherData(data),
         dailyWeather: handleDailyWeatherData(data),
         hourlyWeather: handleHourlyWeatherData(data),
@@ -33,7 +33,7 @@ async function WeatherData(
     });
 }
 
-async function getcityName(lat, long) {
+async function getLocationName(lat, long) {
   return axios
     .get(
       `https://api.bigdatacloud.net/data/reverse-geocode?localityLanguage=en&key=bdc_ee65efb4989c4d09a3f21513083e269d`, //server-side big data
@@ -47,7 +47,7 @@ async function getcityName(lat, long) {
     .then(({ data }) => {
       // console.log(data);
       return {
-        city: data.city,
+        location: data.city, // .city not .location
         region: data.principalSubdivision,
       };
     });
@@ -139,15 +139,6 @@ function handleDailyWeatherData({ daily }) {
 }
 
 function handleHourlyWeatherData({ hourly }) {
-  const dayOfWeek = {
-    0: "Sunday",
-    1: "Monday",
-    2: "Tuesday",
-    3: "Wednesday",
-    4: "Thursday",
-    5: "Friday",
-    6: "Saturday",
-  };
   // console.log(dayOfWeek[0]);
   // console.log(hourly);
   let hourlyLimit = hourly.time.length;
@@ -191,28 +182,17 @@ async function fetchLocations(e) {
       input,
     })
     .then((res) => {
-      bigDatacityName(res.data, e).then((data) => {
-        // console.log(data);
-      });
-      return bigDatacityName(res.data, e);
+      // bigDataLocationName(res.data, e).then((data) => {
+      //   console.log(data);
+      // });
+      return bigDataLocationName(res.data, e);
     })
     .catch((error) => {
       console.log(error.response);
       return Promise.reject("No location found"); //or use throw
     });
 }
-function bigDatacityName(data, e) {
-  // console.log("data before sort", data);
-  //  data.sort((a, b) => {
-  //     if (a.cityName < b.cityName) {
-  //       return -1;
-  //     }
-  //     if (a.cityName > b.cityName) {
-  //       return 1;
-  //     }
-  //     return 0;
-  //   });
-  //   console.log("data after sort",data);
+function bigDataLocationName(data, e) {
   if (e.target.value.length < 2) {
     return;
   }
@@ -223,13 +203,13 @@ function bigDatacityName(data, e) {
   let cloneLocations = [...data];
   cloneLocations.forEach((location, index) => {
     promises.push(
-      getcityName(location.latitude, location.longitude).then(
-        ({ city, region }) => {
-          let cityFromBigData = city,
+      getLocationName(location.latitude, location.longitude).then(
+        ({ location, region }) => {
+          let locationFromBigData = location,
             regionFromBigData = region;
-          if (cityFromBigData !== "") {
-            // console.log(city);
-            cloneLocations[index].cityName = cityFromBigData;
+          if (locationFromBigData !== "") {
+            // console.log(location);
+            cloneLocations[index].locationName = locationFromBigData;
             cloneLocations[index].region = regionFromBigData;
             // setLocations([...cloneLocations]);
             // console.log("locations");
@@ -241,15 +221,15 @@ function bigDatacityName(data, e) {
 
   return Promise.all(promises).then(() => {
     // data.sort((a, b) => {  //sort an array of objects
-    //   if (a.cityName < b.cityName) {
+    //   if (a.locationName < b.locationName) {
     //     return -1;
     //   }
-    //   if (a.cityName > b.cityName) {
+    //   if (a.locationName > b.locationName) {
     //     return 1;
     //   }
     //   return 0;
     // });
-    console.log("final", cloneLocations);
+    console.log("final", filterDuplicateLocations(cloneLocations));
     return filterDuplicateLocations(cloneLocations);
   });
 }
@@ -259,15 +239,15 @@ function filterDuplicateLocations(arrayOfLocations) {
       index ===
       self.findIndex(
         (cloneLocationElement) =>
-          cloneLocationElement.cityName === location.cityName &&
+          cloneLocationElement.locationName === location.locationName &&
           cloneLocationElement.region === location.region
       )
   );
 
   //   // console.log(locations);
   //   // console.log(
-  //   //   cloneLocation.cityName,
-  //   //   cloneLocations[index + 1].cityName
+  //   //   cloneLocation.locationName,
+  //   //   cloneLocations[index + 1].locationName
   //   // );
   //   // console.log(
   //   //   cloneLocation.countryFlag,
@@ -282,15 +262,15 @@ function filterDuplicateLocations(arrayOfLocations) {
   //       return;
   //     }
   //     if (
-  //       location.cityName !== locations[index + 1].cityName ||
+  //       location.locationName !== locations[index + 1].locationName ||
   //       location.region !== locations[index + 1].region
   //     ) {
   //       filteredLocations.push({ ...location });
   //     }
   //   });
   //   // console.log(
-  //   //   "cityName",
-  //   //   firstLocation.cityName === secondLocation.cityName
+  //   //   "locationName",
+  //   //   firstLocation.locationName === secondLocation.locationName
   //   // );
   //   // console.log(
   //   //   "flag",
@@ -326,4 +306,4 @@ function weatherCodeToIcon(weatherCode) {
   }
 }
 
-export { WeatherData, fetchLocations, getcityName, weatherCodeToIcon };
+export { WeatherData, fetchLocations, getLocationName, weatherCodeToIcon };

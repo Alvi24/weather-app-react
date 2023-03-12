@@ -1,5 +1,5 @@
 // npm run dev
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import SearchBar from "./SearchBar.jsx";
 import { weatherCodeToIcon, WeatherData } from "../API.mjs";
 import parse from "html-react-parser";
@@ -9,38 +9,41 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   fas, //to use fontAwesome icon as string
   faLocationDot,
-  faCloudSun,
+  faClock,
 } from "@fortawesome/free-solid-svg-icons";
 import { library } from "@fortawesome/fontawesome-svg-core";
 library.add(fas);
 export default function Body() {
   let [currentWeather, setCurrentWeather] = useState({});
   let [dailyWeather, setdailyWeather] = useState({});
-  let [city, setcityName] = useState();
-  function callWeatherData(lat, long, cityName) {
+  let [location, setLocationName] = useState();
+  let [currentTime, setCurrentTime] = useState(
+    `${new Date().getHours()} : ${new Date().getMinutes()}`
+  );
+  const callWeatherData = useCallback((lat, long, locationName) => {
     WeatherData(
       lat,
       long,
-      cityName,
+      locationName,
       Intl.DateTimeFormat().resolvedOptions().timeZone
     ).then(setData);
-  }
+  }, []);
   function setData(data) {
     const { dailyWeather } = data;
     console.log(data);
     setCurrentWeather({ ...data.currentWeather });
     setdailyWeather([...data.dailyWeather]);
-
     if (
-      typeof data.cityName === "object" &&
-      typeof data.cityName.then === "function"
+      typeof data.locationName === "object" &&
+      typeof data.locationName.then === "function"
     ) {
-      //check if cityName is promise or not
-      data.cityName.then(({ city }) => {
-        setcityName(city);
+      //check if LocationName is promise or not
+      data.locationName.then(({ location }) => {
+        setLocationName(location);
+        console.log(location);
       });
     } else {
-      setcityName(data.cityName);
+      setLocationName(data.locationName);
     }
   }
   useEffect(() => {
@@ -52,7 +55,17 @@ export default function Body() {
       long = longitude;
       callWeatherData(lat, long);
     }
-  }, []);
+  }, [callWeatherData]);
+
+  useEffect(() => {
+    function updateTime() {
+      let date = new Date();
+      let currentTimeInterval = `${date.getHours()} : ${date.getMinutes()} `;
+      setCurrentTime(currentTimeInterval);
+    }
+    const interval = setInterval(updateTime, 1000);
+    return () => clearInterval(interval);
+  });
   useEffect(() => {
     // console.log("weather   ", currentWeather);
   }, [currentWeather]);
@@ -70,17 +83,21 @@ export default function Body() {
         <div className={styles.mainWeatherInfo}>
           <p className={styles.heroTemp}> {currentWeather?.temperature}°</p>
           <div className={styles.currentLocationAndTime}>
-            <p>time: {currentWeather?.currentTime}</p>
             <p>
-              <FontAwesomeIcon icon={"fa-location-dot"} /> {city}{" "}
+              {" "}
+              <FontAwesomeIcon icon={faClock} /> {currentTime}
+            </p>
+            <p>
+              <FontAwesomeIcon icon={faLocationDot} /> {location}{" "}
             </p>
           </div>
-          <FontAwesomeIcon
-            icon={weatherCodeToIcon(currentWeather?.weatherCode)}
-            fontSize="100px"
-          />
         </div>
-        <p>mintemp: {dailyWeather[0]?.minTemp + "°"} </p>
+        <FontAwesomeIcon
+          icon={weatherCodeToIcon(currentWeather?.weatherCode)}
+          className={styles["currentWeatherIcon"]}
+          fontSize="70px"
+        />
+        {/* <p>mintemp: {dailyWeather[0]?.minTemp + "°"} </p> */}
       </div>
       <div className="weather" style={{ marginBlockStart: "300px" }}>
         <FontAwesomeIcon icon="fa-sun" fontSize="100px" />
@@ -91,11 +108,11 @@ export default function Body() {
         <FontAwesomeIcon icon="fa-cloud-meatball" fontSize="100px" />
         <FontAwesomeIcon icon="fa-snowflake" fontSize="100px" />
         <FontAwesomeIcon icon="fa-cloud-showers-heavy" fontSize="100px" />
-        <img
+        {/* <img
           src="https://cdn.iconscout.com/icon/premium/png-512-thumb/weather-36-89515.png?f=avif&w=256"
           alt=""
           style={{ background: "white" }}
-        />
+        /> */}
       </div>
     </div>
   );
