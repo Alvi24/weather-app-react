@@ -109,6 +109,7 @@ function handleDailyWeatherData({ daily }) {
     5: "Friday",
     6: "Saturday",
   };
+  // console.log(dayOfWeek[0]);
   const dayOfWeekLength = Object.keys(dayOfWeek).length; //number of properties
   let days = [];
   for (let i = 0; i < dayOfWeekLength; i++) {
@@ -124,7 +125,6 @@ function handleDailyWeatherData({ daily }) {
 }
 
 function handleHourlyWeatherData({ hourly }) {
-  // console.log(dayOfWeek[0]);
   let hourlyLimit = hourly.time.length;
   let {
     time: timeHourly,

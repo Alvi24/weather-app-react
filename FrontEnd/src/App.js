@@ -1,8 +1,6 @@
 // npm run dev
 import Options from "./Components/OptionsComponents/OptionsMain";
 import Body from "./Components/Body";
-// import { useEffect, useState } from "react";
-// import WeatherData from "./server.mjs";
 function App() {
   
   // useEffect(() => {
