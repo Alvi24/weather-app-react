@@ -24,9 +24,9 @@ async function WeatherData(
           locationNameFromBodyComponent === undefined
             ? getLocationName(latitude, longitude)
             : locationNameFromBodyComponent,
-        currentWeather: handleCurrentWeatherData(data),
-        dailyWeather: handleDailyWeatherData(data),
-        hourlyWeather: handleHourlyWeatherData(data),
+        currentWeatherAPI: handleCurrentWeatherData(data),
+        dailyWeatherAPI: handleDailyWeatherData(data),
+        hourlyWeatherAPI: handleHourlyWeatherData(data),
       };
     });
 }
@@ -95,6 +95,7 @@ function handleDailyWeatherData({ daily }) {
     weathercode: weatherCodeDaily,
     time,
   } = daily;
+  let dates = time.map((unixTime) => new Date(unixTime * 1000).getDate());
   sunRise = convertUnixTimeToNormalTime(sunRise);
   sunSet = convertUnixTimeToNormalTime(sunSet);
   maxTemp = roundTemperatureNumber(maxTemp);
@@ -115,6 +116,7 @@ function handleDailyWeatherData({ daily }) {
   for (let i = 0; i < dayOfWeekLength; i++) {
     days[i] = {};
     days[i].day = convertUnixTimeToDay(time[i]);
+    days[i].date = dates[i];
     days[i].sunRise = sunRise[i];
     days[i].sunSet = sunSet[i];
     days[i].maxTemp = maxTemp[i];
@@ -207,6 +209,10 @@ function bigDataLocationName(data, e) {
     return filterDuplicateLocations(cloneLocations);
   });
 }
+//docker run -p 8080:8080 -p 50000:50000 jenkins/jenkins
+
+//be33dc8f2d2f45cda4b2bf8a00eb2cbf
+//be33dc8f2d2f45cda4b2bf8a00eb2cbf
 function filterDuplicateLocations(arrayOfLocations) {
   return arrayOfLocations.filter(
     (location, index, self) =>

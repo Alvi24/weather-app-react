@@ -7,10 +7,6 @@ body {
   height: 100vh;
   /* background-color: rgb(100, 189, 189); */
   background-color: rgb(100, 189, 219);
-  background-repeat: no-repeat;
-  background-size: cover;
-  background-position: center;
-  backdrop-filter: blur(10px);
   margin: 0;
   padding: 0;
 }
@@ -19,10 +15,11 @@ body {
 }
 .Body {
   position: relative;
-  min-width: 90%;
-  min-height: 100px;
+  /* min-width: 90%; */
+  min-height: 100vh;
   margin: 0;
   transition: 0.5s;
+  margin-bottom: 70px;
 }
 .Body * {
   margin: 0;
@@ -30,7 +27,7 @@ body {
   color: black;
   transition: filter 0.5s;
 }
-/* .Body > :not(.Hero) {
+/* .Body > :not(.currentWeather) {
   align-self: auto;
 } */
 /*SearchBar.jsx*/
@@ -105,15 +102,21 @@ table:has(tr:active) {
   z-index: 2;
   display: inline-block;
 }
-th {
-  background-color: rgba(195, 195, 195, 0.8);
+th{
+  text-align: center;
 }
+ td{
+  padding-block-end: 5px;
+ }
 tr img {
   width: 40px;
   height: 30px;
 }
 td.locationName {
   padding-inline: 20px;
+}
+td.countryFlag{
+  padding-inline-start: 5px;
 }
 td.countryFlag img {
   background-color: red;
@@ -124,7 +127,7 @@ td.countryFlag img {
   background-color: red;
   background-color: rgba(195, 195, 195, 0.8);
 }
-.Hero {
+.currentWeather {
   display: flex;
   align-items: center;
   width: 600px;
@@ -139,7 +142,6 @@ td.countryFlag img {
   transform: translateY(70%);
   margin-inline-start: auto;
   margin-inline-end: auto;
-
   /* box-shadow: 0 0 8px 8px rgb(100, 189, 219) inset; */ /*faded edges*/
 }
 .mainWeatherInfo {
@@ -151,7 +153,7 @@ td.countryFlag img {
 .mainWeatherInfo p {
   display: inline-block;
 }
-.heroTemp {
+.currentWeatherTemp {
   width: fit-content;
   font-size: 4.5em;
   padding-right: 2%;
@@ -207,7 +209,7 @@ td.countryFlag img {
   }
 }
 @media (max-width: 700px) {
-  .Hero {
+  .currentWeather {
     flex: 0 0 auto; /*display flex of parent(.Body) dictates the width of child width, adding this property removes its dependency*/
     width: 90%;
   }
@@ -215,7 +217,7 @@ td.countryFlag img {
     font-size: 1em;
   }
 
-  .heroTemp {
+  .currentWeatherTemp {
     margin-inline-start: 0;
   }
   .currentLocationAndTime p {
@@ -223,14 +225,14 @@ td.countryFlag img {
   }
 }
 @media (max-width: 580px) {
-  .Hero {
+  .currentWeather {
     flex: 0 0 auto; /*display flex of parent(.Body) dictates the width of child width, adding this property removes its dependency*/
     width: 90%;
   }
   .searchBarAndLocationContainer {
     right: 10%;
   }
-  .heroTemp {
+  .currentWeatherTemp {
     font-size: 4rem;
   }
   .currentLocationAndTime p {
@@ -240,7 +242,7 @@ td.countryFlag img {
 }
 
 @media (max-width: 450px) {
-  .Hero {
+  .currentWeather {
     width: 98%;
   }
 
@@ -253,7 +255,7 @@ td.countryFlag img {
   .currentLocationAndTime p {
     font-size: 1.2em;
   }
-  .heroTemp {
+  .currentWeatherTemp {
     font-size: 3em;
     margin-inline-start: 0;
   }

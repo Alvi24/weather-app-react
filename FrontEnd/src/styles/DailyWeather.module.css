@@ -1,0 +1,80 @@
+
+.dailyContainer {
+  display: flex;
+  justify-content: space-evenly;
+  transform: translateY(80%);
+}
+.daily {
+  width: 14%;
+  height: 150px;
+  background: rgba(216, 216, 216, 0.3);
+  border-radius: 16px;
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.2);
+  backdrop-filter: blur(4.1px);
+  -webkit-backdrop-filter: blur(4.1px);
+  border: 1px solid rgba(216, 216, 216, 0.65);
+ 
+}
+ 
+.dailyDay{
+   text-align: center;
+   font-size: 1.3em;
+   margin-block: 10%;
+}
+.dailyWeatherInfoContainer{
+    display: flex;
+    justify-content: space-around; 
+}
+.dailyWeatherInfoContainer svg:not(.dailyWeatherHighLow svg){
+   font-size: 5vw;
+  font-size: clamp(1px,5vw,60px);
+   transform: translateY(-5%);
+}
+ .dailyWeatherHighLow{
+   display: flex;
+   flex-direction: column;
+   align-items: flex-start;
+   transform: translateY(-2%);
+ }
+ .dailyWeatherHighLow p{
+     display: flex;
+     font-size: 1.8vw;
+     align-items: center;
+ }
+ .dailyWeatherHighLow svg{
+  margin-inline-end:10% ;
+ }
+ @media (max-width: 1050px) {
+  .daily{
+    height: 120px;
+  }
+  .dailyDay {
+    font-size: 1em;
+  }
+  .dailyWeatherInfoContainer svg:not(.dailyWeatherHighLow svg){
+    font-size: 6vw;
+ }
+ .dailyWeatherHighLow p{
+  font-size: 2.2vw;
+}
+}
+ @media (max-width:800px){
+  .dailyDay{
+    font-size: 0.9em;
+  }
+    .dailyWeatherInfoContainer{
+      flex-direction: column;
+    }
+    .dailyWeatherInfoContainer svg:not(.dailyWeatherHighLow svg){
+      font-size: 5vw;
+     font-size: 6w;
+   }
+    .dailyWeatherHighLow{
+      flex-direction: row;
+      justify-content: space-evenly;
+      transform: translateY(30%);
+    }
+    .dailyWeatherHighLow p{
+      font-size: 2.5vw;
+    }
+ }
