@@ -13,13 +13,15 @@ body {
 * {
   font-family: "Golos Text", sans-serif;
 }
+p,h1,h2,h3,h4,h5,h6{
+  cursor:default;
+}
 .Body {
   position: relative;
   /* min-width: 90%; */
   min-height: 100vh;
   margin: 0;
   transition: 0.5s;
-  margin-bottom: 70px;
 }
 .Body * {
   margin: 0;
@@ -206,6 +208,9 @@ td.countryFlag img {
   :global(.blur) {
     filter: blur(15px);
     opacity: 0.4;
+    height:100vh;  /* use height 100vh and overflow hidden to disable scrolling when on side panel*/
+    overflow: hidden;
+   
   }
 }
 @media (max-width: 700px) {

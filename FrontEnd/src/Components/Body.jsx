@@ -64,13 +64,19 @@ export default function Body() {
 
   useEffect(() => {
     function updateTime() {
+      // console.log("1 second passed")
       let date = new Date();
-      let currentTimeInterval = `${date.getHours()} : ${date.getMinutes()} `;
+      let currentTimeInterval;
+      if (date.getMinutes() < 10)
+        currentTimeInterval = `${date.getHours()} : ${"0" +date.getMinutes()} `;
+       else{
+        currentTimeInterval=`${date.getHours()} : ${date.getMinutes()} `
+       }
       setCurrentTime(currentTimeInterval);
     }
     const interval = setInterval(updateTime, 1000);
     return () => clearInterval(interval);
-  });
+  }, []);
   return (
     <div className={styles.Body}>
       <SearchBar handleLocationClick={callWeatherData} />
