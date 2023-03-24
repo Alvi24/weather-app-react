@@ -3,6 +3,7 @@
   justify-content: space-evenly;
   transform: translateY(80%);
 }
+
 .daily {
   width: 14%;
   height: 150px;
@@ -78,18 +79,20 @@
     font-size: 2.5vw;
   }
 }
-@media (max-width: 450px) {
+@media (max-width: 520px) {
   .dailyContainer {
+    height: 80vh;
     transform: translateY(20%);
     flex-direction: column;
     justify-content: space-evenly;
-    height: 80vh;
+    align-items: center;
+    
   }
   .daily {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    width: 100%;
+    width: 95%;
     height: 15%;
   }
 

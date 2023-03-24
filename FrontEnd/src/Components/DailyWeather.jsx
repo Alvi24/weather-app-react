@@ -10,25 +10,51 @@ import {
 import { library } from "@fortawesome/fontawesome-svg-core";
 library.add(fas);
 export default function DailyWeather({ dailyWeather }) {
-  const [screenWidth, setScreenWidth] = useState(window.innerWidth);
+  const [mobileView, setMobileView] = useState();
   useEffect(() => {
-    const handleResize = () => {
-      setScreenWidth(window.innerWidth);
-    };
-
-    window.addEventListener("resize", handleResize);
-
+    const mediaQuery = matchMedia("(max-width: 520px)");
+    function handleResize() {
+      const mobileView = mediaQuery.matches;
+      if (mobileView) {
+        console.log(mediaQuery.matches);
+        setMobileView(true);
+      } else {
+        console.log(mediaQuery.matches);
+        setMobileView(false);
+      }
+    }
+    mediaQuery.addEventListener("change", handleResize);
     return () => {
-      window.removeEventListener("resize", handleResize);
+      mediaQuery.removeEventListener("change", handleResize);
     };
-  }, []);
+  }, [mobileView]);
   console.log(dailyWeather);
-  const threshold = 450; // adjust this as needed
+
   return (
     <div className={styles["dailyContainer"]}>
       {dailyWeather.map(({ weatherCodeDaily, day, date, maxTemp, minTemp }) => (
         <div className={styles.daily} key={date}>
-          {screenWidth > threshold ? (
+          {mobileView ? (
+            <>
+              <div className={styles.dailydayAndHighLow}>
+                <h3 className={styles.dailyDay}>
+                  {day} {date}
+                </h3>
+                <div className={styles.dailyWeatherHighLow}>
+                  <p>
+                    <FontAwesomeIcon icon={faTemperatureHigh} /> {maxTemp}
+                  </p>
+                  <p>
+                    <FontAwesomeIcon icon={faTemperatureLow} /> {minTemp}
+                  </p>
+                </div>
+              </div>
+              <FontAwesomeIcon
+                icon={weatherCodeToIcon(weatherCodeDaily)}
+                className={styles.dailyWeatherIconMediaQueryMatches}
+              />
+            </>
+          ) : (
             <>
               {" "}
               <h3 className={styles.dailyDay}>
@@ -46,23 +72,6 @@ export default function DailyWeather({ dailyWeather }) {
                   </p>
                 </div>
               </div>
-            </>
-          ) : (
-            <>
-              <div className={styles.dailydayAndHighLow}>
-                <h3 className={styles.dailyDay}>
-                  {day} {date}
-                </h3>
-                <div className={styles.dailyWeatherHighLow}>
-                  <p>
-                    <FontAwesomeIcon icon={faTemperatureHigh} /> {maxTemp}
-                  </p>
-                  <p>
-                    <FontAwesomeIcon icon={faTemperatureLow} /> {minTemp}
-                  </p>
-                </div>
-              </div>
-                <FontAwesomeIcon icon={weatherCodeToIcon(weatherCodeDaily)} className={styles.dailyWeatherIconMediaQueryMatches} />
             </>
           )}
         </div>
