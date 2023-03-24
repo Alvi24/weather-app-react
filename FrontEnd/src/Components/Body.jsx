@@ -24,7 +24,7 @@ export default function Body() {
   const DailyWeatherMemo = useMemo(() => {
     if (dailyWeather ?? false) {
       // use nullish coalescing or optional chaining dailyWeather[0]?.day to detect if value is undefined or null
-      return <DailyWeather dailyWeather={dailyWeather.slice(1)} />; //if <DailyWeatherMemo/> is used (use useCallback)
+      return <DailyWeather dailyWeather={dailyWeather.slice(1)} />; //if use useCallback  is used <DailyWeatherMemo/>
     }
   }, [dailyWeather]);
   const callWeatherData = useCallback((lat, long, locationName) => {
@@ -68,10 +68,12 @@ export default function Body() {
       let date = new Date();
       let currentTimeInterval;
       if (date.getMinutes() < 10)
-        currentTimeInterval = `${date.getHours()} : ${"0" +date.getMinutes()} `;
-       else{
-        currentTimeInterval=`${date.getHours()} : ${date.getMinutes()} `
-       }
+        currentTimeInterval = `${date.getHours()} : ${
+          "0" + date.getMinutes()
+        } `;
+      else {
+        currentTimeInterval = `${date.getHours()} : ${date.getMinutes()} `;
+      }
       setCurrentTime(currentTimeInterval);
     }
     const interval = setInterval(updateTime, 1000);
@@ -103,11 +105,6 @@ export default function Body() {
         />
         {/* <p>mintemp: {dailyWeather[0]?.minTemp + "°"} </p> */}
       </div>
-      {/* <img
-          src="https://cdn.iconscout.com/icon/premium/png-512-thumb/weather-36-89515.png?f=avif&w=256"
-          alt=""
-          style={{ background: "white" }}
-        /> */}
       {DailyWeatherMemo}
       {/* {DailyWeatherMemo}  if useMemos is used*/}
       {/* <DailyWeatherMemo/>  if useCallback is used*/}
