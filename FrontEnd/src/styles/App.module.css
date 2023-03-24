@@ -3,7 +3,6 @@
 @import url("https://fonts.googleapis.com/css2?family=Golos+Text&display=swap");
 
 body {
-  width: 100vw;
   height: 100vh;
   /* background-color: rgb(100, 189, 189); */
   background-color: rgb(100, 189, 219);
@@ -12,9 +11,17 @@ body {
 }
 * {
   font-family: "Golos Text", sans-serif;
+  box-sizing: border-box;
 }
-p,h1,h2,h3,h4,h5,h6{
-  cursor:default;
+
+p,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  cursor: default;
 }
 .Body {
   position: relative;
@@ -22,6 +29,7 @@ p,h1,h2,h3,h4,h5,h6{
   min-height: 100vh;
   margin: 0;
   transition: 0.5s;
+ 
 }
 .Body * {
   margin: 0;
@@ -103,13 +111,13 @@ table:has(tr:active) {
   z-index: 2;
   display: inline-block;
 }
-th{
+th {
   text-align: center;
 }
- td{
+td {
   /* padding-block-end: 5px; */
   padding-block-end: 2%;
- }
+}
 tr img {
   width: 40px;
   height: 30px;
@@ -117,7 +125,7 @@ tr img {
 td.locationName {
   padding-inline: 20px;
 }
-td.countryFlag{
+td.countryFlag {
   padding-inline-start: 5px;
 }
 td.countryFlag img {
@@ -208,9 +216,8 @@ td.countryFlag img {
   :global(.blur) {
     filter: blur(15px);
     opacity: 0.4;
-    height:100vh;  /* use height 100vh and overflow hidden to disable scrolling when on side panel*/
+    height: 100vh; /* use height 100vh and overflow hidden to disable scrolling when on side panel*/
     overflow: hidden;
-   
   }
 }
 @media (max-width: 700px) {
@@ -254,6 +261,7 @@ td.countryFlag img {
   .mainWeatherInfo {
     font-size: 1em;
   }
+
   .currentLocationAndTime {
     justify-content: space-evenly;
   }
@@ -277,10 +285,18 @@ td.countryFlag img {
     font-size: 1em;
   }
   .searchBarAndLocationContainer {
-    right: 15%;
     width: 80%;
+    right: 15%;
+    background-color: red;
   }
-  .searchBarAndLocationContainer table td{
-       font-size: 0.8em;
+  .searchBar {
+    width: 20%;
+    height: 33px;
+  }
+  .searchIcon {
+    margin-left: 10px;
+  }
+  .searchBarAndLocationContainer table td {
+    font-size: 0.8em;
   }
 }
