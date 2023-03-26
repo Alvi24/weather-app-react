@@ -28,7 +28,6 @@ export default function DailyWeather({ dailyWeather }) {
       mediaQuery.removeEventListener("change", handleResize);
     };
   }, [mobileView]);
-  console.log(dailyWeather);
 
   return (
     <div className={styles["dailyContainer"]}>

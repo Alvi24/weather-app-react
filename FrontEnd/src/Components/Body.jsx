@@ -2,6 +2,7 @@
 import React, { useCallback, useEffect, useState, useMemo } from "react";
 import SearchBar from "./SearchBar.jsx";
 import DailyWeather from "./DailyWeather.jsx";
+import HourlyWeather from "./HourlyWeather.jsx";
 import { weatherCodeToIcon, WeatherData } from "../API.mjs";
 // import parse from "html-react-parser";
 // ./ means current directory  ../ means parent of current directory and / means root directory
@@ -17,6 +18,7 @@ library.add(fas);
 export default function Body() {
   let [currentWeather, setCurrentWeather] = useState({});
   let [dailyWeather, setdailyWeather] = useState();
+  let [hourlyWeather, setHourlyWeather] = useState();
   let [location, setLocationName] = useState();
   let [currentTime, setCurrentTime] = useState(
     `${new Date().getHours()} : ${new Date().getMinutes()}`
@@ -36,8 +38,10 @@ export default function Body() {
     ).then(setData);
   }, []);
   function setData(data) {
+    console.log(data);
     setCurrentWeather({ ...data.currentWeatherAPI });
     setdailyWeather([...data.dailyWeatherAPI]);
+    setHourlyWeather([...data.hourlyWeatherAPI]);
     if (
       typeof data.locationName === "object" &&
       typeof data.locationName.then === "function"

@@ -149,7 +149,8 @@ td.countryFlag img {
   backdrop-filter: blur(4.1px);
   -webkit-backdrop-filter: blur(4.1px);
   border: 1px solid rgba(216, 216, 216, 0.65);
-  transform: translateY(70%);
+  /* transform: translateY(70%); */
+  margin-block-start: 70px;
   margin-inline-start: auto;
   margin-inline-end: auto;
   /* box-shadow: 0 0 8px 8px rgb(100, 189, 219) inset; */ /*faded edges*/
