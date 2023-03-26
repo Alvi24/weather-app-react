@@ -83,7 +83,8 @@
 @media (max-width: 520px) {
   .dailyContainer {
     height: 80vh;
-    transform: translateY(20%);
+    /* transform: translateY(20%); */
+    margin-block-start: 20px;
     flex-direction: column;
     justify-content: space-evenly;
     align-items: center;

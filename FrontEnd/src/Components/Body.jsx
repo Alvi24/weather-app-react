@@ -19,16 +19,11 @@ export default function Body() {
   let [currentWeather, setCurrentWeather] = useState({});
   let [dailyWeather, setdailyWeather] = useState();
   let [hourlyWeather, setHourlyWeather] = useState();
+  let [hourlyWeatherProp, setHourlyWeatherProp] = useState();
   let [location, setLocationName] = useState();
   let [currentTime, setCurrentTime] = useState(
     `${new Date().getHours()} : ${new Date().getMinutes()}`
   );
-  const DailyWeatherMemo = useMemo(() => {
-    if (dailyWeather ?? false) {
-      // use nullish coalescing or optional chaining dailyWeather[0]?.day to detect if value is undefined or null
-      return <DailyWeather dailyWeather={dailyWeather.slice(1)} />; //if use useCallback  is used <DailyWeatherMemo/>
-    }
-  }, [dailyWeather]);
   const callWeatherData = useCallback((lat, long, locationName) => {
     WeatherData(
       lat,
@@ -38,10 +33,10 @@ export default function Body() {
     ).then(setData);
   }, []);
   function setData(data) {
-    console.log(data);
     setCurrentWeather({ ...data.currentWeatherAPI });
     setdailyWeather([...data.dailyWeatherAPI]);
     setHourlyWeather([...data.hourlyWeatherAPI]);
+    setHourlyWeatherProp(data.hourlyWeatherAPI[0]);
     if (
       typeof data.locationName === "object" &&
       typeof data.locationName.then === "function"
@@ -65,7 +60,6 @@ export default function Body() {
       callWeatherData(lat, long);
     }
   }, [callWeatherData]);
-
   useEffect(() => {
     function updateTime() {
       // console.log("1 second passed")
@@ -83,10 +77,44 @@ export default function Body() {
     const interval = setInterval(updateTime, 1000);
     return () => clearInterval(interval);
   }, []);
+  const DailyWeatherMemo = useMemo(() => {
+    if (dailyWeather ?? false) {
+      // use nullish coalescing or optional chaining dailyWeather[0]?.day to detect if value is undefined or null
+      return (
+        <DailyWeather
+          dailyWeather={dailyWeather.slice(1)}
+          onDailyClick={handleWeatherClick}
+        />
+      );
+      // if use useCallback is used <DailyWeatherMemo />
+    }
+  }, [dailyWeather]);
+  const HourlyWeatherMemo = useMemo(() => {
+    if (hourlyWeatherProp ?? false) {
+      return <HourlyWeather hourlyWeather={hourlyWeatherProp} />;
+    }
+  }, [hourlyWeatherProp]);
+  function handleWeatherClick(date) {
+    if (date === currentWeather.date) setHourlyWeatherProp(hourlyWeather[0]);
+    //first current day showing hourly weather
+    else {
+      for (const element of hourlyWeather) {
+        if (element.date === date) {
+          setHourlyWeatherProp(element);
+          break;
+        }
+      }
+    }
+    
+  }
+
   return (
     <div className={styles.Body}>
       <SearchBar handleLocationClick={callWeatherData} />
-      <div className={styles.currentWeather}>
+      <div
+        className={styles.currentWeather}
+        onClick={() => handleWeatherClick(currentWeather?.date)}
+      >
         {/* <button onClick={() => getLocations()}>Press</button> */}
         {/*use the ?  */}
         <div className={styles.mainWeatherInfo}>
@@ -110,6 +138,7 @@ export default function Body() {
         {/* <p>mintemp: {dailyWeather[0]?.minTemp + "°"} </p> */}
       </div>
       {DailyWeatherMemo}
+      {HourlyWeatherMemo}
       {/* {DailyWeatherMemo}  if useMemos is used*/}
       {/* <DailyWeatherMemo/>  if useCallback is used*/}
     </div>

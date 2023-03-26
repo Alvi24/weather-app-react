@@ -1,6 +1,6 @@
 // npm run dev
 import axios from "axios";
-
+// document.querySelector("body").style.background = "red"; prove that API.mjs works in phones
 async function WeatherData(
   latitude,
   longitude,
@@ -16,6 +16,7 @@ async function WeatherData(
           latitude: latitude,
           longitude: longitude,
         },
+        
       }
     )
     .then(({ data }) => {
@@ -52,6 +53,7 @@ async function getLocationName(lat, long) {
 
 function handleCurrentWeatherData({ current_weather }) {
   return {
+    date: new Date(current_weather.time * 1000).getDate(),
     weatherCode: Math.round(current_weather.weathercode / 10) * 10, //round to neart 10,20,30 etc
     temperature: Math.round(current_weather.temperature),
     windSpeed: Math.round(current_weather.windspeed),
@@ -135,6 +137,7 @@ function handleHourlyWeatherData({ hourly }) {
   } = hourly;
   let hourlyDataClone = []; // or  let hourlyDataClone = [{},{},{},{},{},{},{}];
   let hourlyIterator = 0;
+  let dateHourly;
   tempHourly = roundTemperatureNumber(tempHourly);
   timeHourly = convertUnixTimeToNormalTime(timeHourly);
   weatherCodeHourly = weatherCodeHourly.map((el) => Math.round(el / 10) * 10);
@@ -144,7 +147,8 @@ function handleHourlyWeatherData({ hourly }) {
     hourlyDataClone[hourlyIterator].day = convertUnixTimeToDay(
       hourly.time[i - 23]
     );
-
+    dateHourly = new Date(hourly.time[i - 23] * 1000).getDate();
+    hourlyDataClone[hourlyIterator].date = dateHourly;
     hourlyDataClone[hourlyIterator].time = timeHourly.slice(i - 24, i); //0-23
     hourlyDataClone[hourlyIterator].temp = tempHourly.slice(i - 24, i);
     hourlyDataClone[hourlyIterator].weathercode = weatherCodeHourly.slice(

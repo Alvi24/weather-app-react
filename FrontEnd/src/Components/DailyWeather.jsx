@@ -9,10 +9,11 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { library } from "@fortawesome/fontawesome-svg-core";
 library.add(fas);
-export default function DailyWeather({ dailyWeather }) {
+export default function DailyWeather({ dailyWeather, onDailyClick }) {
   const [mobileView, setMobileView] = useState();
   useEffect(() => {
     const mediaQuery = matchMedia("(max-width: 520px)");
+    if (mediaQuery.matches) setMobileView(mediaQuery.matches);
     function handleResize() {
       const mobileView = mediaQuery.matches;
       if (mobileView) {
@@ -28,11 +29,15 @@ export default function DailyWeather({ dailyWeather }) {
       mediaQuery.removeEventListener("change", handleResize);
     };
   }, [mobileView]);
-
+  console.log(dailyWeather);
   return (
     <div className={styles["dailyContainer"]}>
       {dailyWeather.map(({ weatherCodeDaily, day, date, maxTemp, minTemp }) => (
-        <div className={styles.daily} key={date}>
+        <div
+          className={`${styles.daily} dailyGlobalClass`}
+          key={date}
+          onClick={() => onDailyClick(date)}
+        >
           {mobileView ? (
             <>
               <div className={styles.dailydayAndHighLow}>
