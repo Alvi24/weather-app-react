@@ -35,6 +35,7 @@ export default function Body() {
   function setData(data) {
     setCurrentWeather({ ...data.currentWeatherAPI });
     setdailyWeather([...data.dailyWeatherAPI]);
+    console.log(data.dailyWeatherAPI);
     setHourlyWeather([...data.hourlyWeatherAPI]);
     setHourlyWeatherProp(data.hourlyWeatherAPI[0]);
     if (
@@ -105,7 +106,6 @@ export default function Body() {
         }
       }
     }
-    
   }
 
   return (

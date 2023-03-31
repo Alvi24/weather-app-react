@@ -1,0 +1,29 @@
+.HourlyContainer {
+  width: 70%;
+  margin-block-start: 3%;
+  margin-inline: auto;
+}
+:global(.HourlyContainerGlobal) {
+  content: "";
+}
+/* removing the anychart watermark text */
+:global(.anychart-credits-text) {
+  display: none !important;
+  opacity: 0;
+}
+/* removing the  anychart watermark logo */
+:global(.anychart-credits-logo) {
+  display: none !important;
+  opacity: 0;
+}
+.HourlyContainer div {
+  /*chart*/
+}
+.my_tooltip {
+  background-color: red;
+  opacity: 0.5;
+}
+:global(.anychart-tooltip) {
+  content: "hello";
+  background-color: blue;
+}

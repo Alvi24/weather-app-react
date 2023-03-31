@@ -1,6 +1,25 @@
 // npm run dev
 import axios from "axios";
+import anychart from "anychart";
+console.log(anychart);
 // document.querySelector("body").style.background = "red"; prove that API.mjs works in phones
+// let successHandler = function(position) {
+//   alert(position.coords.latitude);
+//   alert(position.coords.longitude);
+//   };
+
+// var errorHandler = function (errorObj) {
+// alert(errorObj.code + ": " + errorObj.message);
+
+// alert("something wrong take this lat " + 26.0546106 );
+// alert("something wrong take this lng " +-98.3939791);
+
+// };
+
+// navigator.geolocation.getCurrentPosition(
+// successHandler, errorHandler,
+// {enableHighAccuracy: true, maximumAge: 10000});
+
 async function WeatherData(
   latitude,
   longitude,
@@ -16,7 +35,6 @@ async function WeatherData(
           latitude: latitude,
           longitude: longitude,
         },
-        
       }
     )
     .then(({ data }) => {
@@ -61,9 +79,8 @@ function handleCurrentWeatherData({ current_weather }) {
   };
 }
 function convertUnixTimeToNormalTime(arrayOfUnixTime) {
-  return arrayOfUnixTime.map((el) =>
-    new Date(el * 1000).toLocaleTimeString("it-IT")
-  );
+  return arrayOfUnixTime.map((el) => new Date(el * 1000).getHours());
+  // new Date(el * 1000).toLocaleTimeString("it-IT")
 }
 function roundTemperatureNumber(arrayOfTemperature) {
   arrayOfTemperature = arrayOfTemperature.map((el) => {
@@ -167,7 +184,8 @@ console.log("value " + value);
 async function fetchLocations(e) {
   const { value: input } = e.target;
   return axios
-    .post("http://localhost:5000/", {
+    .post("http://192.168.100.29:5000/", {
+      //use 192.168.100.29 (Pc address) or localhost-> but it wont work with mobile phones
       input,
     })
     .then((res) => {

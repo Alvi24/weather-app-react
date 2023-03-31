@@ -143,6 +143,7 @@ td.countryFlag img {
   width: 600px;
   /* width: clamp(600px, 8vw, 200px); */
   transition: filter 0.5s;
+  -webkit-transition:filter 0.5s;
   background: rgba(216, 216, 216, 0.3);
   border-radius: 16px;
   box-shadow: 0 4px 30px rgba(0, 0, 0, 0.2);
