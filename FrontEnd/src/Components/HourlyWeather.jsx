@@ -1,40 +1,66 @@
 import React, { useMemo, useState } from "react";
 import styles from "../styles/HourlyWeather.module.css";
-import anychart from "anychart";
-import AnyChart from "anychart-react";
+import { Line } from "react-chartjs-2";
+import { Chart, registerables } from "chart.js";
+
+Chart.register(...registerables);
+
 export default function HourlyWeather({ hourlyWeather }) {
   const [chartEnabled, setChartEnabled] = useState(false);
-  const tooltipSettings = {
-    background: {
-      fill: "red",
-    },
-  };
 
   console.log(hourlyWeather);
-  const hourlyDataMemo = useMemo(() => {
-    const { temp, time } = hourlyWeather;
-    const hourlyDataClone = [];
-    let hours = 24;
-    for (let index = 0; index < hours; index++) {
-      hourlyDataClone[index] = [time[index], temp[index]];
-    }
-    return hourlyDataClone;
+  const chartDataMemo = useMemo(() => {
+    return {
+      labels: hourlyWeather.time,
+      datasets: [
+        {
+          data: hourlyWeather.temp,
+          label: `Hourly Weather ` + hourlyWeather.day,
+          fill: false,
+          borderColor: "white",
+          lineTension: 0.1,
+        },
+      ],
+    };
   }, [hourlyWeather]);
+  const chartOptions = {
+    title: {
+      display: true,
+    },
+    legend: {
+      display: false,
+
+      labels: {
+        boxWidth: 0,
+      },
+    },
+    scales: {
+      x: {
+        type: "category",
+        title: {
+          display: true,
+          text: "Hours",
+        },
+      },
+      y: {
+        beginAtZero: false,
+        title: {
+          display: true,
+          text: "Temperature",
+        },
+      },
+    },
+    maintainAspectRatio: false, // set to false to make the chart responsive
+    responsive: true, // set to true to make the chart responsive
+    // animation: false, // set animation to false to achieve a smoother animation
+    
+  };
   return (
-    <div
-      className={`${styles["HourlyContainer"]} HourlyContainerGlobal`}
-      id="my-chart"
-    >
-      <AnyChart
-        type="line"
-        id="hello"
-        data={hourlyDataMemo}
-        title={`Hourly Weather (${
-          hourlyWeather.day + " " + hourlyWeather.date
-        })`}
-        yAxis={{ title: "Temp." }}
-        xAxis={{ title: "Hours" }}
-        tooltip={tooltipSettings}
+    <div className={styles["HourlyContainer"]}>
+      <Line
+        className={styles["chart"]}
+        data={chartDataMemo}
+        options={chartOptions}
       />
     </div>
   );
