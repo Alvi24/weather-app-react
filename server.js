@@ -1,5 +1,6 @@
 // npm run dev
 const express = require("express");
+const axios = require("axios");
 const app = express();
 app.use(express.urlencoded({ extended: false })); //use this if you want to use data that comes from a Form(input)
 app.use(express.json()); //use this if you want to use data that comes as JSON or use both
@@ -80,17 +81,81 @@ async function getLatAndLong(searchText) {
       });
       return array;
     });
-    console.log(locationNames);
-    console.log(locationNames.length);
+    // console.log(locationNames);
+    console.log("locations length", locationNames.length);
     if (locationNames.length === 0) {
       return Promise.reject();
     }
-    return locationNames;
+    
+    return bigDataLocationName(locationNames);
   } catch (err) {
     console.log("rejectiong");
     return Promise.reject(err);
   }
+}
 
+
+
+async function getLocationName(lat, long) {
+  return axios
+    .get(
+      `https://api.bigdatacloud.net/data/reverse-geocode?localityLanguage=en&key=bdc_ee65efb4989c4d09a3f21513083e269d`, //server-side big data
+      {
+        params: {
+          latitude: lat,
+          longitude: long,
+        },
+      }
+    )
+    .then(({ data }) => {
+      return {
+        location: data.city, // .city not .location
+        region: data.principalSubdivision,
+      };
+    });
+}
+function bigDataLocationName(data) {
+  const promises = [];
+  let cloneLocations = [...data];
+  cloneLocations.forEach((location, index) => {
+    promises.push(
+      getLocationName(location.latitude, location.longitude).then(
+        ({ location, region }) => {
+          let locationFromBigData = location,
+            regionFromBigData = region;
+          if (locationFromBigData !== "") {
+            cloneLocations[index].locationName = locationFromBigData;
+            cloneLocations[index].region = regionFromBigData;
+          }
+        }
+      )
+    );
+  });
+
+  return Promise.all(promises).then(() => {
+    // data.sort((a, b) => {  //sort an array of objects
+    //   if (a.locationName < b.locationName) {
+    //     return -1;
+    //   }
+    //   if (a.locationName > b.locationName) {
+    //     return 1;
+    //   }
+    //   return 0;
+    // });
+    console.log("final", filterDuplicateLocations(cloneLocations));
+    return filterDuplicateLocations(cloneLocations);
+  });
+}
+function filterDuplicateLocations(arrayOfLocations) {
+  return arrayOfLocations.filter(
+    (location, index, self) =>
+      index ===
+      self.findIndex(
+        (cloneLocationElement) =>
+          cloneLocationElement.locationName === location.locationName &&
+          cloneLocationElement.region === location.region
+      )
+  );
 }
 getLatAndLong();
 app.listen("5000", () => {

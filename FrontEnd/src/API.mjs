@@ -165,9 +165,15 @@ function handleHourlyWeatherData({ hourly }) {
 const object = {
   hello: 30,
 };
+var startTime, endTime;
 const { hello: value } = object;
 console.log("value " + value);
 async function fetchLocations(e) {
+  if (e.target.value.length < 2) {
+    return;
+  }
+  let value = e.target.value;
+  startTime = performance.now();
   const { value: input } = e.target;
   return axios
     .post("http://192.168.100.29:5000/", {
@@ -175,62 +181,20 @@ async function fetchLocations(e) {
       input,
     })
     .then((res) => {
-      return bigDataLocationName(res.data, e);
+      endTime = performance.now();
+      var timeDiff = endTime - startTime; //in ms
+      // strip the ms
+      timeDiff /= 1000;
+
+      // get seconds
+      var seconds = Math.round(timeDiff);
+      console.log(seconds + " seconds");
+      return res.data;
     })
     .catch((error) => {
       console.log(error.response);
       return Promise.reject("No location found"); //or use throw
     });
-}
-function bigDataLocationName(data, e) {
-  if (e.target.value.length < 2) {
-    return;
-  }
-  const promises = [];
-  let cloneLocations = [...data];
-  cloneLocations.forEach((location, index) => {
-    promises.push(
-      getLocationName(location.latitude, location.longitude).then(
-        ({ location, region }) => {
-          let locationFromBigData = location,
-            regionFromBigData = region;
-          if (locationFromBigData !== "") {
-            cloneLocations[index].locationName = locationFromBigData;
-            cloneLocations[index].region = regionFromBigData;
-          }
-        }
-      )
-    );
-  });
-
-  return Promise.all(promises).then(() => {
-    // data.sort((a, b) => {  //sort an array of objects
-    //   if (a.locationName < b.locationName) {
-    //     return -1;
-    //   }
-    //   if (a.locationName > b.locationName) {
-    //     return 1;
-    //   }
-    //   return 0;
-    // });
-    console.log("final", filterDuplicateLocations(cloneLocations));
-    return filterDuplicateLocations(cloneLocations);
-  });
-}
-//docker run -p 8080:8080 -p 50000:50000 jenkins/jenkins
-
-//be33dc8f2d2f45cda4b2bf8a00eb2cbf
-//be33dc8f2d2f45cda4b2bf8a00eb2cbf
-function filterDuplicateLocations(arrayOfLocations) {
-  return arrayOfLocations.filter(
-    (location, index, self) =>
-      index ===
-      self.findIndex(
-        (cloneLocationElement) =>
-          cloneLocationElement.locationName === location.locationName &&
-          cloneLocationElement.region === location.region
-      )
-  );
 }
 
 function weatherCodeToIcon(weatherCode) {
@@ -248,7 +212,7 @@ function weatherCodeToIcon(weatherCode) {
     case 50:
       return "fa-cloud-sun-rain";
     case 60:
-      return "fa-cloud-sun-rain";  //fa-cloud-meatball
+      return "fa-cloud-sun-rain"; //fa-cloud-meatball
     case 70:
       return "fa-snowflake";
     case 80:
