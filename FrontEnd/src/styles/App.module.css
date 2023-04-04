@@ -215,7 +215,7 @@ td.countryFlag img {
   fill: red;
 }
 
-@media (max-width: 800px) {
+@media (max-width: 520px) {
   :global(.blur) {
     filter: blur(15px);
     opacity: 0.4;

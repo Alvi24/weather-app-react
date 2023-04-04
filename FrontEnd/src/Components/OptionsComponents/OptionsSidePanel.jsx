@@ -1,23 +1,12 @@
-import React, { useState, useEffect } from "react";
+import React, { useMemo } from "react";
 import styles from "../../styles/Options.module.css";
-
 export default function OptionsSidePanel({ appearHandle }) {
-  const [width, setWidth] = useState("0");
-
-  useEffect(() => {
-    const mediaQuery = matchMedia("(max-width:800px)");
-    mediaQuery.addEventListener("change", () => {
-      setWidth(
-        appearHandle === true ? (mediaQuery.matches ? "100%" : "25%") : "0"
-      );
-    });
-    setWidth(
-      appearHandle === true ? (mediaQuery.matches ? "100%" : "25%") : "0"
-    );
-  }, [appearHandle]);
-
+  // let activeClassName = useMemo(() => {
+  //   return appearHandle ? styles.active : "";
+  // }, [appearHandle]);
+  //COMPONENT RE-RENDERS WHEN PROPS CHANGE
   return (
-    <div className={styles.sidePanel} style={{ width: width }}>
+    <div className={`${styles.sidePanel} ${appearHandle ? styles.active : ""}`}>
       <div className={styles.poweredBy}>
         <svg
           xmlns="http://www.w3.org/2000/svg"
