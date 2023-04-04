@@ -26,7 +26,7 @@ h6 {
 .Body {
   position: relative;
   /* min-width: 90%; */
-  min-height: 100vh;
+  height: 100vh;
   margin: 0;
   transition: 0.5s;
  
@@ -151,7 +151,7 @@ td.countryFlag img {
   -webkit-backdrop-filter: blur(4.1px);
   border: 1px solid rgba(216, 216, 216, 0.65);
   /* transform: translateY(70%); */
-  margin-block-start: 70px;
+  margin-block-start: 50px;
   margin-inline-start: auto;
   margin-inline-end: auto;
   /* box-shadow: 0 0 8px 8px rgb(100, 189, 219) inset; */ /*faded edges*/
@@ -203,6 +203,7 @@ td.countryFlag img {
 :global(.blur) {
   filter: blur(2px);
   pointer-events: none; /*disable hovering selecting and other interactable things*/
+  overflow: hidden;
 }
 :global(.blur) * {
   user-select: none; /*make the elements behind unselectable*/
@@ -219,7 +220,6 @@ td.countryFlag img {
     filter: blur(15px);
     opacity: 0.4;
     height: 100vh; /* use height 100vh and overflow hidden to disable scrolling when on side panel*/
-    overflow: hidden;
   }
 }
 @media (max-width: 700px) {

@@ -8,14 +8,13 @@ Chart.register(...registerables);
 export default function HourlyWeather({ hourlyWeather }) {
   const [chartEnabled, setChartEnabled] = useState(false);
 
-  console.log(hourlyWeather);
   const chartDataMemo = useMemo(() => {
     return {
       labels: hourlyWeather.time,
       datasets: [
         {
           data: hourlyWeather.temp,
-          label: `Hourly Weather ` + hourlyWeather.day,
+          label: ``,
           fill: false,
           borderColor: "white",
           lineTension: 0.1,
@@ -24,6 +23,11 @@ export default function HourlyWeather({ hourlyWeather }) {
     };
   }, [hourlyWeather]);
   const chartOptions = {
+    plugins: {
+      legend: {
+        display: false, // remove dataset label rectangle
+      },
+    },
     title: {
       display: true,
     },
@@ -53,10 +57,16 @@ export default function HourlyWeather({ hourlyWeather }) {
     maintainAspectRatio: false, // set to false to make the chart responsive
     responsive: true, // set to true to make the chart responsive
     // animation: false, // set animation to false to achieve a smoother animation
-    
   };
   return (
     <div className={styles["HourlyContainer"]}>
+      <header style={{ textAlign: "center" }}>
+        Hourly Weather (
+        {hourlyWeather.day === "Today"
+          ? hourlyWeather.day
+          : hourlyWeather.day + " " + hourlyWeather.date}
+        )
+      </header>
       <Line
         className={styles["chart"]}
         data={chartDataMemo}

@@ -10,6 +10,7 @@ import {
 import { library } from "@fortawesome/fontawesome-svg-core";
 library.add(fas);
 export default function DailyWeather({ dailyWeather, onDailyClick }) {
+  
   const [mobileView, setMobileView] = useState();
   useEffect(() => {
     const mediaQuery = matchMedia("(max-width: 520px)");
@@ -29,7 +30,6 @@ export default function DailyWeather({ dailyWeather, onDailyClick }) {
       mediaQuery.removeEventListener("change", handleResize);
     };
   }, [mobileView]);
-  console.log(dailyWeather);
   return (
     <div className={styles["dailyContainer"]}>
       {dailyWeather.map(({ weatherCodeDaily, day, date, maxTemp, minTemp }) => (

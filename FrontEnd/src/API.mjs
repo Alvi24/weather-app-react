@@ -1,24 +1,5 @@
 // npm run dev
 import axios from "axios";
-import anychart from "anychart";
-console.log(anychart);
-// document.querySelector("body").style.background = "red"; prove that API.mjs works in phones
-// let successHandler = function(position) {
-//   alert(position.coords.latitude);
-//   alert(position.coords.longitude);
-//   };
-
-// var errorHandler = function (errorObj) {
-// alert(errorObj.code + ": " + errorObj.message);
-
-// alert("something wrong take this lat " + 26.0546106 );
-// alert("something wrong take this lng " +-98.3939791);
-
-// };
-
-// navigator.geolocation.getCurrentPosition(
-// successHandler, errorHandler,
-// {enableHighAccuracy: true, maximumAge: 10000});
 
 async function WeatherData(
   latitude,
@@ -79,7 +60,11 @@ function handleCurrentWeatherData({ current_weather }) {
   };
 }
 function convertUnixTimeToNormalTime(arrayOfUnixTime) {
-  return arrayOfUnixTime.map((el) => new Date(el * 1000).getHours());
+  const options = { hour: "numeric" };
+  return arrayOfUnixTime.map((time) =>
+    Intl.DateTimeFormat("en-US", options).format(time * 1000)
+  );
+  //new Date(el * 1000).getHours()
   // new Date(el * 1000).toLocaleTimeString("it-IT")
 }
 function roundTemperatureNumber(arrayOfTemperature) {
@@ -174,6 +159,7 @@ function handleHourlyWeatherData({ hourly }) {
     );
     hourlyIterator++;
   }
+  hourlyDataClone[0].day = "Today";
   return hourlyDataClone;
 }
 const object = {
@@ -262,7 +248,7 @@ function weatherCodeToIcon(weatherCode) {
     case 50:
       return "fa-cloud-sun-rain";
     case 60:
-      return "fa-cloud-meatball";
+      return "fa-cloud-sun-rain";  //fa-cloud-meatball
     case 70:
       return "fa-snowflake";
     case 80:
