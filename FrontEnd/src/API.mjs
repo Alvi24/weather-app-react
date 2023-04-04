@@ -165,15 +165,14 @@ function handleHourlyWeatherData({ hourly }) {
 const object = {
   hello: 30,
 };
-var startTime, endTime;
+
 const { hello: value } = object;
 console.log("value " + value);
+
 async function fetchLocations(e) {
   if (e.target.value.length < 2) {
     return;
   }
-  let value = e.target.value;
-  startTime = performance.now();
   const { value: input } = e.target;
   return axios
     .post("http://192.168.100.29:5000/", {
@@ -181,14 +180,6 @@ async function fetchLocations(e) {
       input,
     })
     .then((res) => {
-      endTime = performance.now();
-      var timeDiff = endTime - startTime; //in ms
-      // strip the ms
-      timeDiff /= 1000;
-
-      // get seconds
-      var seconds = Math.round(timeDiff);
-      console.log(seconds + " seconds");
       return res.data;
     })
     .catch((error) => {
