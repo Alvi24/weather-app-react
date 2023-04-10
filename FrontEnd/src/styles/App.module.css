@@ -13,7 +13,9 @@ body {
   font-family: "Golos Text", sans-serif;
   box-sizing: border-box;
 }
-
+.Body:has(:global(.HourlyContainerGlobal)) {
+   overflow: hidden;
+}
 p,
 h1,
 h2,
@@ -26,10 +28,9 @@ h6 {
 .Body {
   position: relative;
   /* min-width: 90%; */
-  height: 100vh;
+  min-height: 100vh;
   margin: 0;
   transition: 0.5s;
- 
 }
 .Body * {
   margin: 0;
@@ -143,7 +144,7 @@ td.countryFlag img {
   width: 600px;
   /* width: clamp(600px, 8vw, 200px); */
   transition: filter 0.5s;
-  -webkit-transition:filter 0.5s;
+  -webkit-transition: filter 0.5s;
   background: rgba(216, 216, 216, 0.3);
   border-radius: 16px;
   box-shadow: 0 4px 30px rgba(0, 0, 0, 0.2);
@@ -285,6 +286,7 @@ td.countryFlag img {
   .currentLocationAndTime p {
     width: 200px;
     font-size: 1em;
+    white-space:normal;
   }
   .searchBarAndLocationContainer {
     width: 80%;

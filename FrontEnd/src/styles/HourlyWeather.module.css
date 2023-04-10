@@ -9,9 +9,7 @@
   -webkit-backdrop-filter: blur(4.1px);
   border: 1px solid rgba(216, 216, 216, 0.65);
 }
-:global(.HourlyContainerGlobal) {
-  content: "";
-}
+
 /* removing the anychart watermark text */
 :global(.anychart-credits-text) {
   display: none !important;
@@ -22,9 +20,7 @@
   display: none !important;
   opacity: 0;
 }
-.HourlyContainer div {
-  /*chart*/
-}
+
 .my_tooltip {
   background-color: red;
   opacity: 0.5;
@@ -34,6 +30,54 @@
   background-color: blue;
 }
 .chart {
-  width:100% !important;
+  width: 100% !important;
   height: 35vh !important;
+  /* height: 35vh !important; */
+}
+:global(.tooltip) {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  background: rgba(216, 216, 216, 0.9);
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.2);
+  backdrop-filter: blur(4.1px);
+  -webkit-backdrop-filter: blur(4.1px);
+  border: 1px solid rgba(216, 216, 216, 0.65);
+  pointer-events: none;
+  transform: translate(-50%,-150%);
+  transition: 0.1s ease;
+}
+:global(.tooltipTime){
+  font-size: 0.9em;
+}
+
+@media (max-width: 520px) {
+  .HourlyContainer {
+    width: 100%;
+    max-height: 1px; /*use max-height instead of height because with height (when removing) the transition will not work*/
+    position: fixed;
+    left: 0;
+    border-bottom-right-radius: 0;
+    border-bottom-left-radius: 0;
+    right: 0;
+    bottom: -1px;
+    transition: 0.5s;
+    transition-property: max-height, background-color;
+  }
+
+  .HourlyContainer.visible {
+    max-height: 60vh;
+    background-color: rgba(235, 235, 235, 0.8);
+    -webkit-backdrop-filter: blur(10px) !important;
+    -moz-backdrop-filter: blur(10px) !important;
+    backdrop-filter: blur(10px);
+  }
+  @supports not (not (backdrop-filter)) {
+    .HourlyContainer.visible {
+      background-color: white; /* Fallback background color (when backdrop-filter is ont supported (safari for example)) */
+    }
+  }
+  .HourlyContainer .chart {
+    height: 57vh !important;
+  }
 }

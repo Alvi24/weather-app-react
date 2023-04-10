@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { weatherCodeToIcon } from "../API.mjs";
-import styles from "../styles/App.module.css";
+import styles from "../styles/CurrentWeather.module.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   fas, //to use fontAwesome icon as string

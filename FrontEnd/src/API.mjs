@@ -4,8 +4,8 @@ import axios from "axios";
 async function WeatherData(
   latitude,
   longitude,
-  locationNameFromBodyComponent,
-  timezone
+  timezone,
+  locationNameFromBodyComponent = undefined
 ) {
   return axios
 
@@ -18,15 +18,14 @@ async function WeatherData(
         },
       }
     )
-    .then(({ data }) => {
+    .then(async ({ data }) => {
       return {
-        locationName:
-          locationNameFromBodyComponent === undefined
-            ? getLocationName(latitude, longitude)
-            : locationNameFromBodyComponent,
-        currentWeatherAPI: handleCurrentWeatherData(data),
-        dailyWeatherAPI: handleDailyWeatherData(data),
-        hourlyWeatherAPI: handleHourlyWeatherData(data),
+        locationName: locationNameFromBodyComponent
+          ? locationNameFromBodyComponent
+          : await getLocationName(latitude, longitude),
+        currentWeather: handleCurrentWeatherData(data),
+        dailyWeather: handleDailyWeatherData(data),
+        hourlyWeather: handleHourlyWeatherData(data),
       };
     });
 }
@@ -42,12 +41,7 @@ async function getLocationName(lat, long) {
         },
       }
     )
-    .then(({ data }) => {
-      return {
-        location: data.city, // .city not .location
-        region: data.principalSubdivision,
-      };
-    });
+    .then(({ data }) => data.city);
 }
 
 function handleCurrentWeatherData({ current_weather }) {
@@ -213,5 +207,55 @@ function weatherCodeToIcon(weatherCode) {
       return "fa-sun";
   }
 }
+const getOrCreateTooltip = (chart) => {
+  let tooltipEl = chart.canvas.parentNode.querySelector("div");
+  if (!tooltipEl) {
+    tooltipEl = document.createElement("DIV");
+    tooltipEl.classList.add("tooltip");
+    chart.canvas.parentNode.appendChild(tooltipEl);
+    let tooltiParagraphTime = document.createElement("P");
+    tooltiParagraphTime.classList.add("tooltipTime");
+    let tooltiParagraphWeather = document.createElement("P");
+    tooltiParagraphWeather.classList.add("tooltipWeather");
+    tooltipEl.appendChild(tooltiParagraphTime);
+    tooltipEl.appendChild(tooltiParagraphWeather);
+    // const temp = bodyLines;
+    // tooltipLiTime.innerHTML = temp;
+    // console.log(bodyLines);
 
-export { WeatherData, fetchLocations, getLocationName, weatherCodeToIcon };
+    console.log(tooltipEl);
+  }
+  return tooltipEl;
+};
+
+function externalTooltip(context) {
+  const { chart, tooltip } = context;
+  const tooltipEl = getOrCreateTooltip(chart);
+
+  if (tooltip.opacity === 0) {
+    tooltipEl.style.opacity = "0";
+  } else if (tooltipEl) {
+    tooltipEl.style.opacity = "1";
+  }
+
+  const time = tooltip.title[0];
+  const weather = tooltip.body[0].lines[0];
+
+  const { offsetLeft: positionX, offsetTop: positionY } = chart.canvas;
+  console.log("time", time, weather.temp, weather.weathercode);
+  tooltipEl.style.left = positionX + tooltip.caretX + "px";
+  tooltipEl.style.top = positionY + tooltip.caretY + "px";
+
+  // tooltipEl.style.padding = tooltip.options.padding + "px";
+
+  tooltipEl.querySelector(".tooltipTime").innerHTML = time + "<br>";
+  tooltipEl.querySelector(".tooltipWeather").innerHTML =
+    weather.temp + "°" + `<i class="fa ${weather.weathercode}"></i>`;
+}
+export {
+  WeatherData,
+  fetchLocations,
+  getLocationName,
+  weatherCodeToIcon,
+  externalTooltip,
+};

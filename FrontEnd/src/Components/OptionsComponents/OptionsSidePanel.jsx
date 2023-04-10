@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import React from "react";
 import styles from "../../styles/Options.module.css";
 export default function OptionsSidePanel({ appearHandle }) {
   // let activeClassName = useMemo(() => {

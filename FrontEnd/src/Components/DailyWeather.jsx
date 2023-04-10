@@ -1,4 +1,5 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect } from "react";
+import { MyContext } from "./Body";
 import styles from "../styles/DailyWeather.module.css";
 import { weatherCodeToIcon } from "../API.mjs";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -10,29 +11,13 @@ import {
 import { library } from "@fortawesome/fontawesome-svg-core";
 library.add(fas);
 export default function DailyWeather({ dailyWeather, onDailyClick }) {
-  
-  const [mobileView, setMobileView] = useState();
   useEffect(() => {
-    const mediaQuery = matchMedia("(max-width: 520px)");
-    if (mediaQuery.matches) setMobileView(mediaQuery.matches);
-    function handleResize() {
-      const mobileView = mediaQuery.matches;
-      if (mobileView) {
-        console.log(mediaQuery.matches);
-        setMobileView(true);
-      } else {
-        console.log(mediaQuery.matches);
-        setMobileView(false);
-      }
-    }
-    mediaQuery.addEventListener("change", handleResize);
-    return () => {
-      mediaQuery.removeEventListener("change", handleResize);
-    };
-  }, [mobileView]);
+    //console.log(dailyWeather);
+  }, [dailyWeather]);
+  const mobileView = useContext(MyContext);
   return (
     <div className={styles["dailyContainer"]}>
-      {dailyWeather.map(({ weatherCodeDaily, day, date, maxTemp, minTemp }) => (
+      {dailyWeather.slice(1).map(({ weatherCodeDaily, day, date, maxTemp, minTemp }) => (
         <div
           className={`${styles.daily} dailyGlobalClass`}
           key={date}
