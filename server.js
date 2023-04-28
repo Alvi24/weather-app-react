@@ -1,10 +1,12 @@
 // npm run dev
+require("dotenv").config();
+
 const express = require("express");
 const axios = require("axios");
 const app = express();
 app.use(express.urlencoded({ extended: false })); //use this if you want to use data that comes from a Form(input)
 app.use(express.json()); //use this if you want to use data that comes as JSON or use both
-
+console.log(process.env.PORT);
 const cors = require("cors");
 const { resolveObjectURL } = require("buffer");
 const { endianness } = require("os");
@@ -18,11 +20,10 @@ const corsOptions = {
 app.use(cors(corsOptions)); // Use this after the variable declaration
 app.post("/", (req, res) => {
   console.log(req.body);
-  getLatAndLong(req.body.input)
-    .then((coords) => {
+  getLocations(req.body.input)
+    .then((data) => {
       //req.body.searchText
-      // the song_iframe is the returned value from Scraper
-      res.send(JSON.stringify(coords));
+      res.send(JSON.stringify(data));
     })
     .catch((error) => {
       res
@@ -33,7 +34,7 @@ app.post("/", (req, res) => {
 });
 
 let browser, page;
-async function getLatAndLong(searchText) {
+async function getLocations(searchText) {
   const puppeteer = require("puppeteer");
   if (!browser) {
     browser = await puppeteer.launch(
@@ -51,14 +52,12 @@ async function getLatAndLong(searchText) {
     await page.waitForSelector("input#gls");
     await page.click("input#gls");
   }
-  if (searchText == undefined) {
-    return;
-  }
+  if (searchText == undefined) return;
 
   await page.$eval(
     "input#gls",
     (el, searchText) => {
-      el.value = searchText; //does't work this way use page.type instead
+      el.value = searchText;
     },
     searchText
   );
@@ -81,20 +80,21 @@ async function getLatAndLong(searchText) {
       });
       return array;
     });
-    // console.log(locationNames);
+
     console.log("locations length", locationNames.length);
     if (locationNames.length === 0) {
       return Promise.reject();
     }
-    
-    return bigDataLocationName(locationNames);
+
+    return {
+      weatherData: await bigDataLocationName(locationNames),
+      prevSearchText: searchText,
+    };
   } catch (err) {
     console.log("rejectiong");
     return Promise.reject(err);
   }
 }
-
-
 
 async function getLocationName(lat, long) {
   return axios
@@ -146,6 +146,7 @@ function bigDataLocationName(data) {
     return filterDuplicateLocations(cloneLocations);
   });
 }
+
 function filterDuplicateLocations(arrayOfLocations) {
   return arrayOfLocations.filter(
     (location, index, self) =>
@@ -157,7 +158,16 @@ function filterDuplicateLocations(arrayOfLocations) {
       )
   );
 }
-getLatAndLong();
-app.listen("5000", () => {
+getLocations(); // opening the chromium (first time)
+
+// const API_KEY = process.env.API_KEY_BIG_DATA;
+// const URL = process.env.URL;
+// app.get("/environment-variables", (req, res) => {
+//   res.send({
+//     API_KEY,
+//     URL,
+//   });
+// });
+app.listen(process.env.PORT, () => {
   console.log("server up and running");
 });

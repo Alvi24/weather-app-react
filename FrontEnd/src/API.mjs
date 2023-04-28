@@ -1,5 +1,6 @@
 // npm run dev
 import axios from "axios";
+console.log(process.env);
 
 async function WeatherData(
   latitude,
@@ -33,7 +34,7 @@ async function WeatherData(
 async function getLocationName(lat, long) {
   return axios
     .get(
-      `https://api.bigdatacloud.net/data/reverse-geocode?localityLanguage=en&key=bdc_ee65efb4989c4d09a3f21513083e269d`, //server-side big data
+      `https://api.bigdatacloud.net/data/reverse-geocode?localityLanguage=en&key=${process.env.REACT_APP_API_KEY}`, //server-side big data
       {
         params: {
           latitude: lat,
@@ -164,24 +165,26 @@ const { hello: value } = object;
 console.log("value " + value);
 
 async function fetchLocations(e) {
+  // if (!environmentVariables) await fetchEnvironmentVariables();
+  // console.log("api", environmentVariables.URL);
   if (e.target.value.length < 2) {
     return;
   }
   const { value: input } = e.target;
   return axios
-    .post("http://192.168.100.29:5000/", {
+    .post(process.env.REACT_APP_URL, {
       //use 192.168.100.29 (Pc address) or localhost-> but it wont work with mobile phones
       input,
     })
-    .then((res) => {
-      return res.data;
-    })
+    .then((res) => res.data)
     .catch((error) => {
       console.log(error.response);
       return Promise.reject("No location found"); //or use throw
     });
 }
-
+function convertCelsiusToFahrenheit(cTemp) {
+  return Math.round((cTemp * 9) / 5 + 32);
+}
 function weatherCodeToIcon(weatherCode) {
   switch (weatherCode) {
     case 0:
@@ -237,25 +240,27 @@ function externalTooltip(context) {
   } else if (tooltipEl) {
     tooltipEl.style.opacity = "1";
   }
+  if (tooltip.body) {
+    const time = tooltip.title[0];
+    const weather = tooltip.body[0].lines[0];
 
-  const time = tooltip.title[0];
-  const weather = tooltip.body[0].lines[0];
+    const { offsetLeft: positionX, offsetTop: positionY } = chart.canvas;
+    console.log("time", time, weather.temp, weather.weathercode);
+    tooltipEl.style.left = positionX + tooltip.caretX + "px";
+    tooltipEl.style.top = positionY + tooltip.caretY + "px";
 
-  const { offsetLeft: positionX, offsetTop: positionY } = chart.canvas;
-  console.log("time", time, weather.temp, weather.weathercode);
-  tooltipEl.style.left = positionX + tooltip.caretX + "px";
-  tooltipEl.style.top = positionY + tooltip.caretY + "px";
+    // tooltipEl.style.padding = tooltip.options.padding + "px";
 
-  // tooltipEl.style.padding = tooltip.options.padding + "px";
-
-  tooltipEl.querySelector(".tooltipTime").innerHTML = time + "<br>";
-  tooltipEl.querySelector(".tooltipWeather").innerHTML =
-    weather.temp + "°" + `<i class="fa ${weather.weathercode}"></i>`;
+    tooltipEl.querySelector(".tooltipTime").innerHTML = time + "<br>";
+    tooltipEl.querySelector(".tooltipWeather").innerHTML =
+      weather.temp + `° <i class="fa ${weather.weathercode}"></i>`;
+  }
 }
 export {
   WeatherData,
   fetchLocations,
   getLocationName,
+  convertCelsiusToFahrenheit,
   weatherCodeToIcon,
   externalTooltip,
 };

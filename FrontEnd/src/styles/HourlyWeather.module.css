@@ -5,30 +5,11 @@
   background: rgba(216, 216, 216, 0.3);
   border-radius: 16px;
   box-shadow: 0 4px 30px rgba(0, 0, 0, 0.2);
-  backdrop-filter: blur(4.1px);
-  -webkit-backdrop-filter: blur(4.1px);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
   border: 1px solid rgba(216, 216, 216, 0.65);
 }
 
-/* removing the anychart watermark text */
-:global(.anychart-credits-text) {
-  display: none !important;
-  opacity: 0;
-}
-/* removing the  anychart watermark logo */
-:global(.anychart-credits-logo) {
-  display: none !important;
-  opacity: 0;
-}
-
-.my_tooltip {
-  background-color: red;
-  opacity: 0.5;
-}
-:global(.anychart-tooltip) {
-  content: "hello";
-  background-color: blue;
-}
 .chart {
   width: 100% !important;
   height: 35vh !important;
@@ -37,44 +18,54 @@
 :global(.tooltip) {
   position: absolute;
   display: flex;
+  /* width: 5%; */
   flex-direction: column;
   background: rgba(216, 216, 216, 0.9);
   box-shadow: 0 4px 30px rgba(0, 0, 0, 0.2);
   backdrop-filter: blur(4.1px);
   -webkit-backdrop-filter: blur(4.1px);
+  -moz-backdrop-filter: blur(4.1px);
   border: 1px solid rgba(216, 216, 216, 0.65);
   pointer-events: none;
-  transform: translate(-50%,-150%);
+  transform: translate(-50%, -150%);
   transition: 0.1s ease;
 }
-:global(.tooltipTime){
+:global(.tooltip) p {
+  text-align: center;
+  font-size: clamp(10px, 0.7vw, 1vw);
+  /* font-size: 10px; */
+}
+:global(.tooltipTime) {
   font-size: 0.9em;
 }
 
 @media (max-width: 520px) {
   .HourlyContainer {
     width: 100%;
-    max-height: 1px; /*use max-height instead of height because with height (when removing) the transition will not work*/
+    max-height: 60vh; /*use max-height instead of height because with height (when removing) the transition will not work*/
     position: fixed;
     left: 0;
+    bottom: 0; /*when transform is used*/
+    /* bottom: -100%; */
+    transform: translateY(100%);
     border-bottom-right-radius: 0;
     border-bottom-left-radius: 0;
-    right: 0;
-    bottom: -1px;
     transition: 0.5s;
-    transition-property: max-height, background-color;
+    -webkit-transition: 0.5s;
+    transition-property: transform, background-color;
   }
 
   .HourlyContainer.visible {
-    max-height: 60vh;
-    background-color: rgba(235, 235, 235, 0.8);
-    -webkit-backdrop-filter: blur(10px) !important;
-    -moz-backdrop-filter: blur(10px) !important;
-    backdrop-filter: blur(10px);
-  }
-  @supports not (not (backdrop-filter)) {
-    .HourlyContainer.visible {
-      background-color: white; /* Fallback background color (when backdrop-filter is ont supported (safari for example)) */
+    /* bottom: 0; */
+    transform: translateY(0);
+    background-color: white;
+    @supports ((backdrop-filter: blur(10px))) {
+      background-color: rgba(235, 235, 235, 0.8);
+      -webkit-backdrop-filter: blur(10px) !important;
+      -moz-backdrop-filter: blur(10px) !important;
+      backdrop-filter: blur(
+        10px
+      ); /* Fallback background color (when backdrop-filter is ont supported (safari for example)) */
     }
   }
   .HourlyContainer .chart {

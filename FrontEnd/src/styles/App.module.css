@@ -3,9 +3,6 @@
 @import url("https://fonts.googleapis.com/css2?family=Golos+Text&display=swap");
 
 body {
-  height: 100vh;
-  /* background-color: rgb(100, 189, 189); */
-  background-color: rgb(100, 189, 219);
   margin: 0;
   padding: 0;
 }
@@ -14,7 +11,7 @@ body {
   box-sizing: border-box;
 }
 .Body:has(:global(.HourlyContainerGlobal)) {
-   overflow: hidden;
+  overflow: hidden;
 }
 p,
 h1,
@@ -27,10 +24,17 @@ h6 {
 }
 .Body {
   position: relative;
+  top: 0;
   /* min-width: 90%; */
-  min-height: 100vh;
+  min-height: 100vh; /*remove min to disable scrollbar when hourlyWeather(mobile) is visible*/
   margin: 0;
+  /* background-color: rgb(
+    100,
+    189,
+    189
+  ); fallback backgound if video doesn't work*/
   transition: 0.5s;
+  -webkit-transition: 0.5s;
 }
 .Body * {
   margin: 0;
@@ -42,6 +46,17 @@ h6 {
   align-self: auto;
 } */
 /*SearchBar.jsx*/
+
+.Body .Background video {
+  position: fixed;
+  right: 0;
+  bottom: 0;
+  min-width: 100%;
+  min-height: 100%;
+  z-index: -1;
+  object-fit: cover;
+  transition: 0.5s;
+}
 
 .searchBarAndLocationContainer {
   display: flex;
@@ -63,12 +78,13 @@ h6 {
   background: rgba(216, 216, 216, 0.3);
   border-radius: 20px;
   box-shadow: 0 4px 30px rgba(0, 0, 0, 0.2);
-  backdrop-filter: blur(4.1px);
-  -webkit-backdrop-filter: blur(4.1px);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
   border: 1px solid rgba(216, 216, 216, 0.65);
   outline: transparent;
   transition: 1s;
 }
+
 .searchBarAndLocationContainer .searchBar input {
   width: 90%;
   background-color: transparent;
@@ -83,6 +99,7 @@ h6 {
 .searchBarAndLocationContainer .searchBar:has(input:focus),
 .searchBarAndLocationContainer .searchBar:has(input:not(:placeholder-shown)) {
   width: 100%;
+  background: rgba(216, 216, 216, 0.4);
 }
 .searchBarAndLocationContainer .noLocationFoundText {
   font-size: 1.8em;
@@ -94,11 +111,11 @@ table {
   display: none;
   top: 40px;
   /* From https://css.glass */
-  background: rgba(255, 255, 255, 0.8);
+  background: rgba(255, 255, 255, 0.7);
   border-radius: 10px;
   box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
   border: none;
   border-spacing: 0; /*remove gaps between borders*/
   overflow: hidden;
@@ -112,6 +129,7 @@ table:has(tr:active) {
   z-index: 2;
   display: inline-block;
 }
+
 th {
   text-align: center;
 }
@@ -135,74 +153,13 @@ td.countryFlag img {
 }
 .location:hover {
   cursor: pointer;
-  background-color: red;
-  background-color: rgba(195, 195, 195, 0.8);
+  background: rgba(255, 255, 255, 1);
 }
-.currentWeather {
-  display: flex;
-  align-items: center;
-  width: 600px;
-  /* width: clamp(600px, 8vw, 200px); */
-  transition: filter 0.5s;
-  -webkit-transition: filter 0.5s;
-  background: rgba(216, 216, 216, 0.3);
-  border-radius: 16px;
-  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.2);
-  backdrop-filter: blur(4.1px);
-  -webkit-backdrop-filter: blur(4.1px);
-  border: 1px solid rgba(216, 216, 216, 0.65);
-  /* transform: translateY(70%); */
-  margin-block-start: 50px;
-  margin-inline-start: auto;
-  margin-inline-end: auto;
-  /* box-shadow: 0 0 8px 8px rgb(100, 189, 219) inset; */ /*faded edges*/
-}
-.mainWeatherInfo {
-  width: calc(100% - 20%); /*operator + or - should always have space around*/
-  display: inline-flex;
-  min-height: 100px;
-  align-items: center;
-}
-.mainWeatherInfo p {
-  display: inline-block;
-}
-.currentWeatherTemp {
-  width: fit-content;
-  font-size: 4.5em;
-  padding-right: 2%;
-  border-image: linear-gradient(to top, rgba(255, 255, 255, 0.7), transparent) 2;
-  border-right: 3px solid;
-  margin-inline-start: 8%;
-}
-.currentWeatherIcon {
-  width: 20%;
-  margin-inline-end: 10px;
-}
-.currentLocationAndTime {
-  /* flex-shrink: 0;  allow width to work (overflow the container)*/
-  display: inline-flex;
-  flex-direction: column;
-  align-items: flex-start;
-  justify-content: space-between;
-  height: 60px;
-  margin-inline-start: 20px;
-}
-.currentLocationAndTime p {
-  /* white-space: nowrap; */
-  font-size: 1.3em;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  overflow: hidden;
-  width: 320px; /* some width */
-}
-.currentLocationAndTime p:first-child {
-  transform: translateX(-1%);
-}
-.currentLocationAndTime p svg {
-  height: 1em;
-}
+
 :global(.blur) {
-  filter: blur(2px);
+  @supports (filter: blur(2px)) {
+    filter: blur(2px);
+  }
   pointer-events: none; /*disable hovering selecting and other interactable things*/
   overflow: hidden;
 }
@@ -217,81 +174,29 @@ td.countryFlag img {
 }
 
 @media (max-width: 520px) {
+  body:has(:global(.blur)) {
+    overflow: hidden; /*disable scrolling when options panel is open*/
+  }
   :global(.blur) {
-    filter: blur(15px);
-    opacity: 0.4;
-    height: 100vh; /* use height 100vh and overflow hidden to disable scrolling when on side panel*/
+    /* filter: blur(15px);
+    opacity: 0.4; */
+    height: 100vh; /*; use height 100vh and overflow hidden to disable scrolling when on side panel (mobile mostly)*/
+  }
+  :global(.blur) *{
+    z-index: -1;
   }
 }
-@media (max-width: 700px) {
-  .currentWeather {
-    flex: 0 0 auto; /*display flex of parent(.Body) dictates the width of child width, adding this property removes its dependency*/
-    width: 90%;
-  }
-  .mainWeatherInfo {
-    font-size: 1em;
-  }
 
-  .currentWeatherTemp {
-    margin-inline-start: 0;
-  }
-  .currentLocationAndTime p {
-    font-size: 1.5em;
-  }
-}
 @media (max-width: 580px) {
-  .currentWeather {
-    flex: 0 0 auto; /*display flex of parent(.Body) dictates the width of child width, adding this property removes its dependency*/
-    width: 90%;
-  }
   .searchBarAndLocationContainer {
     right: 10%;
   }
-  .currentWeatherTemp {
-    font-size: 4rem;
-  }
-  .currentLocationAndTime p {
-    font-size: 1.2em;
-    width: 210px;
-  }
 }
 
-@media (max-width: 450px) {
-  .currentWeather {
-    width: 98%;
-  }
-
-  .mainWeatherInfo {
-    font-size: 1em;
-  }
-
-  .currentLocationAndTime {
-    justify-content: space-evenly;
-  }
-  .currentLocationAndTime p {
-    font-size: 1.2em;
-  }
-  .currentWeatherTemp {
-    font-size: 3em;
-    margin-inline-start: 0;
-  }
-  .currentWeatherIcon {
-    margin: 0;
-  }
-}
 @media (max-width: 380px) {
-  .currentLocationAndTime {
-    margin-inline-start: 5px;
-  }
-  .currentLocationAndTime p {
-    width: 200px;
-    font-size: 1em;
-    white-space:normal;
-  }
   .searchBarAndLocationContainer {
     width: 80%;
     right: 15%;
-    background-color: red;
   }
   .searchBar {
     width: 20%;

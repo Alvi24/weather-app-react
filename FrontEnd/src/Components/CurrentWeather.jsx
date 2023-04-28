@@ -1,5 +1,6 @@
-import React, { useEffect, useMemo, useState } from "react";
-import { weatherCodeToIcon } from "../API.mjs";
+import React, { useEffect, useMemo, useState, useContext } from "react";
+import { convertCelsiusToFahrenheit, weatherCodeToIcon } from "../API.mjs";
+import { configContext } from "../App";
 import styles from "../styles/CurrentWeather.module.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -16,6 +17,7 @@ export default function CurrentWeather({
   location,
 }) {
   let [time, setTime] = useState(new Date());
+  const { configObject } = useContext(configContext);
   useEffect(() => {
     const timer = setInterval(() => {
       const currentTime = new Date();
@@ -38,7 +40,10 @@ export default function CurrentWeather({
       {/*use the ?  */}
       <div className={styles.mainWeatherInfo}>
         <p className={styles.currentWeatherTemp}>
-          {currentWeather?.temperature}°
+          {configObject.degree === "celsius"
+            ? currentWeather?.temperature
+            : convertCelsiusToFahrenheit(currentWeather?.temperature)}
+          °
         </p>
         <div className={styles.currentLocationAndTime}>
           <p>

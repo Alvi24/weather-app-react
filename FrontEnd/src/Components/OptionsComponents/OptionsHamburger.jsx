@@ -17,7 +17,7 @@ export default function OptionsHamburger(props) {
       onClick={props.onAppear}
       onKeyDown={handleKeyDown} //when clicking with keyboard
       onKeyUp={handleKeyDown} //when clicking with keyboard
-      tabIndex="0" //to style when clicked with keyboard (Ta)
+      tabIndex="0" //to style when clicked with keyboard (Tab)
     />
   );
 }

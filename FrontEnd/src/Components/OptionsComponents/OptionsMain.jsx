@@ -1,11 +1,11 @@
-import React, { useState, useEffect } from "react";
-import styles from "../../styles/Options.module.css";
+import React, { useState, useEffect, useRef } from "react";
 import OptionsHamburger from "./OptionsHamburger";
 import OptionsSidePanel from "./OptionsSidePanel";
-export default function Options(props) {
-  const [appear, setAppear] = useState(() => false);
+import styles from "../../styles/Options.module.css";
+export default function Options() {
+  const [appear, setAppear] = useState(false);
+  const OptionsRef = useRef(null);
   function AppearSwap() {
-    // setAppear(appear === false ? true : false);
     setAppear(!appear);
     document
       .querySelector(`.App > :not(.${styles.Options})`)
@@ -20,11 +20,9 @@ export default function Options(props) {
   }
 
   useEffect(() => {
+    if (!appear) return;
     function effectClick(e) {
-      if (
-        !document.querySelector(`.${styles.Options}`).contains(e.target) &&
-        appear
-      ) {
+      if (!OptionsRef.current.contains(e.target)) {
         console.log(e.target.nodeName);
         document
           .querySelector(`.App > :not(.${styles.Options})`)
@@ -39,9 +37,8 @@ export default function Options(props) {
     };
   });
   return (
-    <div className={styles.Options}>
+    <div ref={OptionsRef} className={styles.Options}>
       <OptionsHamburger onAppear={AppearSwap} />
-      {/*or ()=> setAppear(appear === false ? true : false) }  */}
       <OptionsSidePanel appearHandle={appear} />
     </div>
   );

@@ -1,6 +1,11 @@
-import React, { useMemo, useState, useContext, useEffect, useRef } from "react";
+import React, { useMemo, useContext, useEffect, useRef } from "react";
 import { MyContext } from "./Body";
-import { weatherCodeToIcon, externalTooltip } from "../API.mjs";
+import { configContext } from "../App";
+import {
+  convertCelsiusToFahrenheit,
+  weatherCodeToIcon,
+  externalTooltip as costumTooltip,
+} from "../API.mjs";
 import styles from "../styles/HourlyWeather.module.css";
 import { Line } from "react-chartjs-2";
 import { Chart, registerables } from "chart.js";
@@ -12,50 +17,48 @@ export default function HourlyWeather({
   visible,
   removeVisible,
 }) {
-  const [chartEnabled, setChartEnabled] = useState(false);
-
   const mobileView = useContext(MyContext);
-  let prevHourlyWeather = useRef();
-
+  const { configObject } = useContext(configContext);
+  console.log(configObject); // value from App.js
+  let prevHourlyWeather = useRef(null);
+  console.log("hello");
   useEffect(() => {
-    function effectClick(e) {
-      console.log(
-        !document
-          .querySelector(`.${styles.HourlyContainer}`)
-          .contains(e.target),
-        prevHourlyWeather.current,
-        hourlyWeather
-      );
+    if (!mobileView) return;
+    function handleClick(e) {
       if (
-        !document
-          .querySelector(`.${styles.HourlyContainer}`)
-          .contains(e.target) &&
-        prevHourlyWeather.current === hourlyWeather &&
-        visible
+        !document.querySelector(`.${styles.HourlyContainer}`).contains(e.target)
       ) {
-        console.log(e.target.nodeName);
-        prevHourlyWeather.current = "";
-        removeVisible();
-      } else if (visible) {
-        prevHourlyWeather.current = hourlyWeather;
+        if (prevHourlyWeather.current !== hourlyWeather) {
+          console.log(e.target.nodeName);
+          prevHourlyWeather.current = hourlyWeather;
+        } else {
+          prevHourlyWeather.current = {};
+          removeVisible();
+        }
       }
     }
-    document.addEventListener("click", mobileView ? effectClick : null);
+    document.addEventListener("click", visible ? handleClick : null);
     return () => {
-      console.log("event listener removed WEEKLY");
-      document.removeEventListener("click", effectClick);
+      console.log("event listener removed Hourly");
+      document.removeEventListener("click", handleClick);
     };
   }, [hourlyWeather, mobileView, visible, removeVisible]);
-  const chartConfigMemo = useMemo(() => {
+
+  const chartConfig = useMemo(() => {
     return {
       chartData: {
         labels: hourlyWeather.time,
         datasets: [
           {
-            data: hourlyWeather.temp,
+            data:
+              configObject.degree === "celsius"
+                ? hourlyWeather.temp
+                : hourlyWeather.temp.map((temp) =>
+                    convertCelsiusToFahrenheit(temp)
+                  ),
             label: ``,
             fill: false,
-            borderColor: mobileView ? "black" : "white",
+            borderColor:"grey",
             lineTension: 0.2,
           },
         ],
@@ -72,14 +75,19 @@ export default function HourlyWeather({
             //   intersect: false,
             // },
             enabled: false,
-            external: externalTooltip,
+            external: costumTooltip,
             callbacks: {
               title: function (chart) {
                 return hourlyWeather.time[chart[0].dataIndex];
               },
               label: function (context) {
                 return {
-                  temp: hourlyWeather.temp[context.dataIndex],
+                  temp:
+                    configObject.degree === "celsius"
+                      ? hourlyWeather.temp[context.dataIndex]
+                      : convertCelsiusToFahrenheit(
+                          hourlyWeather.temp[context.dataIndex]
+                        ),
                   weathercode: weatherCodeToIcon(
                     hourlyWeather.weathercode[context.dataIndex]
                   ),
@@ -102,7 +110,7 @@ export default function HourlyWeather({
           x: {
             type: "category",
             title: {
-              display: true,
+              display: !mobileView,
               text: "Hours",
             },
           },
@@ -112,6 +120,11 @@ export default function HourlyWeather({
               display: !mobileView,
               text: "Temperature",
             },
+            ticks: {
+              callback: (value) => {
+                return value + "°";
+              },
+            },
           },
         },
         maintainAspectRatio: false, // set to false to make the chart responsive
@@ -119,7 +132,7 @@ export default function HourlyWeather({
         // animation: false, // set animation to false to achieve a smoother animation
       },
     };
-  }, [hourlyWeather, mobileView]);
+  }, [hourlyWeather, mobileView, configObject]);
   return (
     <div
       className={`${styles["HourlyContainer"]}  ${
@@ -138,8 +151,8 @@ export default function HourlyWeather({
 
       <Line
         className={styles["chart"]}
-        data={chartConfigMemo.chartData}
-        options={chartConfigMemo.chartOptions}
+        data={chartConfig.chartData}
+        options={chartConfig.chartOptions}
       />
     </div>
   );

@@ -15,17 +15,20 @@ const MemoizedDailyWeather = React.memo(DailyWeather);
 const MemoizedHourlyWeather = React.memo(HourlyWeather);
 
 export default function Body() {
-
-
+  console.log("body");
   const [location, setLocationName] = useState();
   const [{ currentWeather, dailyWeather, hourlyWeather }, setWeatherData] =
     useState({ currentWeather: null, dailyWeather: null, hourlyWeather: null });
   const [hourlyWeatherProp, setHourlyWeatherProp] = useState();
-  const [mobileView, setMobileView] = useState(false);
+  const [mobileView, setMobileView] = useState(
+    matchMedia("(max-width: 520px)").matches
+  );
   const [visible, setVisible] = useState(false);
   useEffect(() => {
+    console.log("mobile view useEffect", mobileView);
     const mediaQuery = matchMedia("(max-width: 520px)");
     if (mediaQuery.matches) setMobileView(mediaQuery.matches);
+
     function handleResize() {
       const mobileView = mediaQuery.matches;
       if (mobileView) {
@@ -59,17 +62,7 @@ export default function Body() {
       // if (
       //   typeof data.locationName === "object" &&
       //   typeof data.locationName.then === "function"
-      // ) {
-      //   //check if LocationName is promise or not
-      //   data.locationName.then(({ location }) => {
-      //     setLocationName(location);
-      //     console.log(location);
-      //   });
-      // } else {
-      //   setLocationName(data.locationName);
-      // }
       setLocationName(data.locationName);
-      // setLocationName(data.locationName.location ?? data.locationName);
     }
   }, []);
 
@@ -96,12 +89,22 @@ export default function Body() {
           }
         }
       }
-      if (mobileView && !visible) setVisible((prevState) => !prevState);
+      if (mobileView && !visible) setVisible(true); //setVisible((prevState) => !prevState);
     },
     [hourlyWeather, currentWeather?.date, mobileView, visible]
   );
   return (
     <div className={styles.Body}>
+      <div className={styles.Background}>
+        <video autoPlay loop muted playsInline>
+          {/* playsInline for autoplay video on iphone(IOS) */}
+
+          <source
+            src="https://player.vimeo.com/external/210730141.sd.mp4?s=e58a94323301b678e36275c0a85dd4eac34050d0&profile_id=164&oauth2_token_id=57447761"
+            type="video/mp4"
+          />
+        </video>
+      </div>
       <MemoizedSearchBar handleLocationClick={callWeatherData} />
       {currentWeather && location ? (
         <>
@@ -118,7 +121,6 @@ export default function Body() {
 
             <MemoizedHourlyWeather
               hourlyWeather={hourlyWeatherProp}
-              location={location}
               visible={visible}
               removeVisible={() => setVisible(false)}
             />

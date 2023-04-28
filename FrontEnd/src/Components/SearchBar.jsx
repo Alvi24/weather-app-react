@@ -5,23 +5,23 @@ import styles from "../styles/App.module.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faMagnifyingGlass } from "@fortawesome/free-solid-svg-icons";
 export default function SearchBar(props) {
-  let [locations, setLocations] = useState();
+  let [locations, setLocations] = useState([]);
+
   console.log("SearchBar rendered");
   function getLocations(e) {
     console.log(e.target.value !== "" ? e.target.value : "empty");
-    if (e.target.value.length < 2) {
+    if (e.target.value.length < 2 && locations.length !== 0) {
       console.log("remove");
       setLocations([]);
-
       return;
     }
 
     fetchLocations(e)
-      .then((data) => {
-        if (e.target.value.length >= 2) {
-          console.log("target value", e.target.value.length);
-
-          setLocations(data);
+      .then(({ weatherData, prevSearchText }) => {
+        if (e.target.value.length >= 2 && e.target.value === prevSearchText) {
+          //when the searched text and the current searched text are equal set data
+          console.log("target value length", e.target.value.length);
+          setLocations(weatherData);
         }
       })
       .catch((errotText) => {
