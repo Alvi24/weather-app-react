@@ -1,24 +1,45 @@
-import React, { useState, useEffect } from "react";
+import React, { useContext } from "react";
+import FavLocationsComponent from "./FavLocationsComponent.jsx";
+import { configContext } from "../../App.js";
 import styles from "../../styles/Options.module.css";
 
-export default function OptionsSidePanel({ appearHandle }) {
-  const [width, setWidth] = useState("0");
-
-  useEffect(() => {
-    const mediaQuery = matchMedia("(max-width:800px)");
-    mediaQuery.addEventListener("change", () => {
-      setWidth(
-        appearHandle === true ? (mediaQuery.matches ? "100%" : "25%") : "0"
-      );
-    });
-    setWidth(
-      appearHandle === true ? (mediaQuery.matches ? "100%" : "25%") : "0"
-    );
-  }, [appearHandle]);
-
+export default function OptionsSidePanel({ appear, changeIsElementDragged }) {
+  // let activeClassName = useMemo(() => {
+  //   return appearHandle ? styles.active : "";
+  // }, [appearHandle]);
+  //COMPONENT RE-RENDERS WHEN PROPS CHANGE
+  const [configObject, setConfigObject] = useContext(configContext);
+  const changeDegree = (degree) => {
+    const prevDegree = configObject.degree;
+    if (degree !== prevDegree)
+      setConfigObject((prevState) => ({
+        ...prevState,
+        degree,
+      }));
+  };
   return (
-    <div className={styles.sidePanel} style={{ width: width }}>
-      <div className={styles.poweredBy}>
+    <div className={`${styles.sidePanel} ${appear ? styles.active : ""}`}>
+      <section className={styles.configSection}>
+        <h3 className={styles.degreeTitle}>Degree</h3>
+        <div className={`${styles.degrees} ${styles[configObject.degree]}`}>
+          <button
+            className={styles.celsius}
+            onClick={() => changeDegree("celsius")}
+          >
+            <p>°C</p>
+          </button>
+          <button
+            className={styles.fahrenheit}
+            onClick={() => changeDegree("fahrenheit")}
+          >
+            <p>°F</p>
+          </button>
+
+          <div className={styles.switch}></div>
+        </div>
+      </section>
+      <FavLocationsComponent changeIsElementDragged={changeIsElementDragged} />
+      <section className={styles.poweredBy}>
         <svg
           xmlns="http://www.w3.org/2000/svg"
           fill="currentColor"
@@ -29,7 +50,7 @@ export default function OptionsSidePanel({ appearHandle }) {
           <path d="M10.5 1.5a.5.5 0 0 0-1 0v1a.5.5 0 0 0 1 0v-1zm3.743 1.964a.5.5 0 1 0-.707-.707l-.708.707a.5.5 0 0 0 .708.708l.707-.708zm-7.779-.707a.5.5 0 0 0-.707.707l.707.708a.5.5 0 1 0 .708-.708l-.708-.707zm1.734 3.374a2 2 0 1 1 3.296 2.198c.199.281.372.582.516.898a3 3 0 1 0-4.84-3.225c.352.011.696.055 1.028.129zm4.484 4.074c.6.215 1.125.59 1.522 1.072a.5.5 0 0 0 .039-.742l-.707-.707a.5.5 0 0 0-.854.377zM14.5 6.5a.5.5 0 0 0 0 1h1a.5.5 0 0 0 0-1h-1z"></path>
         </svg>
         <p>Powered By Open Meteo</p>
-      </div>
+      </section>
     </div>
   );
 }

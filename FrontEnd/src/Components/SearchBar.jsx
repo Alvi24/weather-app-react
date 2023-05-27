@@ -1,152 +1,105 @@
 // npm run dev
 import React, { useState } from "react";
-import { fetchLocations, getcityName } from "../API.mjs";
+import { fetchLocations } from "../Utilities.mjs";
 import styles from "../styles/App.module.css";
-
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faMagnifyingGlass } from "@fortawesome/free-solid-svg-icons";
 export default function SearchBar(props) {
-  let [locations, setLocations] = useState();
-  function filterLocations(locations) {
-    console.log(locations);
-    // console.log(
-    //   cloneLocation.cityName,
-    //   cloneLocations[index + 1].cityName
-    // );
-    // console.log(
-    //   cloneLocation.countryFlag,
-    //   cloneLocations[index + 1].countryFlag
-    // );
-    // console.log("index", index);
-    let filteredLocations = [];
-    locations.forEach((location, index) => {
-      // console.log(index);
-      if (index === locations.length - 1) {
-        filteredLocations.push({ ...location });
-        return;
-      }
-      if (
-        location.cityName !== locations[index + 1].cityName ||
-        location.region !== locations[index + 1].region
-      ) {
-        console.log(
-          "cityName",
-          location.cityName !== locations[index + 1].cityName,
-          location.cityName,
-          locations[index + 1].cityName
-        );
-        console.log(
-          "region",
-          location.region !== locations[index + 1].region,
-          location.region,
-          locations[index + 1].region
-        );
-        console.log(" ");
-        filteredLocations.push({ ...location });
-      }
-    });
+  let [locations, setLocations] = useState([]);
 
-    // console.log(
-    //   "cityName",
-    //   firstLocation.cityName === secondLocation.cityName
-    // );
-    // console.log(
-    //   "flag",
-    //   firstLocation.countryFlag === secondLocation.countryFlag
-    // )
-    // console.log(filteredLocations);
-    return filteredLocations;
-  }
-
-  function bigDatacityName(data, e) {
-    if (e.target.value.length < 2) {
-      return;
-    }
-
-    // console.log("filtered", filteredLocations);
-    // console.log(data);
-    // let filteredLocations = ;
-    let cloneLocations = [...data];
-    cloneLocations.forEach((location, index) => {
-      getcityName(location.latitude, location.longitude)
-        .then(({ city, region }) => {
-          console.log("changing");
-          let cityFromBigData = city,
-            regionFromBigData = region;
-          if (cityFromBigData !== "") {
-            // console.log(city);
-            cloneLocations[index].cityName = cityFromBigData;
-            cloneLocations[index].region = regionFromBigData;
-            // setLocations([...cloneLocations]);
-            // console.log("locations");
-          }
-        })
-        .finally(() => {
-          console.log("finished");
-          if (e.target.value.length >= 2) {
-            setLocations(filterLocations(cloneLocations));
-          }
-        });
-    });
-    // setLocations(data.map(location)=>);
-  }
-  // useEffect(() => {
-  //   console.log(locations);
-  // }, [locations]);
-  function getLocations(e) {
-    console.log(e.target.value !== "" ? e.target.value : "empty");
-    if (e.target.value.length < 2) {
-      // console.log(document.querySelector("li"));
-
-      console.log("remove");
-
-      setLocations([]);
-
-      return;
-    }
-    fetchLocations(e.target.value)
-      .then((data) => {
-        // console.log(data);
-        if (e.target.value.length >= 2) {
-          console.log("target value", e.target.value.length);
-          bigDatacityName(data, e);
-          // setLocations(data);
+  console.log("SearchBar rendered");
+  const debounce = (callbackFunction, delay = 250) => {
+    let timeout;
+    return (...args) => {
+      clearTimeout(timeout);
+      timeout = setTimeout(() => {
+        callbackFunction(...args);
+      }, delay);
+    };
+  };
+  const debouncedFetchLocation = debounce((e) => {
+    console.log("start", Date());
+    fetchLocations(e)
+      .then(({ weatherData, prevSearchText }) => {
+        console.log("end", Date());
+        if (
+          e.target.value.trim().length >= 2 &&
+          e.target.value === prevSearchText
+        ) {
+          //when the searched text and the current searched text are equal set data
+          console.log("target value length", e.target.value.length);
+          setLocations(weatherData);
         }
       })
       .catch((errotText) => {
-        setLocations(errotText);
+        if (e.target.value.trim().length >= 2) setLocations(errotText);
       });
+  }, 150);
+
+  function getLocations(e) {
+    console.log(e.target.value !== "" ? e.target.value : "empty");
+    if (e.target.value.trim().length < 2) {
+      if (locations.length !== 0) setLocations([]);
+      return;
+    }
+    debouncedFetchLocation(e);
   }
   return (
-    <div className={styles.searchBar}>
-      <input
-        type="text"
-        name="searchBar"
-        id="searchBar"
-        placeholder=" "
-        autoComplete="off"
-        onChange={(e) => {
-          getLocations(e);
-        }}
-      />
-
-      <ul>
-        {Array.isArray(locations)
-          ? locations?.map((location) => (
-              <li
+    <div className={styles.searchBarAndLocationContainer}>
+      <div className={styles.searchBar}>
+        <input
+          type="text"
+          name="searchBar"
+          id="searchBar"
+          placeholder=" "
+          autoComplete="off"
+          onChange={(e) => getLocations(e)}
+        />
+        <FontAwesomeIcon
+          icon={faMagnifyingGlass}
+          className={styles.searchIcon}
+        />
+      </div>
+      {typeof locations === "object" ? (
+        <table border={3}>
+          <tbody>
+            <tr>
+              <th>Flag</th>
+              <th>Location</th>
+              <th>Region</th>
+            </tr>
+            {locations?.map((location) => (
+              <tr
+                className={styles.location}
                 key={location.latitude}
-                onClick={() =>
-                  props.handleLocationClick(
-                    location.latitude,
-                    location.longitude,
-                    location.cityName
-                  )
-                }
+                onClick={() => {
+                  console.log(location);
+                  const {
+                    latitude: lat,
+                    longitude: long,
+                    locationName,
+                    timezone: timeZone,
+                  } = location;
+                  props.handleLocationClick({
+                    lat,
+                    long,
+                    locationName,
+                    timeZone,
+                  });
+                }}
               >
-                {location.cityName} <br />
-                Region: {location.region}
-              </li>
-            ))
-          : locations}
-      </ul>
+                <td className={styles.countryFlag}>
+                  <img src={location.countryFlag} alt="no flag found" />
+                </td>
+                <td className={styles.locationName}>{location.locationName}</td>
+                <td>{location.region}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      ) : (
+        <p className={styles.noLocationFoundText}>{locations}</p>
+      )}
     </div>
   );
 }

@@ -1,12 +1,17 @@
-import React, { useState, useEffect } from "react";
-import styles from "../../styles/Options.module.css";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import OptionsHamburger from "./OptionsHamburger";
 import OptionsSidePanel from "./OptionsSidePanel";
-export default function Options(props) {
-  const [appear, setAppear] = useState(() => false);
-  function AppearSwap() {
-    // setAppear(appear === false ? true : false);
-    setAppear(!appear);
+import styles from "../../styles/Options.module.css";
+export default function Options() {
+  const [appear, setAppear] = useState(false);
+  const OptionsRef = useRef(null);
+  const isElementDragged = useRef(false);
+  const updateIsElementDragged = useCallback((isDragged) => {
+    isElementDragged.current = isDragged;
+    console.log("DRAG", isElementDragged.current);
+  }, []);
+  const AppearSwap = useCallback(() => {
+    setAppear((prevState) => !prevState);
     document
       .querySelector(`.App > :not(.${styles.Options})`)
       .classList.add("blur");
@@ -17,32 +22,35 @@ export default function Options(props) {
         .querySelector(`.App > :not(.${styles.Options})`)
         .classList.remove("blur");
     }
-  }
+  }, [appear]);
 
   useEffect(() => {
+    if (!appear) return;
+
     function effectClick(e) {
-      if (
-        !document.querySelector(`.${styles.Options}`).contains(e.target) &&
-        appear
-      ) {
+      if (!OptionsRef.current.contains(e.target) && !isElementDragged.current) {
         console.log(e.target.nodeName);
+
         document
           .querySelector(`.App > :not(.${styles.Options})`)
           .classList.remove("blur");
         setAppear(false);
       }
     }
-    document.addEventListener("click", effectClick);
+    document.addEventListener("click", effectClick, { capture: true });
     return () => {
       console.log("event listener removed");
-      document.removeEventListener("click", effectClick);
+      document.removeEventListener("click", effectClick, { capture: true });
     };
-  });
+  }, [appear]);
   return (
-    <div className={styles.Options}>
+    <div ref={OptionsRef} className={styles.Options}>
       <OptionsHamburger onAppear={AppearSwap} />
-      {/*or ()=> setAppear(appear === false ? true : false) }  */}
-      <OptionsSidePanel appearHandle={appear} />
+      <OptionsSidePanel
+        appear={appear}
+        changeIsElementDragged={updateIsElementDragged}
+        isDragging={isElementDragged}
+      />
     </div>
   );
 }

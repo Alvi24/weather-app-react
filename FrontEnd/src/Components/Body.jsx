@@ -1,72 +1,167 @@
 // npm run dev
-import React, { useEffect, useState } from "react";
+import React, {
+  useCallback,
+  useEffect,
+  useState,
+  createContext,
+  useContext,
+} from "react";
 import SearchBar from "./SearchBar.jsx";
-import { WeatherData } from "../API.mjs";
-// ./ means current directory  ../ means parent of current directory and / means root directory
+import CurrentWeather from "./WeatherComponents/CurrentWeather.jsx";
+import DailyWeather from "./WeatherComponents/DailyWeather.jsx";
+import HourlyWeather from "./WeatherComponents/HourlyWeather.jsx";
+import { fetchWeatherData, updateWeather } from "../Utilities.mjs";
 import styles from "../styles/App.module.css";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faLocationDot } from "@fortawesome/free-solid-svg-icons";
+import { configContext } from "../App.js";
 
-export default function Body() {
-  let [currentWeather, setCurrentWeather] = useState({});
-  let [dailyWeather, setdailyWeather] = useState({});
-  let [city, setcityName] = useState();
-  function callWeatherData(lat, long, cityName) {
-    WeatherData(
-      lat,
-      long,
-      cityName,
-      Intl.DateTimeFormat().resolvedOptions().timeZone
-    ).then(setData);
-  }
-  function setData(data) {
-    const { dailyWeather } = data;
-    setCurrentWeather({ ...data.currentWeather });
-    setdailyWeather([...data.dailyWeather]);
+// ./ means current directory  ../ means parent of current directory and / means root directory
+export const MobileViewContext = createContext();
+const MemoizedSearchBar = React.memo(SearchBar);
+const MemoizedCurrentWeather = React.memo(CurrentWeather);
+const MemoizedDailyWeather = React.memo(DailyWeather);
+const MemoizedHourlyWeather = React.memo(HourlyWeather);
 
-    if (
-      typeof data.cityName === "object" &&
-      typeof data.cityName.then === "function"
-    ) {
-      //check if cityName is promise or not
-      data.cityName.then(({city}) => {
-        setcityName(city);
-      });
-    } else {
-      setcityName(data.cityName);
+export default function Body({
+  addCurrentWeather,
+  favLocationData,
+  updatedCurrentWeather,
+}) {
+  console.log("body");
+
+  const [configObject] = useContext(configContext);
+
+  const [location, setLocationName] = useState();
+  const [weatherData, setWeatherData] = useState(); //or  const [{ currentWeather, dailyWeather, hourlyWeather }, setWeatherData] = useState({ currentWeather: null, dailyWeather: null, hourlyWeather: null });
+  const { currentWeather, dailyWeather, hourlyWeather } = weatherData || {};
+  const [hourlyWeatherProp, setHourlyWeatherProp] = useState();
+  const [isVisible, setIsVisible] = useState(false);
+  const [mobileView, setMobileView] = useState(
+    matchMedia("(max-width: 520px)").matches
+  );
+
+  useEffect(() => {
+    const mediaQuery = matchMedia("(max-width: 520px)");
+    // if (mediaQuery.matches) setMobileView(mediaQuery.matches);
+
+    function handleResize() {
+      const onMobileView = mediaQuery.matches;
+      console.log(onMobileView);
+      setMobileView(onMobileView);
+      if (!onMobileView) setIsVisible(false);
     }
-  }
+    mediaQuery.addEventListener("change", handleResize);
+    return () => {
+      mediaQuery.removeEventListener("change", handleResize);
+    };
+  }, [mobileView]);
+  //`${new Date().getHours()} : ${new Date().getMinutes()}`
+  const setFetchedWeatherData = useCallback(
+    (data) => {
+      //weather Data from API
+      console.log(data);
+      setWeatherData(data);
+      setHourlyWeatherProp(data?.hourlyWeather[0]);
+      setLocationName(data?.locationName);
+      addCurrentWeather(data);
+    },
+    [addCurrentWeather]
+  );
+  useEffect(() => {
+    if (favLocationData) {
+      console.log("fav location", favLocationData);
+      setFetchedWeatherData(favLocationData);
+    }
+  }, [favLocationData, setFetchedWeatherData]);
+
+  const callFetchWeatherData = useCallback(
+    async ({ lat, long, locationName, timeZone }) => {
+      console.log(timeZone, weatherData?.coords.lat);
+      if (lat !== weatherData?.coords.lat) {
+        const data = await fetchWeatherData(
+          lat,
+          long,
+          locationName,
+          timeZone,
+          configObject
+        );
+        setFetchedWeatherData(data);
+      }
+    },
+    [setFetchedWeatherData, configObject, weatherData]
+  );
+
   useEffect(() => {
     navigator.geolocation.getCurrentPosition(defaultCoords);
-    let lat, long;
+
     function defaultCoords(position) {
-      const { latitude, longitude } = position.coords;
-      lat = latitude;
-      long = longitude;
-      callWeatherData(lat, long);
+      const { latitude: lat, longitude: long } = position.coords;
+      const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone; //user time zone
+      callFetchWeatherData({ lat, long, timeZone });
     }
   }, []);
+  // useEffect(() => {
+  //   if (weatherData) {
+  //     const updatedWeatherData = updateWeather(weatherData, configObject);
+  //     setFetchedWeatherData(updatedWeatherData);
+  //   }
+  // }, [configObject]);
   useEffect(() => {
-    // console.log("weather   ", currentWeather);
-  }, [currentWeather]);
-  useEffect(() => {
-    // console.log("daily   ", dailyWeather);
-  }, [dailyWeather]);
+    if (updatedCurrentWeather) setFetchedWeatherData(updatedCurrentWeather);
+  }, [updatedCurrentWeather]);
+  const handleWeatherClick = useCallback(
+    (date) => {
+      if (date === currentWeather.date) setHourlyWeatherProp(hourlyWeather[0]);
+      //first current day showing hourly weather
+      else {
+        for (const element of hourlyWeather) {
+          if (element.date === date) {
+            setHourlyWeatherProp(element);
+            break;
+          }
+        }
+      }
+      console.log(mobileView, !isVisible);
+      if (mobileView && !isVisible) setIsVisible(true); //setVisible((prevState) => !prevState);
+    },
+    [hourlyWeather, currentWeather?.date, mobileView, isVisible]
+  );
 
   return (
     <div className={styles.Body}>
-      <SearchBar handleLocationClick={callWeatherData} />
-      <div className={styles.Hero}>
-        {/* <button onClick={() => getLocations()}>Press</button> */}
-        {/*use the ?  */}
-        <h1>time: {currentWeather?.currentTime}</h1>
-        <h1>
-          city:
-          <FontAwesomeIcon icon={faLocationDot} /> {city}{" "}
-        </h1>
-        <h1>mintemp: {dailyWeather[0]?.minTemp + "°"} </h1>
-        <p className={styles.heroTemp}> {currentWeather?.temperature}°</p>
+      <div className={styles.Background}>
+        <video autoPlay loop muted playsInline>
+          {/* playsInline for autoplay video on iphone(IOS) */}
+          {/*https://player.vimeo.com/external/210730141.sd.mp4?s=e58a94323301b678e36275c0a85dd4eac34050d0&profile_id=164&oauth2_token_id=57447761 */}
+          <source src="skyBackgroundVideo.mp4" type="video/mp4" />
+        </video>
       </div>
+      <MemoizedSearchBar handleLocationClick={callFetchWeatherData} />
+      {currentWeather && location ? (
+        <>
+          <MobileViewContext.Provider value={mobileView}>
+            <MemoizedCurrentWeather
+              currentWeather={currentWeather}
+              onWeatherClick={handleWeatherClick}
+              location={location}
+            />
+            <MemoizedDailyWeather
+              dailyWeather={dailyWeather} //remove .slice to prevernt daily re-render
+              onWeatherClick={handleWeatherClick}
+            />
+
+            <MemoizedHourlyWeather
+              hourlyWeather={hourlyWeatherProp}
+              visible={isVisible}
+              removeVisible={() => setIsVisible(false)}
+            />
+          </MobileViewContext.Provider>
+        </>
+      ) : (
+        <h1 className={styles.Loading}>Loading...</h1>
+      )}
+
+      {/* {DailyWeatherMemo}  if useMemos is used*/}
+      {/* <DailyWeatherMemo/>  if useCallback is used*/}
     </div>
   );
 }

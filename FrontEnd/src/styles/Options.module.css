@@ -1,24 +1,41 @@
 .Options {
   /* height: 8vh; */
-  height: 99.7vh;
+  width: 100%;
   display: flex;
   justify-content: flex-end;
   align-items: flex-start;
   float: right;
+  overflow: hidden;
+}
+.backDrop {
+  position: absolute;
+  width: 100vw;
+  height: 100vh;
+  backdrop-filter: blur(2px);
+  z-index: 1;
+  transition: 0.5s;
+  @supports (filter: blur(2px)) {
+    filter: blur(2px);
+  }
 }
 .optionsHamburger {
+  position: absolute;
   width: 30px;
   height: 30px;
   padding: 10px;
+  outline: none;
   background: rgba(255, 255, 255, 0.32);
   box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
   backdrop-filter: blur(5.9px);
   -webkit-backdrop-filter: blur(5.9px);
   border: 1px solid rgba(255, 255, 255, 0.31);
   border-radius: 8px;
-  margin-inline-end: 10%;
-  margin-block-start: 10px;
-  transition: background-color 0.5s;
+  right: 1%;
+  top: 1%;
+  z-index: 1;
+  /* transform: translate(-50%,20%); */
+  cursor: pointer;
+  transition: background-color 0.5s, opacity 0.5s;
 }
 .optionsHamburger * {
   color: black;
@@ -26,38 +43,363 @@
 .optionsHamburger:hover {
   background: rgba(255, 255, 255, 0.52);
 }
+
+/* :global(.clicked).optionsHamburger {
+  opacity: 0;
+  outline: none;
+} */
+:global(.App:has(.blur)) .optionsHamburger {
+  outline: none;
+  /* opacity: 0; */
+}
 .sidePanel {
-  position: absolute;
+  /* width: 0; */
+  width: 25%;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  position: fixed; /*or position absolute and width set to 25%*/
+  /* right: -25%; */
+  right: 0;
+  transform: translateX(100%);
   overflow: hidden;
-  background-color: rgb(235, 235, 235);
-  height: 100%;
-  transition: 0.5s;
+  background-color: rgba(235, 235, 235, 0.8);
+  backdrop-filter: blur(10px);
+  transition: 0.6s;
   z-index: 1;
 }
-
+.sidePanel.active {
+  /* right: 0; */
+  overflow: auto;
+  transform: translateX(0);
+}
 .poweredBy {
   display: flex;
   justify-content: center;
   align-items: center;
+  margin-top: auto;
+  font-size: 1em; /*default fontSize */
 }
 .poweredBy * {
   color: black;
-  font-size: 1w;
+  /* font-size: 1w; */
 }
 .poweredBy p {
   display: inline-block;
   white-space: nowrap;
-
   margin-inline-start: 15px;
 }
 .poweredBy svg {
-  width: 5vh;
+  width: 2.6em;
 }
-@media (max-width: 800px) {
-  .sidePanel {
-    z-index: 0;
+.sidePanel section:not(.poweredBy) {
+}
+.configSection > * {
+  margin-inline-start: 10px;
+}
+.degreeTitle {
+}
+.sidePanel .degrees {
+  position: relative;
+  width: 100px;
+  /* height: 5%; */
+  height: 38px;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  background-color: rgba(23, 69, 143, 1);
+  border: 2px solid rgba(23, 69, 143, 1);
+  box-shadow: inset 1px 1px 6px black;
+  border-radius: 5px;
+}
+
+.sidePanel .degrees :is(.celsius, .fahrenheit) {
+  z-index: 1;
+  width: 50%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: transparent;
+  border: 0;
+}
+.sidePanel .degrees .switch {
+  position: absolute;
+  z-index: 0;
+  width: 50%;
+  height: 95%;
+  left: 0;
+  background-color: rgb(134, 164, 228);
+  border-radius: inherit;
+  transition: 0.5s;
+}
+.sidePanel .degrees.celsius .switch {
+  box-shadow: 1px 1px 6px black, inset 1px 1px 4px black;
+  /* left: 0; */
+  transform: translateX(0);
+}
+.sidePanel .degrees.fahrenheit .switch {
+  box-shadow: -1px 1px 6px black, inset -1px 1px 4px black;
+  /* left: 50%; */
+  transform: translateX(100%);
+}
+.favLocationsSection {
+  position: relative;
+  /* background: rgba(105, 105, 105, 0.32); */
+}
+.AddIconAndPopUp {
+  display: inline-block;
+
+  position: relative;
+  transform: translate(8px, 3px);
+}
+.favoriteLocationsTitle,
+.addFavLocationText,
+.editFavLocationText {
+  margin-inline-start: 10px;
+}
+.addFavLocationText {
+  width: fit-content;
+  position: relative;
+  font-size: clamp(13px, 7vw, 15px);
+}
+.addIcon,
+.editIcon {
+  font-size: 20px;
+  transition: 0.5s;
+  cursor: pointer;
+}
+.editIcon {
+  transform: translate(8px, 3px);
+}
+.addIcon:hover,
+.editIcon:hover {
+  /* background-color: rgba(0, 155, 200, 0.5); */
+  background-color: rgb(114, 144, 248);
+  border-radius: 2px;
+}
+.popUp {
+  position: absolute;
+  bottom: 120%;
+  left: 50%;
+  transform: translateX(calc(-100% + 88% / 2));
+  margin-left: 100%;
+  width: fit-content;
+  white-space: nowrap;
+  font-size: 0.8em;
+  background-color: rgb(98, 123, 214);
+  border-radius: 5px;
+  padding: 0.7em;
+  opacity: 0;
+  transition: 0.5s;
+}
+.popUp.show {
+  opacity: 1;
+}
+.popUp::after {
+  content: "";
+  width: 20%;
+  height: 90%;
+  position: absolute;
+  bottom: -20%;
+  right: 10%;
+  left: 0;
+  margin-inline: auto;
+  z-index: -1;
+  background-color: inherit;
+  transform: rotate(45deg);
+}
+.favLocationContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-left: 0;
+  /* background-color: rgba(161, 161, 161, 0.5); */
+}
+.favLocation {
+  width: 75%;
+  height: 60px;
+  /* position: relative !important; */
+  background-color: rgb(114, 144, 248);
+  transform-style: preserve-3d;
+  display: flex;
+  align-items: center;
+  /* width: clamp(600px, 8vw, 200px); */
+  border: 1px solid rgb(69, 101, 218);
+  border-radius: 5px;
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.2);
+  margin-block: 10px;
+  cursor: pointer;
+  user-select: none;
+  z-index: 1000;
+}
+
+.favLocation * {
+  cursor: pointer;
+}
+.mainWeatherInfo {
+  width: calc(100% - 20%); /*operator + or - should always have space around*/
+  display: inline-flex;
+  /* min-height: 100px; */
+  height: 60px; /*100%*/
+  align-items: center;
+}
+
+.favWeatherTemp {
+  position: relative;
+  width: fit-content;
+  height: 100%;
+  margin: 0;
+  margin-inline-start: 2%;
+  padding-right: 2%;
+  /* border-image: linear-gradient(
+      to bottom,
+      rgba(216, 216, 216, 0.3) 0%,
+      rgb(15, 15, 15) 51%,
+      rgba(216, 216, 216, 0.3) 100%
+    )
+    2;
+  border-right: 2.7px solid; */
+}
+.favWeatherTemp .current {
+  font-size: 2.2em;
+  text-align: center;
+  margin: 0;
+  margin-inline-start: 6%;
+}
+.favWeatherHighLow {
+  white-space: nowrap;
+  font-size: 0.9em;
+}
+.verticalLine {
+  width: 2px;
+  height: 80%;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  right: 0;
+  margin-block: auto;
+  background: linear-gradient(
+    to bottom,
+    rgba(216, 216, 216, 0.3) 0%,
+    rgb(15, 15, 15) 51%,
+    rgba(216, 216, 216, 0.3) 100%
+  );
+  transform: translateX(150%);
+}
+.favWeatherIcon {
+  width: 20%;
+  font-size: 40px;
+  margin-inline-end: 10px;
+}
+.favLocationAndTime {
+  /* flex-shrink: 0;  allow width to work (overflow the container)*/
+  width: 60%;
+  height: 100%;
+  display: inline-flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: space-around;
+  margin-inline-start: 15px;
+  /* height: 60px; */
+}
+.favLocationAndTime p {
+  max-width: 100%;
+  font-size: 1em;
+  margin: 0;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+  /*width: 320px;  some width */
+}
+.favLocationAndTime p:first-child {
+  transform: translateX(-1%);
+}
+
+.favLocation :where(.deleteButton, .sortButton) {
+  position: absolute;
+  top: auto;
+  color: white;
+  padding: 8px 12px;
+  font-size: 20px;
+  border-radius: 5px;
+  transform: translateZ(
+    -1px
+  ); /*hide behind parent (use transform-style:preserve 3d on parent to work)*/
+  pointer-events: auto;
+}
+.deleteButton {
+  background-color: red;
+  right: 0;
+  transition: transform 0.2s ease-in-out;
+}
+.sortButton {
+  background: rgba(105, 105, 105, 0.32);
+  left: 0;
+  transition: transform 0.2s ease-in-out, background 0.5s;
+  cursor: grab;
+}
+.sortButton:hover {
+  background-color: rgba(105, 105, 105, 0.62);
+}
+.sortButton * {
+  cursor: grab;
+}
+
+.favLocationContainer.edit {
+}
+.favLocationContainer.edit .favLocation {
+}
+.favLocationContainer.edit .favLocation .deleteButton,
+.favLocation.isDragged .deleteButton {
+  transform: translate(105%);
+}
+.favLocationContainer.edit .favLocation .sortButton,
+.favLocation.isDragged .sortButton {
+  transform: translateX(-105%);
+}
+
+@media (max-width: 1400px) {
+  .sidePanel.active {
+    width: 35%;
+  }
+}
+@media (max-width: 1100px) {
+  .sidePanel.active {
+    width: 45%;
+  }
+  .sidePanel.active .poweredBy {
+    font-size: 0.9em;
+  }
+}
+@media (max-width: 750px) {
+  .sidePanel.active {
+    width: 65%;
+  }
+}
+
+@media (max-width: 520px) {
+  .sidePanel.active {
+    width: 100%;
+  }
+  .sidePanel.active .poweredBy {
+    font-size: 1em;
   }
   .optionsHamburger {
     z-index: 2;
+  }
+  :global(.App:has(.blur)) .optionsHamburger {
+    opacity: 1;
+    outline: none;
+  }
+}
+@media (max-width: 350px) {
+  .optionsHamburger {
+    width: 20px;
+    height: 20px;
+  }
+  .sidePanel.active .poweredBy {
+    font-size: 0.9em;
+    justify-content: flex-start;
   }
 }
