@@ -5,6 +5,8 @@
 body {
   margin: 0;
   padding: 0;
+  overflow-x: hidden;
+  
 }
 * {
   font-family: "Golos Text", sans-serif;
@@ -47,7 +49,7 @@ h6 {
 } */
 /*SearchBar.jsx*/
 
-.Body .Background video {
+.Background video {
   position: fixed;
   right: 0;
   bottom: 0;
@@ -57,7 +59,23 @@ h6 {
   object-fit: cover;
   transition: 0.5s;
 }
-
+.Loading {
+  height: 100vh;
+  width: 100vw;
+  position: absolute;
+  top: 0px;
+  z-index: 1000;
+  background-color: rgb(76, 112, 181);
+}
+.weatherCard {
+  background: rgba(216, 216, 216, 0.3);
+  border-radius: 20px;
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.2);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(216, 216, 216, 0.65);
+  outline: transparent;
+}
 .searchBarAndLocationContainer {
   display: flex;
   justify-content: center;
@@ -82,7 +100,7 @@ h6 {
   -webkit-backdrop-filter: blur(10px);
   border: 1px solid rgba(216, 216, 216, 0.65);
   outline: transparent;
-  transition: 1s;
+  transition: 0.6s;
 }
 
 .searchBarAndLocationContainer .searchBar input {
@@ -95,8 +113,7 @@ h6 {
   transform: translateX(-50%);
 }
 .searchBarAndLocationContainer .searchBar:hover,
-.searchBarAndLocationContainer .searchBar:has(input:hover),
-.searchBarAndLocationContainer .searchBar:has(input:focus),
+.searchBarAndLocationContainer .searchBar:has(input:is(:hover, :focus)),
 .searchBarAndLocationContainer .searchBar:has(input:not(:placeholder-shown)) {
   width: 100%;
   background: rgba(216, 216, 216, 0.4);
@@ -135,7 +152,7 @@ th {
 }
 td {
   /* padding-block-end: 5px; */
-  padding-block-end: 2%;
+  padding-block: 1%;
 }
 tr img {
   width: 40px;
@@ -174,15 +191,16 @@ td.countryFlag img {
 }
 
 @media (max-width: 520px) {
-  body:has(:global(.blur)) {
+  body:has(:global(#root .App:has(.blur))) {
     overflow: hidden; /*disable scrolling when options panel is open*/
+    background-color: red;
   }
   :global(.blur) {
     /* filter: blur(15px);
     opacity: 0.4; */
     height: 100vh; /*; use height 100vh and overflow hidden to disable scrolling when on side panel (mobile mostly)*/
   }
-  :global(.blur) *{
+  :global(.blur) * {
     z-index: -1;
   }
 }

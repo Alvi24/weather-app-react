@@ -19,12 +19,10 @@ const corsOptions = {
 };
 app.use(cors(corsOptions)); // Use this after the variable declaration
 app.post("/", (req, res) => {
-  console.log(req.body);
-  getLocations(req.body.input)
-    .then((data) => {
-      //req.body.searchText
-      res.send(JSON.stringify(data));
-    })
+  console.log("req", req.body);
+  getLocations
+    .then((returnedFunction) => returnedFunction(req.body.input))
+    .then((fetchedLocations) => res.send(JSON.stringify(fetchedLocations))) //req.body.searchText
     .catch((error) => {
       res
         .status("400")
@@ -33,73 +31,103 @@ app.post("/", (req, res) => {
     });
 });
 
-let browser, page;
-async function getLocations(searchText) {
-  const puppeteer = require("puppeteer");
-  if (!browser) {
-    browser = await puppeteer.launch(
-      //remove (the headless,defaultViewport and the curly brackets)property if you want the chromium page to not open
-      {
-        headless: false, //to make the browser headless
-        defaultViewport: false, // not use the default but
-      }
-    );
-    page = await browser.newPage();
-    await page.goto(
-      `https://www.meteoblue.com/en/weather/week/elbasan_albania_783263/`
-    );
-    await page.click("input[type='submit']");
-    await page.waitForSelector("input#gls");
-    await page.click("input#gls");
-  }
-  if (searchText == undefined) return;
-
-  await page.$eval(
-    "input#gls",
-    (el, searchText) => {
-      el.value = searchText;
-    },
-    searchText
+app.post("/big-data-api", (req, res) => {
+  const { lat, long } = req.body;
+  getLocationNameAndTimeZone(lat, long).then((data) =>
+    res.send(JSON.stringify(data))
   );
-  try {
+  //req.body.searchText
+});
+
+const getLocations = (async function () {
+  let initialSearchLocations;
+  const puppeteer = require("puppeteer");
+  const browser = await puppeteer.launch(
+    //remove (the headless,defaultViewport and the curly brackets)property if you want the chromium page to not open
+    {
+      headless: false, //to make the browser headless
+      defaultViewport: false, // not use the default but
+    }
+  );
+  const page = await browser.newPage();
+  await page.goto(
+    `https://www.meteoblue.com/en/weather/week/elbasan_albania_783263/`
+  );
+  await page.click("input[type='submit']");
+  await page.waitForSelector("input#gls");
+  await page.click("input#gls");
+
+  return async function (searchText) {
+    if (!searchText) return;
+
+    console.log("text", searchText);
+    await page.$eval(
+      "input#gls",
+      (el, searchText) => {
+        el.value = searchText;
+      },
+      searchText
+    );
     await page.waitForSelector(".search-results:not(.multiple,.lastvis-only)", {
       timeout: 1000,
     });
+    // try {
+    //   const prevSearch = await page.$eval(
+    //     ".search-results",
+    //     (el) => el?.textContent
+    //   );
 
-    await page.waitForTimeout(500);
-    const locationNames = await page.$$eval("tr.loc", (locations) => {
-      let array = locations.map((location) => {
-        return {
-          locationName: location.querySelector(".locationname-inside")
-            .innerHTML,
-          latitude: location.querySelector("td.lat").innerHTML,
-          longitude: location.querySelector("td.lon").innerHTML,
-          countryFlag: location.querySelector("img").src,
-          region: location.querySelector("td.admin1").innerHTML,
-        };
+    //   await page.waitForFunction(
+    //     //wait for search-results to change after typing
+    //     (prevSearch) => {
+    //       const locationsSearch =
+    //         document.querySelector(".search-results").textContent;
+    //       return locationsSearch !== prevSearch;
+    //     },
+    //     { timeout: 500 },
+    //     prevSearch
+    //   );
+    // } catch {}
+    
+    // await page.waitForTimeout(500); deprecated version
+    await new Promise((r) => setTimeout(r, 500));
+    try {
+      const locationNames = await page.$$eval("tr.loc", (locations) => {
+        let array = locations.map((location) => {
+          return {
+            locationName: location.querySelector(".locationname-inside")
+              .innerHTML,
+            latitude: +location.querySelector("td.lat").innerHTML,
+            longitude: +location.querySelector("td.lon").innerHTML,
+            countryFlag: location.querySelector("img").src,
+            region: location.querySelector("td.admin1").innerHTML,
+          };
+        });
+        return array;
       });
-      return array;
-    });
 
-    console.log("locations length", locationNames.length);
-    if (locationNames.length === 0) {
-      return Promise.reject();
+      console.log("locations length", locationNames.length);
+      locationNames.forEach((el, index) => console.log(index, el.locationName));
+      if (locationNames.length === 0) {
+        return Promise.reject();
+      }
+
+      return {
+        weatherData: await bigDataLocationName(locationNames),
+        prevSearchText: searchText,
+      };
+    } catch (err) {
+      console.log("rejectiong");
+      console.log(err);
+      return Promise.reject(err);
     }
+  };
+})(); // self invoke the function to open the chromium an weather page
 
-    return {
-      weatherData: await bigDataLocationName(locationNames),
-      prevSearchText: searchText,
-    };
-  } catch (err) {
-    console.log("rejectiong");
-    return Promise.reject(err);
-  }
-}
-
-async function getLocationName(lat, long) {
+async function getLocationNameAndTimeZone(lat, long) {
   return axios
     .get(
-      `https://api.bigdatacloud.net/data/reverse-geocode?localityLanguage=en&key=bdc_ee65efb4989c4d09a3f21513083e269d`, //server-side big data
+      `https://api.bigdatacloud.net/data/reverse-geocode?localityLanguage=en&key=${process.env.API_KEY_BIG_DATA}`, //server-side big data
       {
         params: {
           latitude: lat,
@@ -108,25 +136,34 @@ async function getLocationName(lat, long) {
       }
     )
     .then(({ data }) => {
+      let timezone;
+      data.localityInfo.informative.map((dataSet) => {
+        if (dataSet.description === "time zone") timezone = dataSet.name;
+      });
       return {
         location: data.city, // .city not .location
         region: data.principalSubdivision,
+        timezone,
       };
     });
 }
-function bigDataLocationName(data) {
+async function bigDataLocationName(data) {
   const promises = [];
   let cloneLocations = [...data];
   cloneLocations.forEach((location, index) => {
     promises.push(
-      getLocationName(location.latitude, location.longitude).then(
-        ({ location, region }) => {
-          let locationFromBigData = location,
-            regionFromBigData = region;
-          if (locationFromBigData !== "") {
-            cloneLocations[index].locationName = locationFromBigData;
-            cloneLocations[index].region = regionFromBigData;
-          }
+      getLocationNameAndTimeZone(location.latitude, location.longitude).then(
+        ({
+          location: locationFromBigData,
+          region: regionFromBigData,
+          timezone: timezoneFromBigData,
+        }) => {
+          cloneLocations[index].locationName =
+            locationFromBigData || cloneLocations[index].locationName;
+          cloneLocations[index].region =
+            regionFromBigData || cloneLocations[index].region;
+          cloneLocations[index].timezone =
+            timezoneFromBigData || cloneLocations[index].timezone;
         }
       )
     );
@@ -158,7 +195,7 @@ function filterDuplicateLocations(arrayOfLocations) {
       )
   );
 }
-getLocations(); // opening the chromium (first time)
+//getLocations(); // opening the chromium (first time)
 
 // const API_KEY = process.env.API_KEY_BIG_DATA;
 // const URL = process.env.URL;
@@ -169,5 +206,5 @@ getLocations(); // opening the chromium (first time)
 //   });
 // });
 app.listen(process.env.PORT, () => {
-  console.log("server up and running");
+  console.log(`server up and running at port ${process.env.PORT}`);
 });

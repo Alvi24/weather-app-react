@@ -11,8 +11,8 @@
   background: rgba(216, 216, 216, 0.3);
   border-radius: 16px;
   box-shadow: 0 4px 30px rgba(0, 0, 0, 0.2);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
+  /* backdrop-filter: blur(8px);  backdrop-filter blur affects performance
+  -webkit-backdrop-filter: blur(8px); */
   border: 1px solid rgba(216, 216, 216, 0.65);
   cursor: pointer;
 }
@@ -85,7 +85,8 @@
 }
 @media (max-width: 520px) {
   .dailyContainer {
-    height: 80vh;
+    height: 600px;
+    /* height: 80vh; */
     /* transform: translateY(20%); */
     margin-block-start: 30px;
     flex-direction: column;

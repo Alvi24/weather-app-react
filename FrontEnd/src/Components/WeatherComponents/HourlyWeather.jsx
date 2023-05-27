@@ -1,12 +1,11 @@
-import React, { useMemo, useContext, useEffect, useRef } from "react";
-import { MyContext } from "./Body";
-import { configContext } from "../App";
+import React, { useMemo, useEffect, useRef, useContext } from "react";
+import { MobileViewContext } from "../Body";
+
 import {
-  convertCelsiusToFahrenheit,
   weatherCodeToIcon,
   externalTooltip as costumTooltip,
-} from "../API.mjs";
-import styles from "../styles/HourlyWeather.module.css";
+} from "../../Utilities.mjs";
+import styles from "../../styles/HourlyWeather.module.css";
 import { Line } from "react-chartjs-2";
 import { Chart, registerables } from "chart.js";
 
@@ -17,13 +16,14 @@ export default function HourlyWeather({
   visible,
   removeVisible,
 }) {
-  const mobileView = useContext(MyContext);
-  const { configObject } = useContext(configContext);
-  console.log(configObject); // value from App.js
+  const mobileView = useContext(MobileViewContext);
+
   let prevHourlyWeather = useRef(null);
-  console.log("hello");
   useEffect(() => {
-    if (!mobileView) return;
+    if (!mobileView) {
+      prevHourlyWeather.current = {};
+      return;
+    }
     function handleClick(e) {
       if (
         !document.querySelector(`.${styles.HourlyContainer}`).contains(e.target)
@@ -50,15 +50,10 @@ export default function HourlyWeather({
         labels: hourlyWeather.time,
         datasets: [
           {
-            data:
-              configObject.degree === "celsius"
-                ? hourlyWeather.temp
-                : hourlyWeather.temp.map((temp) =>
-                    convertCelsiusToFahrenheit(temp)
-                  ),
+            data: hourlyWeather.temp,
             label: ``,
             fill: false,
-            borderColor:"grey",
+            borderColor: "grey",
             lineTension: 0.2,
           },
         ],
@@ -82,12 +77,7 @@ export default function HourlyWeather({
               },
               label: function (context) {
                 return {
-                  temp:
-                    configObject.degree === "celsius"
-                      ? hourlyWeather.temp[context.dataIndex]
-                      : convertCelsiusToFahrenheit(
-                          hourlyWeather.temp[context.dataIndex]
-                        ),
+                  temp: hourlyWeather.temp[context.dataIndex],
                   weathercode: weatherCodeToIcon(
                     hourlyWeather.weathercode[context.dataIndex]
                   ),
@@ -132,7 +122,7 @@ export default function HourlyWeather({
         // animation: false, // set animation to false to achieve a smoother animation
       },
     };
-  }, [hourlyWeather, mobileView, configObject]);
+  }, [hourlyWeather, mobileView]);
   return (
     <div
       className={`${styles["HourlyContainer"]}  ${

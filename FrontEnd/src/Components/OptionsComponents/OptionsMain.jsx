@@ -1,12 +1,17 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import OptionsHamburger from "./OptionsHamburger";
 import OptionsSidePanel from "./OptionsSidePanel";
 import styles from "../../styles/Options.module.css";
 export default function Options() {
   const [appear, setAppear] = useState(false);
   const OptionsRef = useRef(null);
-  function AppearSwap() {
-    setAppear(!appear);
+  const isElementDragged = useRef(false);
+  const updateIsElementDragged = useCallback((isDragged) => {
+    isElementDragged.current = isDragged;
+    console.log("DRAG", isElementDragged.current);
+  }, []);
+  const AppearSwap = useCallback(() => {
+    setAppear((prevState) => !prevState);
     document
       .querySelector(`.App > :not(.${styles.Options})`)
       .classList.add("blur");
@@ -17,29 +22,35 @@ export default function Options() {
         .querySelector(`.App > :not(.${styles.Options})`)
         .classList.remove("blur");
     }
-  }
+  }, [appear]);
 
   useEffect(() => {
     if (!appear) return;
+
     function effectClick(e) {
-      if (!OptionsRef.current.contains(e.target)) {
+      if (!OptionsRef.current.contains(e.target) && !isElementDragged.current) {
         console.log(e.target.nodeName);
+
         document
           .querySelector(`.App > :not(.${styles.Options})`)
           .classList.remove("blur");
         setAppear(false);
       }
     }
-    document.addEventListener("click", effectClick);
+    document.addEventListener("click", effectClick, { capture: true });
     return () => {
       console.log("event listener removed");
-      document.removeEventListener("click", effectClick);
+      document.removeEventListener("click", effectClick, { capture: true });
     };
-  });
+  }, [appear]);
   return (
     <div ref={OptionsRef} className={styles.Options}>
       <OptionsHamburger onAppear={AppearSwap} />
-      <OptionsSidePanel appearHandle={appear} />
+      <OptionsSidePanel
+        appear={appear}
+        changeIsElementDragged={updateIsElementDragged}
+        isDragging={isElementDragged}
+      />
     </div>
   );
 }

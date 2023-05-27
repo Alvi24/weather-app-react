@@ -18,7 +18,7 @@
   /* box-shadow: 0 0 8px 8px rgb(100, 189, 219) inset; */ /*faded edges*/
   cursor: pointer;
 }
-.currentWeather *{
+.currentWeather * {
   cursor: pointer;
 }
 .mainWeatherInfo {
@@ -26,6 +26,7 @@
   display: inline-flex;
   min-height: 100px;
   align-items: center;
+  
 }
 .mainWeatherInfo p {
   display: inline-block;
@@ -42,6 +43,7 @@
     )
     2;
   border-right: 2.7px solid;
+  
   margin-inline-start: 8%;
 }
 .currentWeatherIcon {
@@ -50,6 +52,7 @@
 }
 .currentLocationAndTime {
   /* flex-shrink: 0;  allow width to work (overflow the container)*/
+
   display: inline-flex;
   flex-direction: column;
   align-items: flex-start;
@@ -63,7 +66,7 @@
   text-overflow: ellipsis;
   white-space: nowrap;
   overflow: hidden;
-  width: 320px; /* some width */
+  max-width: 100%;
 }
 .currentLocationAndTime p:first-child {
   transform: translateX(-1%);
@@ -83,9 +86,7 @@
   .currentWeatherTemp {
     margin-inline-start: 5%;
   }
-  .currentLocationAndTime p {
-    font-size: 1.5em;
-  }
+
 }
 @media (max-width: 580px) {
   .currentWeather {
@@ -96,7 +97,7 @@
     font-size: 4rem;
   }
   .currentLocationAndTime p {
-    font-size: 1.2em;
+   
     width: 210px;
   }
 }
@@ -113,9 +114,7 @@
   .currentLocationAndTime {
     justify-content: space-evenly;
   }
-  .currentLocationAndTime p {
-    font-size: 1.2em;
-  }
+  
   .currentWeatherTemp {
     font-size: 3em;
     margin-inline-start: 0;

@@ -1,6 +1,6 @@
 // npm run dev
 import React, { useState } from "react";
-import { fetchLocations } from "../API.mjs";
+import { fetchLocations } from "../Utilities.mjs";
 import styles from "../styles/App.module.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faMagnifyingGlass } from "@fortawesome/free-solid-svg-icons";
@@ -8,25 +8,41 @@ export default function SearchBar(props) {
   let [locations, setLocations] = useState([]);
 
   console.log("SearchBar rendered");
-  function getLocations(e) {
-    console.log(e.target.value !== "" ? e.target.value : "empty");
-    if (e.target.value.length < 2 && locations.length !== 0) {
-      console.log("remove");
-      setLocations([]);
-      return;
-    }
-
+  const debounce = (callbackFunction, delay = 250) => {
+    let timeout;
+    return (...args) => {
+      clearTimeout(timeout);
+      timeout = setTimeout(() => {
+        callbackFunction(...args);
+      }, delay);
+    };
+  };
+  const debouncedFetchLocation = debounce((e) => {
+    console.log("start", Date());
     fetchLocations(e)
       .then(({ weatherData, prevSearchText }) => {
-        if (e.target.value.length >= 2 && e.target.value === prevSearchText) {
+        console.log("end", Date());
+        if (
+          e.target.value.trim().length >= 2 &&
+          e.target.value === prevSearchText
+        ) {
           //when the searched text and the current searched text are equal set data
           console.log("target value length", e.target.value.length);
           setLocations(weatherData);
         }
       })
       .catch((errotText) => {
-        if (e.target.value.length >= 2) setLocations(errotText);
+        if (e.target.value.trim().length >= 2) setLocations(errotText);
       });
+  }, 150);
+
+  function getLocations(e) {
+    console.log(e.target.value !== "" ? e.target.value : "empty");
+    if (e.target.value.trim().length < 2) {
+      if (locations.length !== 0) setLocations([]);
+      return;
+    }
+    debouncedFetchLocation(e);
   }
   return (
     <div className={styles.searchBarAndLocationContainer}>
@@ -37,9 +53,7 @@ export default function SearchBar(props) {
           id="searchBar"
           placeholder=" "
           autoComplete="off"
-          onChange={(e) => {
-            getLocations(e);
-          }}
+          onChange={(e) => getLocations(e)}
         />
         <FontAwesomeIcon
           icon={faMagnifyingGlass}
@@ -58,13 +72,21 @@ export default function SearchBar(props) {
               <tr
                 className={styles.location}
                 key={location.latitude}
-                onClick={() =>
-                  props.handleLocationClick(
-                    location.latitude,
-                    location.longitude,
-                    location.locationName
-                  )
-                }
+                onClick={() => {
+                  console.log(location);
+                  const {
+                    latitude: lat,
+                    longitude: long,
+                    locationName,
+                    timezone: timeZone,
+                  } = location;
+                  props.handleLocationClick({
+                    lat,
+                    long,
+                    locationName,
+                    timeZone,
+                  });
+                }}
               >
                 <td className={styles.countryFlag}>
                   <img src={location.countryFlag} alt="no flag found" />

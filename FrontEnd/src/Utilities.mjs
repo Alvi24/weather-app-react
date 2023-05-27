@@ -2,28 +2,37 @@
 import axios from "axios";
 console.log(process.env);
 
-async function WeatherData(
+async function fetchWeatherData(
   latitude,
   longitude,
-  timezone,
-  locationNameFromBodyComponent = undefined
+  locationNameFromSearchedLocation,
+  timeZone,
+  configObject
 ) {
+  console.log(timeZone);
   return axios
 
     .get(
-      `  https://api.open-meteo.com/v1/forecast?&hourly=temperature_2m,weathercode&daily=weathercode,temperature_2m_max,temperature_2m_min,sunrise,sunset&current_weather=true&timeformat=unixtime&timezone=${timezone}`,
+      `  https://api.open-meteo.com/v1/forecast?&hourly=temperature_2m,weathercode&daily=weathercode,temperature_2m_max,temperature_2m_min,sunrise,sunset&current_weather=true&timeformat=unixtime`,
       {
         params: {
-          latitude: latitude,
-          longitude: longitude,
+          latitude,
+          longitude,
+          temperature_unit: configObject.degree,
+          timezone: "Europe/Berlin", //auto
         },
       }
     )
     .then(async ({ data }) => {
       return {
-        locationName: locationNameFromBodyComponent
-          ? locationNameFromBodyComponent
-          : await getLocationName(latitude, longitude),
+        locationName:
+          locationNameFromSearchedLocation ??
+          (await getLocationNameAndTimeZone(latitude, longitude)),
+        coords: {
+          lat: latitude, //+ converts string number to number
+          lon: longitude,
+        },
+        timeZone: timeZone,
         currentWeather: handleCurrentWeatherData(data),
         dailyWeather: handleDailyWeatherData(data),
         hourlyWeather: handleHourlyWeatherData(data),
@@ -31,18 +40,13 @@ async function WeatherData(
     });
 }
 
-async function getLocationName(lat, long) {
+async function getLocationNameAndTimeZone(latitude, longitude) {
   return axios
-    .get(
-      `https://api.bigdatacloud.net/data/reverse-geocode?localityLanguage=en&key=${process.env.REACT_APP_API_KEY}`, //server-side big data
-      {
-        params: {
-          latitude: lat,
-          longitude: long,
-        },
-      }
-    )
-    .then(({ data }) => data.city);
+    .post(process.env.REACT_APP_URL + "big-data-api", {
+      lat: latitude,
+      long: longitude,
+    })
+    .then(({ data }) => data.location);
 }
 
 function handleCurrentWeatherData({ current_weather }) {
@@ -182,9 +186,41 @@ async function fetchLocations(e) {
       return Promise.reject("No location found"); //or use throw
     });
 }
-function convertCelsiusToFahrenheit(cTemp) {
-  return Math.round((cTemp * 9) / 5 + 32);
+function convertTemperature(temp, degree) {
+  return degree === "celsius"
+    ? Math.round(((temp - 32) * 5) / 9) //celsius
+    : Math.round((temp * 9) / 5 + 32); //fahrenheit
 }
+
+async function updateStoredFavLocations(savedFavLocations, configObject) {
+  // if (localStorage.getItem("favoriteLocations") === "undefined") return [];
+  // const savedFavLocations = [
+  //   ...JSON.parse(localStorage.getItem("favoriteLocations")),
+  // ];
+  console.log(savedFavLocations);
+  const updatedFavLocations = savedFavLocations.map((data) =>
+    fetchWeatherData(
+      data.coords.lat,
+      data.coords.lon,
+      data.locationName,
+      data.timeZone,
+      configObject
+    )
+  );
+  console.log(updatedFavLocations);
+  return Promise.all(updatedFavLocations).then((favLocations) => favLocations);
+}
+// function getTimeZone(lat, lon) {
+//   return fetch(
+//     `https://api.geoapify.com/v1/geocode/reverse?lat=${lat}&lon=${lon}&format=json&apiKey=${process.env.REACT_APP_GEOAPIFY_TIME_ZONE_API_KEY}`
+//   )
+//     .then((resp) => resp.json())
+//     .then(({ results }) => {
+//       if (results.length) {
+//         return results[0].timezone.name;
+//       }
+//     });
+// }
 function weatherCodeToIcon(weatherCode) {
   switch (weatherCode) {
     case 0:
@@ -209,6 +245,39 @@ function weatherCodeToIcon(weatherCode) {
       //invalid weatherCode
       return "fa-sun";
   }
+}
+function updateWeather(weatherData, configObject) {
+  const { currentWeather, dailyWeather, hourlyWeather } = weatherData;
+  const { degree } = configObject;
+  
+  // for (const propName in configObject) {
+  //   console.log(propName);
+  // }
+  const updatedCurrentWeather = {
+    ...currentWeather,
+    temperature: convertTemperature(currentWeather.temperature, degree),
+  };
+
+  const updatedDailyWeather = dailyWeather.map((day) => {
+    return {
+      ...day,
+      maxTemp: convertTemperature(day.maxTemp, degree),
+      minTemp: convertTemperature(day.minTemp, degree),
+    };
+  });
+  const updatedHourlyWeather = hourlyWeather.map((hour) => {
+    return {
+      ...hour,
+      temp: hour.temp.map((temp) => convertTemperature(temp, degree)),
+    };
+  });
+  console.log("weather updated");
+  return {
+    ...weatherData,
+    currentWeather: updatedCurrentWeather,
+    dailyWeather: updatedDailyWeather,
+    hourlyWeather: updatedHourlyWeather,
+  };
 }
 const getOrCreateTooltip = (chart) => {
   let tooltipEl = chart.canvas.parentNode.querySelector("div");
@@ -256,11 +325,12 @@ function externalTooltip(context) {
       weather.temp + `° <i class="fa ${weather.weathercode}"></i>`;
   }
 }
+
 export {
-  WeatherData,
+  fetchWeatherData,
   fetchLocations,
-  getLocationName,
-  convertCelsiusToFahrenheit,
+  updateWeather,
+  updateStoredFavLocations,
   weatherCodeToIcon,
   externalTooltip,
 };
