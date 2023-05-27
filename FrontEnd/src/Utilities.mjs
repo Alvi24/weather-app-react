@@ -10,6 +10,7 @@ async function fetchWeatherData(
   configObject
 ) {
   console.log(timeZone);
+  console.log(configObject);
   return axios
 
     .get(
@@ -34,8 +35,8 @@ async function fetchWeatherData(
         },
         timeZone: timeZone,
         currentWeather: handleCurrentWeatherData(data),
-        dailyWeather: handleDailyWeatherData(data),
-        hourlyWeather: handleHourlyWeatherData(data),
+        dailyWeather: handleDailyWeatherData(data, configObject.timeFormat),
+        hourlyWeather: handleHourlyWeatherData(data, configObject.timeFormat),
       };
     });
 }
@@ -58,10 +59,10 @@ function handleCurrentWeatherData({ current_weather }) {
     windDirection: current_weather.winddirection,
   };
 }
-function convertUnixTimeToNormalTime(arrayOfUnixTime) {
-  const options = { hour: "numeric" };
+function convertUnixTimeToNormalTime(arrayOfUnixTime, timeFormat) {
+  const options = { hour: "numeric",minutes:"numeric" };
   return arrayOfUnixTime.map((time) =>
-    Intl.DateTimeFormat("en-US", options).format(time * 1000)
+    Intl.DateTimeFormat(timeFormat, options).format(time * 1000)
   );
   //new Date(el * 1000).getHours()
   // new Date(el * 1000).toLocaleTimeString("it-IT")
@@ -89,7 +90,7 @@ function convertUnixTimeToDay(unixTime) {
   const day = dayOfWeek[new Date(unixTime * 1000).getDay()];
   return day;
 }
-function handleDailyWeatherData({ daily }) {
+function handleDailyWeatherData({ daily }, timeFormat) {
   let {
     sunrise: sunRise,
     sunset: sunSet,
@@ -99,8 +100,8 @@ function handleDailyWeatherData({ daily }) {
     time,
   } = daily;
   let dates = time.map((unixTime) => new Date(unixTime * 1000).getDate());
-  sunRise = convertUnixTimeToNormalTime(sunRise);
-  sunSet = convertUnixTimeToNormalTime(sunSet);
+  sunRise = convertUnixTimeToNormalTime(sunRise, timeFormat);
+  sunSet = convertUnixTimeToNormalTime(sunSet, timeFormat);
   maxTemp = roundTemperatureNumber(maxTemp);
   minTemp = roundTemperatureNumber(minTemp);
   weatherCodeDaily = weatherCodeDaily.map((el) => Math.round(el / 10) * 10);
@@ -129,7 +130,7 @@ function handleDailyWeatherData({ daily }) {
   return days;
 }
 
-function handleHourlyWeatherData({ hourly }) {
+function handleHourlyWeatherData({ hourly }, timeFormat) {
   let hourlyLimit = hourly.time.length;
   let {
     time: timeHourly,
@@ -140,7 +141,7 @@ function handleHourlyWeatherData({ hourly }) {
   let hourlyIterator = 0;
   let dateHourly;
   tempHourly = roundTemperatureNumber(tempHourly);
-  timeHourly = convertUnixTimeToNormalTime(timeHourly);
+  timeHourly = convertUnixTimeToNormalTime(timeHourly, timeFormat);
   weatherCodeHourly = weatherCodeHourly.map((el) => Math.round(el / 10) * 10);
 
   for (let i = 24; i <= hourlyLimit; i += 24) {
@@ -246,10 +247,9 @@ function weatherCodeToIcon(weatherCode) {
       return "fa-sun";
   }
 }
-function updateWeather(weatherData, configObject) {
+function updateWeatherDegreeChanged(weatherData, degree) {
   const { currentWeather, dailyWeather, hourlyWeather } = weatherData;
-  const { degree } = configObject;
-  
+
   // for (const propName in configObject) {
   //   console.log(propName);
   // }
@@ -278,6 +278,39 @@ function updateWeather(weatherData, configObject) {
     dailyWeather: updatedDailyWeather,
     hourlyWeather: updatedHourlyWeather,
   };
+}
+function updateWeatherTimeFormatChanged(weatherData, timeFormat) {
+  const { dailyWeather, hourlyWeather } = weatherData;
+  const updatedDailyWeather = dailyWeather.map((day) => {
+    return {
+      ...day,
+      //sunRise:function to convert timeFormat,
+      //sunSet:function to convert timeFormat
+    };
+  });
+  const updatedHourlyWeather = hourlyWeather.map((hour) => {
+    return {
+      ...hour,
+      temp: hour.time.map((time) => "dummy"), //function to convert time format(timeFormat)),
+    };
+  });
+}
+console.log("8 PM"[1]);
+function updateWeather(weatherData, configObject, propertyChangedName) {
+  const { currentWeather, dailyWeather, hourlyWeather } = weatherData;
+  const { degree, timeFormat } = configObject;
+
+  // for (const propName in configObject) {
+  //   console.log(propName);
+  // }
+  switch (propertyChangedName) {
+    case "degree":
+      return updateWeatherDegreeChanged(weatherData, degree);
+    case "timeFormat":
+    // updateWeatherTimeFormatChanged(weatherData,timeFormat);
+    default:
+      break;
+  }
 }
 const getOrCreateTooltip = (chart) => {
   let tooltipEl = chart.canvas.parentNode.querySelector("div");

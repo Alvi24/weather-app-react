@@ -1,8 +1,11 @@
-import { useEffect, useMemo, useState } from "react";
+import { useContext, useEffect, useMemo, useState } from "react";
+import { configContext } from "../App";
 
 export default function Time({
   timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone, //user (default) timezone
 }) {
+  const [configObject] = useContext(configContext);
+
   const [time, setTime] = useState(new Date());
   useEffect(() => {
     const timer = setInterval(() => {
@@ -19,7 +22,9 @@ export default function Time({
       minute: "numeric",
       timeZone: timeZone,
     };
-    return new Intl.DateTimeFormat("en-GB", options).format(time);
+    return new Intl.DateTimeFormat(configObject.timeFormat, options).format(
+      time
+    ); //"en-GB"
   }, [time, timeZone]);
   return <>{formattedTime}</>;
 }

@@ -28,9 +28,17 @@ function App() {
   const [configObject, setConfigObject] = useState(
     JSON.parse(localStorage.getItem("configObject")) || {
       degree: "celsius",
+      timeFormat: "en-US", //"en-GB"
     }
   );
+  // localStorage.clear("configObject");
   const [favoriteLocations, setFavoriteLocations] = useState([]);
+  const currentWeatherData = useRef(null); //holds the current weather data if is needed do add to favorites
+  const [clickedFavoriteLocationData, setClickedFavoriteLocationData] =
+    useState(null);
+  const [updatedCurrentWeather, setUpdatedCurrentWeather] = useState();
+  const firstRender = useRef(true);
+  const prevConfigObject = useRef(configObject);
   useEffect(() => {
     const storedFavLocations = JSON.parse(
       localStorage.getItem("favoriteLocations")
@@ -50,11 +58,6 @@ function App() {
       );
     }
   }, [favoriteLocations]);
-  const currentWeatherData = useRef(null); //holds the current weather data if is needed do add to favorites
-  const [clickedFavoriteLocationData, setClickedFavoriteLocationData] =
-    useState(null);
-  const firstRender = useRef(true);
-  const prevConfigObject = useRef(configObject);
   function handleClickFavoriteLocationData(clickedFavLocationDataParam) {
     console.log(
       currentWeatherData.current,
@@ -104,18 +107,26 @@ function App() {
       firstRender.current = false;
       return;
     }
-    let propertyNameChanged;
+    let propertyChangedName;
     localStorage.setItem("configObject", JSON.stringify(configObject));
+    console.log(configObject, prevConfigObject);
     for (const propName in configObject) {
-      if (configObject[propName] !== prevConfigObject[propName])
-        propertyNameChanged = propName;
+      if (configObject[propName] !== prevConfigObject.current[propName])
+        propertyChangedName = propName;
     }
-    console.log(propertyNameChanged);
+    prevConfigObject.current = { ...configObject };
+    console.log("prop", propertyChangedName);
     const updatedFavoriteLocations = favoriteLocations.map(
       (favoriteLocationData) =>
-        updateWeather(favoriteLocationData, configObject)
+        updateWeather(favoriteLocationData, configObject, propertyChangedName)
     );
-
+    setUpdatedCurrentWeather(
+      updateWeather(
+        currentWeatherData.current,
+        configObject,
+        propertyChangedName
+      )
+    );
     setFavoriteLocations(updatedFavoriteLocations);
   }, [configObject]);
   // const favoriteLocationsContextProviderValue = useMemo(() => {
@@ -153,6 +164,7 @@ function App() {
           <MemoizedBody
             addCurrentWeather={setCurrentWeatherData}
             favLocationData={clickedFavoriteLocationData}
+            updatedCurrentWeather={updatedCurrentWeather}
             // addWeatherFromFavLocation={setFavLocationOnBody}
           />
         </favoriteLocationsContext.Provider>

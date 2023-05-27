@@ -21,7 +21,11 @@ const MemoizedCurrentWeather = React.memo(CurrentWeather);
 const MemoizedDailyWeather = React.memo(DailyWeather);
 const MemoizedHourlyWeather = React.memo(HourlyWeather);
 
-export default function Body({ addCurrentWeather, favLocationData }) {
+export default function Body({
+  addCurrentWeather,
+  favLocationData,
+  updatedCurrentWeather,
+}) {
   console.log("body");
 
   const [configObject] = useContext(configContext);
@@ -95,13 +99,15 @@ export default function Body({ addCurrentWeather, favLocationData }) {
       callFetchWeatherData({ lat, long, timeZone });
     }
   }, []);
+  // useEffect(() => {
+  //   if (weatherData) {
+  //     const updatedWeatherData = updateWeather(weatherData, configObject);
+  //     setFetchedWeatherData(updatedWeatherData);
+  //   }
+  // }, [configObject]);
   useEffect(() => {
-    if (weatherData) {
-      const updatedWeatherData = updateWeather(weatherData, configObject);
-      setFetchedWeatherData(updatedWeatherData);
-    }
-  }, [configObject]);
-
+    if (updatedCurrentWeather) setFetchedWeatherData(updatedCurrentWeather);
+  }, [updatedCurrentWeather]);
   const handleWeatherClick = useCallback(
     (date) => {
       if (date === currentWeather.date) setHourlyWeatherProp(hourlyWeather[0]);
