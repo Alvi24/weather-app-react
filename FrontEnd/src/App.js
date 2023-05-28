@@ -28,7 +28,7 @@ function App() {
   const [configObject, setConfigObject] = useState(
     JSON.parse(localStorage.getItem("configObject")) || {
       degree: "celsius",
-      timeFormat: "en-US", //"en-GB"
+      timeFormat: "en-GB", //"en-GB"
     }
   );
   // localStorage.clear("configObject");

@@ -94,17 +94,29 @@
 }
 .sidePanel section:not(.poweredBy) {
 }
+
 .configSection > * {
   margin-inline-start: 10px;
 }
+.toggleContainer {
+  width: 250px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
 .degreeTitle {
+  display: inline-block;
+}
+.toggle {
+  display: inline-flex;
+  width: fit-content;
+  background-color: red;
 }
 .sidePanel .degrees {
   position: relative;
   width: 100px;
   /* height: 5%; */
   height: 38px;
-  display: flex;
   justify-content: space-around;
   align-items: center;
   background-color: rgba(23, 69, 143, 1);
@@ -113,7 +125,7 @@
   border-radius: 5px;
 }
 
-.sidePanel .degrees :is(.celsius, .fahrenheit) {
+.sidePanel .degrees :is(.left, .right) {
   z-index: 1;
   width: 50%;
   height: 100%;
@@ -123,7 +135,7 @@
   background-color: transparent;
   border: 0;
 }
-.sidePanel .degrees .switch {
+.sidePanel .toggle .switch {
   position: absolute;
   z-index: 0;
   width: 50%;
@@ -133,12 +145,12 @@
   border-radius: inherit;
   transition: 0.5s;
 }
-.sidePanel .degrees.celsius .switch {
+.sidePanel .toggle.left .switch {
   box-shadow: 1px 1px 6px black, inset 1px 1px 4px black;
   /* left: 0; */
   transform: translateX(0);
 }
-.sidePanel .degrees.fahrenheit .switch {
+.sidePanel .toggle.right .switch {
   box-shadow: -1px 1px 6px black, inset -1px 1px 4px black;
   /* left: 50%; */
   transform: translateX(100%);
@@ -327,6 +339,8 @@
     -1px
   ); /*hide behind parent (use transform-style:preserve 3d on parent to work)*/
   pointer-events: auto;
+  outline: none;
+  border: none;
 }
 .deleteButton {
   background-color: red;
@@ -338,6 +352,8 @@
   left: 0;
   transition: transform 0.2s ease-in-out, background 0.5s;
   cursor: grab;
+  box-sizing: border-box;
+  width: 41px;
 }
 .sortButton:hover {
   background-color: rgba(105, 105, 105, 0.62);

@@ -60,7 +60,7 @@ function handleCurrentWeatherData({ current_weather }) {
   };
 }
 function convertUnixTimeToNormalTime(arrayOfUnixTime, timeFormat) {
-  const options = { hour: "numeric",minutes:"numeric" };
+  const options = { hour: "numeric" };
   return arrayOfUnixTime.map((time) =>
     Intl.DateTimeFormat(timeFormat, options).format(time * 1000)
   );
@@ -192,7 +192,47 @@ function convertTemperature(temp, degree) {
     ? Math.round(((temp - 32) * 5) / 9) //celsius
     : Math.round((temp * 9) / 5 + 32); //fahrenheit
 }
+function convertTime(time, timeFormat) {
+  let hour = timeFormat === "en-GB" ? +time.slice(0, time.indexOf(" ")) : +time;
 
+  switch (timeFormat) {
+    case "en-GB":
+      if (time.slice(-2) === "PM" && hour < 12) hour += 12;
+      else if (time.slice(-2) === "AM" && hour < 10) hour = `0${hour}`;
+      if (time === "12 AM") hour = "00";
+      return hour;
+    case "en-US":
+      if (hour === +"00") return "12 AM";
+      if (hour === 12) return "12 PM";
+      return hour > 12 ? `${hour - 12} PM` : `${hour} AM`;
+    default:
+      break;
+  }
+}
+// function convertTime(time, timeFormat) {
+//   // console.log("time before", time);
+//
+//     let hour = +time.slice(0, time.indexOf(":"));
+//     let minutes = time.slice(time.indexOf(":") + 1);
+//   // console.log(hour);
+//   if (timeFormat === "en-GB") {
+//     console.log(time.slice(-2));
+//     if (time.slice(-2) == "PM") hour += 12;
+//     if (time == "12 AM") hour = 0;
+//     time = time.slice(0, -2);
+//     return `${hour}:${minutes}`;
+//   } else {
+//     //en-US
+//     let timePeriod = "AM";
+//     if (hour > 12) {
+//       timePeriod = "PM";
+//       hour = +hour;
+//       hour -= 12;
+//     }
+
+//     return `${hour}:${minutes} ${timePeriod}`;
+//   }
+// }
 async function updateStoredFavLocations(savedFavLocations, configObject) {
   // if (localStorage.getItem("favoriteLocations") === "undefined") return [];
   // const savedFavLocations = [
@@ -284,30 +324,35 @@ function updateWeatherTimeFormatChanged(weatherData, timeFormat) {
   const updatedDailyWeather = dailyWeather.map((day) => {
     return {
       ...day,
-      //sunRise:function to convert timeFormat,
-      //sunSet:function to convert timeFormat
+      sunRise: convertTime(day.sunRise, timeFormat),
+      sunSet: convertTime(day.sunSet, timeFormat),
     };
   });
   const updatedHourlyWeather = hourlyWeather.map((hour) => {
     return {
       ...hour,
-      temp: hour.time.map((time) => "dummy"), //function to convert time format(timeFormat)),
+      time: hour.time.map((time) => convertTime(time, timeFormat)),
     };
   });
+  return {
+    ...weatherData,
+    dailyWeather: updatedDailyWeather,
+    hourlyWeather: updatedHourlyWeather,
+  };
 }
-console.log("8 PM"[1]);
-function updateWeather(weatherData, configObject, propertyChangedName) {
-  const { currentWeather, dailyWeather, hourlyWeather } = weatherData;
-  const { degree, timeFormat } = configObject;
 
+function updateWeather(weatherData, configObject, propertyChangedName) {
+  const { degree, timeFormat } = configObject;
+  console.log(timeFormat);
   // for (const propName in configObject) {
   //   console.log(propName);
   // }
+  console.log(propertyChangedName);
   switch (propertyChangedName) {
     case "degree":
       return updateWeatherDegreeChanged(weatherData, degree);
     case "timeFormat":
-    // updateWeatherTimeFormatChanged(weatherData,timeFormat);
+      return updateWeatherTimeFormatChanged(weatherData, timeFormat);
     default:
       break;
   }

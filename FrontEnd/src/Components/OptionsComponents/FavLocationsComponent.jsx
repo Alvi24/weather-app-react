@@ -19,8 +19,8 @@ import Time from "../Time";
 const MemoizedPopUp = React.memo(PopUp, ontransitionend);
 const MemoizedTime = React.memo(Time);
 
-export default function FavLocationsComponent({ changeIsElementDragged }) {
-  const [isDragDisabled, setIsDragDisabled] = useState(true);
+export default function FavLocationsComponent({ setIsElementDragged }) {
+  const [isDragEnabled, setIsDragEnabled] = useState(false);
   const [popUp, setPopUp] = useState();
   const renderDraggable = useDraggableInPortal();
   const {
@@ -29,10 +29,8 @@ export default function FavLocationsComponent({ changeIsElementDragged }) {
     onFavLocationClickAddFavLocationData,
   } = useContext(favoriteLocationsContext);
 
-  console.log("fav render");
-
   function Reorder(result) {
-    changeIsElementDragged(false);
+    setIsElementDragged(false);
     if (!result.destination) return;
     const reorderedElements = [...favoriteLocations];
     const [movedElement] = reorderedElements.splice(result.source.index, 1);
@@ -54,7 +52,7 @@ export default function FavLocationsComponent({ changeIsElementDragged }) {
     const favLocationContainer = document.querySelector(
       `.${styles.favLocationContainer}`
     );
-    setIsDragDisabled(!isDragDisabled);
+    setIsDragEnabled(!isDragEnabled);
     if (favLocationContainer.classList.contains(styles.edit))
       favLocationContainer.classList.remove(styles.edit);
     else favLocationContainer.classList.add(styles.edit);
@@ -71,7 +69,7 @@ export default function FavLocationsComponent({ changeIsElementDragged }) {
       favLocationContainer.classList.contains(styles.edit)
     ) {
       favLocationContainer.classList.remove(styles.edit);
-      setIsDragDisabled(true);
+      setIsDragEnabled(false);
     }
     const cloneFavLocations = [...favoriteLocations];
     cloneFavLocations.splice(index, 1);
@@ -127,7 +125,7 @@ export default function FavLocationsComponent({ changeIsElementDragged }) {
                       key={key}
                       draggableId={key}
                       index={index}
-                      isDragDisabled={isDragDisabled}
+                      isDragDisabled={!isDragEnabled}
                     >
                       {renderDraggable((provided, snapshot) => (
                         <li
@@ -178,14 +176,15 @@ export default function FavLocationsComponent({ changeIsElementDragged }) {
                               </p>
                             </div>
                           </div>
-                          <div
+                          <button
                             className={styles.sortButton}
-                            onMouseDown={() => changeIsElementDragged(true)}
+                            onMouseDown={() => setIsElementDragged(true)}
                             onClick={(e) => e.stopPropagation()} //not update weather when sortButton is clicked
+                            disabled={!isDragEnabled}
                             {...provided.dragHandleProps} //custom handler
                           >
                             <FontAwesomeIcon icon={faGripLines} />
-                          </div>
+                          </button>
                           <FontAwesomeIcon
                             icon={weatherCodeToIcon(
                               favoriteLocation.currentWeather.weatherCode
@@ -194,16 +193,15 @@ export default function FavLocationsComponent({ changeIsElementDragged }) {
                           />
 
                           {/* <p>mintemp: {dailyWeather[0].minTemp + "°"} </p> */}
-                          <FontAwesomeIcon
+                          <button
                             className={styles.deleteButton}
-                            icon={faTrash}
-                            // style={
-                            //   !isDragDisabled ? { translate: "105%" } : null
-                            // }
                             onClickCapture={() =>
                               handleDeleteButtonClick(index)
                             }
-                          />
+                            disabled={!isDragEnabled}
+                          >
+                            <FontAwesomeIcon icon={faTrash} />
+                          </button>
                         </li>
                       ))}
                     </Draggable>

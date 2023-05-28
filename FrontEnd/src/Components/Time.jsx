@@ -5,8 +5,9 @@ export default function Time({
   timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone, //user (default) timezone
 }) {
   const [configObject] = useContext(configContext);
-
+  console.log(configObject.timeFormat);
   const [time, setTime] = useState(new Date());
+
   useEffect(() => {
     const timer = setInterval(() => {
       const currentTime = new Date();
@@ -16,6 +17,10 @@ export default function Time({
     }, 1000);
     return () => clearInterval(timer);
   }, [time]);
+  // useEffect(() => {
+  //   const currentTime = new Date();
+  //   setTime(currentTime);
+  // }, [configObject.timeFormat]);
   const formattedTime = useMemo(() => {
     const options = {
       hour: "numeric",
@@ -25,6 +30,6 @@ export default function Time({
     return new Intl.DateTimeFormat(configObject.timeFormat, options).format(
       time
     ); //"en-GB"
-  }, [time, timeZone]);
+  }, [time, timeZone, configObject.timeFormat]);
   return <>{formattedTime}</>;
 }

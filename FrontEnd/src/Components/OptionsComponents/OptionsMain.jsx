@@ -48,7 +48,7 @@ export default function Options() {
       <OptionsHamburger onAppear={AppearSwap} />
       <OptionsSidePanel
         appear={appear}
-        changeIsElementDragged={updateIsElementDragged}
+        setIsElementDragged={updateIsElementDragged}
         isDragging={isElementDragged}
       />
     </div>
