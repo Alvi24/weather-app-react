@@ -19,20 +19,18 @@ export default function SearchBar(props) {
   };
   const debouncedFetchLocation = debounce((e) => {
     console.log("start", Date());
+    const isInputFilled = e.target.value.trim().length >= 2;
     fetchLocations(e)
       .then(({ weatherData, prevSearchText }) => {
         console.log("end", Date());
-        if (
-          e.target.value.trim().length >= 2 &&
-          e.target.value === prevSearchText
-        ) {
+        if (isInputFilled && e.target.value === prevSearchText) {
           //when the searched text and the current searched text are equal set data
           console.log("target value length", e.target.value.length);
           setLocations(weatherData);
         }
       })
       .catch((errotText) => {
-        if (e.target.value.trim().length >= 2) setLocations(errotText);
+        if (isInputFilled) setLocations(errotText);
       });
   }, 150);
 

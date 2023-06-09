@@ -1,44 +1,43 @@
-import React, { useContext } from "react";
-import FavLocationsComponent from "./FavLocationsComponent.jsx";
-import { configContext } from "../../App.js";
+import React from "react";
+import FavLocationsSection from "./FavLocationsSection.jsx";
+import ToggleSwitch from "./ToggleSwitch.jsx";
 import styles from "../../styles/Options.module.css";
 
-export default function OptionsSidePanel({ appear, changeIsElementDragged }) {
+export default function OptionsSidePanel({ appear, setIsElementDragged }) {
   // let activeClassName = useMemo(() => {
   //   return appearHandle ? styles.active : "";
   // }, [appearHandle]);
   //COMPONENT RE-RENDERS WHEN PROPS CHANGE
-  const [configObject, setConfigObject] = useContext(configContext);
-  const changeDegree = (degree) => {
-    const prevDegree = configObject.degree;
-    if (degree !== prevDegree)
-      setConfigObject((prevState) => ({
-        ...prevState,
-        degree,
-      }));
-  };
+
   return (
     <div className={`${styles.sidePanel} ${appear ? styles.active : ""}`}>
       <section className={styles.configSection}>
-        <h3 className={styles.degreeTitle}>Degree</h3>
-        <div className={`${styles.degrees} ${styles[configObject.degree]}`}>
-          <button
-            className={styles.celsius}
-            onClick={() => changeDegree("celsius")}
-          >
-            <p>°C</p>
-          </button>
-          <button
-            className={styles.fahrenheit}
-            onClick={() => changeDegree("fahrenheit")}
-          >
-            <p>°F</p>
-          </button>
-
-          <div className={styles.switch}></div>
-        </div>
+        <ToggleSwitch
+          title="Degree"
+          configObjectPropertyName="degree"
+          leftSide={{
+            text: "°C",
+            configObjectPropertyValue: "celsius",
+          }}
+          rightSide={{
+            text: "°F",
+            configObjectPropertyValue: "fahrenheit",
+          }}
+        />
+        <ToggleSwitch
+          title="Time format"
+          configObjectPropertyName="timeFormat"
+          leftSide={{
+            text: "24h",
+            configObjectPropertyValue: "en-GB",
+          }}
+          rightSide={{
+            text: "12h",
+            configObjectPropertyValue: "en-US",
+          }}
+        />
       </section>
-      <FavLocationsComponent changeIsElementDragged={changeIsElementDragged} />
+      <FavLocationsSection setIsElementDragged={setIsElementDragged} />
       <section className={styles.poweredBy}>
         <svg
           xmlns="http://www.w3.org/2000/svg"

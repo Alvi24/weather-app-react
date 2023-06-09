@@ -22,25 +22,22 @@ app.post("/", (req, res) => {
   console.log("req", req.body);
   getLocations
     .then((returnedFunction) => returnedFunction(req.body.input))
-    .then((fetchedLocations) => res.send(JSON.stringify(fetchedLocations))) //req.body.searchText
-    .catch((error) => {
-      res
-        .status("400")
-        .send(new Error("No location found with this input text"));
-      console.log("error");
+    .then((fetchedLocations) => res.json(fetchedLocations)) //req.body.searchText  alternate form res.send(JSON.stringify(fetchedLocations))
+    .catch((errorMessage) => {
+      res.status(400).send(new Error("No location found with this input text"));
+      console.log(errorMessage);
     });
 });
 
 app.post("/big-data-api", (req, res) => {
   const { lat, long } = req.body;
   getLocationNameAndTimeZone(lat, long).then((data) =>
-    res.send(JSON.stringify(data))
+    // res.send(JSON.stringify(data))
+    res.json(data)
   );
-  //req.body.searchText
 });
 
 const getLocations = (async function () {
-  let initialSearchLocations;
   const puppeteer = require("puppeteer");
   const browser = await puppeteer.launch(
     //remove (the headless,defaultViewport and the curly brackets)property if you want the chromium page to not open
@@ -59,39 +56,42 @@ const getLocations = (async function () {
 
   return async function (searchText) {
     if (!searchText) return;
-
-    console.log("text", searchText);
-    await page.$eval(
-      "input#gls",
-      (el, searchText) => {
-        el.value = searchText;
-      },
-      searchText
-    );
-    await page.waitForSelector(".search-results:not(.multiple,.lastvis-only)", {
-      timeout: 1000,
-    });
-    // try {
-    //   const prevSearch = await page.$eval(
-    //     ".search-results",
-    //     (el) => el?.textContent
-    //   );
-
-    //   await page.waitForFunction(
-    //     //wait for search-results to change after typing
-    //     (prevSearch) => {
-    //       const locationsSearch =
-    //         document.querySelector(".search-results").textContent;
-    //       return locationsSearch !== prevSearch;
-    //     },
-    //     { timeout: 500 },
-    //     prevSearch
-    //   );
-    // } catch {}
-    
-    // await page.waitForTimeout(500); deprecated version
-    await new Promise((r) => setTimeout(r, 500));
     try {
+      console.log("text", searchText);
+      await page.$eval(
+        "input#gls",
+        (el, searchText) => {
+          el.value = searchText;
+        },
+        searchText
+      );
+      await page.waitForSelector(
+        ".search-results:not(.multiple,.lastvis-only)",
+        {
+          timeout: 1000,
+        }
+      );
+      // try {
+      //   const prevSearch = await page.$eval(
+      //     ".search-results",
+      //     (el) => el?.textContent
+      //   );
+
+      //   await page.waitForFunction(
+      //     //wait for search-results to change after typing
+      //     (prevSearch) => {
+      //       const locationsSearch =
+      //         document.querySelector(".search-results").textContent;
+      //       return locationsSearch !== prevSearch;
+      //     },
+      //     { timeout: 500 },
+      //     prevSearch
+      //   );
+      // } catch {}
+
+      // await page.waitForTimeout(500); deprecated version
+      await new Promise((r) => setTimeout(r, 500)); // allow the search results to be updated
+
       const locationNames = await page.$$eval("tr.loc", (locations) => {
         let array = locations.map((location) => {
           return {
@@ -108,9 +108,8 @@ const getLocations = (async function () {
 
       console.log("locations length", locationNames.length);
       locationNames.forEach((el, index) => console.log(index, el.locationName));
-      if (locationNames.length === 0) {
-        return Promise.reject();
-      }
+
+      if (locationNames.length === 0) throw new Error("no location found");
 
       return {
         weatherData: await bigDataLocationName(locationNames),
@@ -118,8 +117,8 @@ const getLocations = (async function () {
       };
     } catch (err) {
       console.log("rejectiong");
-      console.log(err);
-      return Promise.reject(err);
+      console.log(err.message);
+      return Promise.reject(err.message);
     }
   };
 })(); // self invoke the function to open the chromium an weather page

@@ -1,4 +1,4 @@
-import Time from "../Time.jsx";
+import useCurrentTime from "../../CustomHooks/useCurrentTime.js";
 import { weatherCodeToIcon } from "../../Utilities.mjs";
 import styles from "../../styles/CurrentWeather.module.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -16,6 +16,7 @@ export default function CurrentWeather({
   onWeatherClick,
   location,
 }) {
+  const currentTime = useCurrentTime();
   return (
     <div
       className={styles.currentWeather}
@@ -29,7 +30,7 @@ export default function CurrentWeather({
         </p>
         <div className={styles.currentLocationAndTime}>
           <p>
-            <FontAwesomeIcon icon={faClock} /> <Time />
+            <FontAwesomeIcon icon={faClock} /> {currentTime}
           </p>
           <p>
             <FontAwesomeIcon icon={faLocationDot} /> {location}{" "}

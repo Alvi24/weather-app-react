@@ -28,7 +28,7 @@ function App() {
   const [configObject, setConfigObject] = useState(
     JSON.parse(localStorage.getItem("configObject")) || {
       degree: "celsius",
-      timeFormat: "en-US", //"en-GB"
+      timeFormat: "en-GB", //"en-GB"
     }
   );
   // localStorage.clear("configObject");
@@ -65,7 +65,11 @@ function App() {
       clickedFavoriteLocationData
     );
 
-    if (currentWeatherData.current !== clickedFavLocationDataParam) {
+    if (
+      currentWeatherData.current !== clickedFavLocationDataParam &&
+      clickedFavLocationDataParam.coords.lat !==
+        currentWeatherData.current.coords.lat
+    ) {
       //check if clickedFavLocationData is different from current weather data
       console.log("new favLocation", clickedFavLocationDataParam);
       setClickedFavoriteLocationData(clickedFavLocationDataParam);
@@ -81,16 +85,26 @@ function App() {
 
   const handleAddFavoriteWeatherData = useCallback(() => {
     if (!currentWeatherData.current) return;
-    const findDublicateFavLocation = favoriteLocations.findIndex(
-      //chech if currentLocation already exists in favLocations
-      (favoriteLocation) =>
-        favoriteLocation.coords.lon.toFixed(2) ===
-          currentWeatherData.current.coords.lon.toFixed(2) &&
+    let isCurrentLocationInFavLocations = false;
+    favoriteLocations.forEach((favoriteLocation) => {
+      if (
         favoriteLocation.locationName ===
-          currentWeatherData.current.locationName
-    );
+          currentWeatherData.current.locationName &&
+        favoriteLocation.coords.lon.toFixed(2) ===
+          currentWeatherData.current.coords.lon.toFixed(2)
+      )
+        isCurrentLocationInFavLocations = true;
+    });
+    // const findDublicateFavLocation = favoriteLocations.findIndex(
+    //   //chech if currentLocation already exists in favLocations
+    //   (favoriteLocation) =>
+    //     favoriteLocation.locationName ===
+    //       currentWeatherData.current.locationName &&
+    //     favoriteLocation.coords.lon.toFixed(2) ===
+    //       currentWeatherData.current.coords.lon.toFixed(2)
+    // );
 
-    if (findDublicateFavLocation === -1 || favoriteLocations.length === 0) {
+    if (!isCurrentLocationInFavLocations || favoriteLocations.length === 0) {
       //if value is -1 there are no duplicates
       setFavoriteLocations((prevState) => [
         ...prevState,
@@ -109,7 +123,7 @@ function App() {
     }
     let propertyChangedName;
     localStorage.setItem("configObject", JSON.stringify(configObject));
-    console.log(configObject, prevConfigObject);
+    console.log(configObject, prevConfigObject.current);
     for (const propName in configObject) {
       if (configObject[propName] !== prevConfigObject.current[propName])
         propertyChangedName = propName;
@@ -141,6 +155,7 @@ function App() {
   //   handleAddFavoriteWeatherData,
   //   handleClickFavoriteLocationData,
   // ]);
+
   return (
     <div className="App">
       <configContext.Provider
