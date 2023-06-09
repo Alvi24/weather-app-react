@@ -5,7 +5,7 @@ export default function useCurrentTime(
   timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone //user (default) timezone
 ) {
   const [configObject] = useContext(configContext);
-  // console.log(configObject.timeFormat);
+
   const [time, setTime] = useState(new Date());
   console.log("TIME RENDER");
   useEffect(() => {
@@ -17,10 +17,7 @@ export default function useCurrentTime(
     }, 1000);
     return () => clearInterval(timer);
   }, [time]);
-  // useEffect(() => {
-  //   const currentTime = new Date();
-  //   setTime(currentTime);
-  // }, [configObject.timeFormat]);
+
   const formattedTime = useMemo(() => {
     const options = {
       hour: "numeric",
@@ -29,7 +26,7 @@ export default function useCurrentTime(
     };
     return new Intl.DateTimeFormat(configObject.timeFormat, options).format(
       time
-    ); //"en-GB"
+    ); 
   }, [time, timeZone, configObject.timeFormat]);
 
   return formattedTime;

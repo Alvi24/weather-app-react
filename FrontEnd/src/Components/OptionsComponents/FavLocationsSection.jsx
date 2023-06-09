@@ -65,7 +65,7 @@ export default function FavLocationsSection({ setIsElementDragged }) {
       setIsDragEnabled(false);
     }
     const cloneFavLocations = [...favoriteLocations];
-    cloneFavLocations.splice(deletedFavLocationIndex, 1); //or pass (e=>event object) instead of index
+    cloneFavLocations.splice(deletedFavLocationIndex, 1); 
     return favoriteLocations.length > 0
       ? setFavoriteLocations([...cloneFavLocations])
       : null;
@@ -104,7 +104,6 @@ export default function FavLocationsSection({ setIsElementDragged }) {
             <ul
               ref={provided.innerRef}
               {...provided.droppableProps}
-              //   style={{ background: "red" }}
               className={styles.favLocationContainer}
             >
               {favoriteLocations.length > 0 &&

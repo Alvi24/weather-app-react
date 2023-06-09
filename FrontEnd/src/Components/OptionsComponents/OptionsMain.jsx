@@ -15,9 +15,8 @@ export default function Options() {
     document
       .querySelector(`.App > :not(.${styles.Options})`)
       .classList.add("blur");
-    // document.querySelector(`.App > :not(.${styles.Options})`).style.filter =`blur(${matchMedia("(max-width:800px)").matches?"10px":"2px"})`;
+
     if (appear) {
-      // document.querySelector(`.App > :not(.${styles.Options})`).style.removeProperty("filter"); //for small screens
       document
         .querySelector(`.App > :not(.${styles.Options})`)
         .classList.remove("blur");

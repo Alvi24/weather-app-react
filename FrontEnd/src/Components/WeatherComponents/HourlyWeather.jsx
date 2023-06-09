@@ -61,14 +61,9 @@ export default function HourlyWeather({
       chartOptions: {
         plugins: {
           legend: {
-            display: false, // remove dataset label rectangle
+            display: false,
           },
           tooltip: {
-            // interaction: {
-            //   mode: "nearest",
-            //   axis: "x",
-            //   intersect: false,
-            // },
             enabled: false,
             external: costumTooltip,
             callbacks: {
@@ -117,9 +112,8 @@ export default function HourlyWeather({
             },
           },
         },
-        maintainAspectRatio: false, // set to false to make the chart responsive
-        responsive: true, // set to true to make the chart responsive
-        // animation: false, // set animation to false to achieve a smoother animation
+        maintainAspectRatio: false,
+        responsive: true,
       },
     };
   }, [hourlyWeather, mobileView]);

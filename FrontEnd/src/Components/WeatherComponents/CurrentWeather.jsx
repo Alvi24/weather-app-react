@@ -3,7 +3,7 @@ import { weatherCodeToIcon } from "../../Utilities.mjs";
 import styles from "../../styles/CurrentWeather.module.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
-  fas, //to use fontAwesome icon as string
+  fas, 
   faLocationDot,
   faClock,
 } from "@fortawesome/free-solid-svg-icons";
@@ -22,8 +22,7 @@ export default function CurrentWeather({
       className={styles.currentWeather}
       onClick={() => onWeatherClick(currentWeather.date)}
     >
-      {/* <button onClick={() => getLocations()}>Press</button> */}
-      {/*use the ?  */}
+    
       <div className={styles.mainWeatherInfo}>
         <p className={styles.currentWeatherTemp}>
           {currentWeather.temperature}°
@@ -42,7 +41,7 @@ export default function CurrentWeather({
         className={styles["currentWeatherIcon"]}
         fontSize="70px"
       />
-      {/* <p>mintemp: {dailyWeather[0].minTemp + "°"} </p> */}
+   
     </div>
   );
 }

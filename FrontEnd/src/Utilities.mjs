@@ -1,4 +1,4 @@
-// npm run dev
+
 import axios from "axios";
 console.log(process.env);
 
@@ -19,7 +19,7 @@ async function fetchWeatherData(
           latitude,
           longitude,
           temperature_unit: configObject.degree,
-          timezone: "Europe/Berlin", //auto
+          timezone: "Europe/Berlin",
         },
       }
     )
@@ -29,7 +29,7 @@ async function fetchWeatherData(
           locationNameFromSearchedLocation ??
           (await getLocationNameAndTimeZone(latitude, longitude)),
         coords: {
-          lat: latitude, //+ converts string number to number
+          lat: latitude,
           lon: longitude,
         },
         timeZone: timeZone,
@@ -52,7 +52,7 @@ async function getLocationNameAndTimeZone(latitude, longitude) {
 function handleCurrentWeatherData({ current_weather }) {
   return {
     date: new Date(current_weather.time * 1000).getDate(),
-    weatherCode: Math.round(current_weather.weathercode / 10) * 10, //round to neart 10,20,30 etc
+    weatherCode: Math.round(current_weather.weathercode / 10) * 10, 
     temperature: Math.round(current_weather.temperature),
     windSpeed: Math.round(current_weather.windspeed),
     windDirection: current_weather.winddirection,
@@ -63,8 +63,7 @@ function convertUnixTimeToNormalTime(arrayOfUnixTime, timeFormat) {
   return arrayOfUnixTime.map((time) =>
     Intl.DateTimeFormat(timeFormat, options).format(time * 1000)
   );
-  //new Date(el * 1000).getHours()
-  // new Date(el * 1000).toLocaleTimeString("it-IT")
+ 
 }
 function roundTemperatureNumber(arrayOfTemperature) {
   arrayOfTemperature = arrayOfTemperature.map((el) => {
@@ -113,8 +112,8 @@ function handleDailyWeatherData({ daily }, timeFormat) {
     5: "Friday",
     6: "Saturday",
   };
-  // console.log(dayOfWeek[0]);
-  const dayOfWeekLength = Object.keys(dayOfWeek).length; //number of properties
+
+  const dayOfWeekLength = Object.keys(dayOfWeek).length;
   let days = [];
   for (let i = 0; i < dayOfWeekLength; ++i) {
     days[i] = {};
@@ -136,7 +135,7 @@ function handleHourlyWeatherData({ hourly }, timeFormat) {
     temperature_2m: tempHourly,
     weathercode: weatherCodeHourly,
   } = hourly;
-  let hourlyDataClone = []; // or  let hourlyDataClone = [{},{},{},{},{},{},{}];
+  let hourlyDataClone = [];
   let hourlyIterator = 0;
   let dateHourly;
   tempHourly = roundTemperatureNumber(tempHourly);
@@ -150,7 +149,7 @@ function handleHourlyWeatherData({ hourly }, timeFormat) {
     );
     dateHourly = new Date(hourly.time[i - 23] * 1000).getDate();
     hourlyDataClone[hourlyIterator].date = dateHourly;
-    hourlyDataClone[hourlyIterator].time = timeHourly.slice(i - 24, i); //0-23
+    hourlyDataClone[hourlyIterator].time = timeHourly.slice(i - 24, i);
     hourlyDataClone[hourlyIterator].temp = tempHourly.slice(i - 24, i);
     hourlyDataClone[hourlyIterator].weathercode = weatherCodeHourly.slice(
       i - 24,
@@ -169,30 +168,27 @@ const { hello: value } = object;
 console.log("value " + value);
 
 async function fetchLocations(e) {
-  // if (!environmentVariables) await fetchEnvironmentVariables();
-  // console.log("api", environmentVariables.URL);
   if (e.target.value.length < 2) {
     return;
   }
   const { value: input } = e.target;
   return axios
     .post(process.env.REACT_APP_URL, {
-      //use 192.168.100.29 (Pc address) or localhost-> but it wont work with mobile phones
       input,
     })
     .then((res) => res.data)
     .catch((error) => {
       console.log(error.response);
-      return Promise.reject("No location found"); //or use throw
+      return Promise.reject("No location found");
     });
 }
 function convertTemperature(temp, degree) {
   return degree === "celsius"
-    ? Math.round(((temp - 32) * 5) / 9) //celsius
-    : Math.round((temp * 9) / 5 + 32); //fahrenheit
+    ? Math.round(((temp - 32) * 5) / 9)
+    : Math.round((temp * 9) / 5 + 32);
 }
 function convertTime(time, timeFormat) {
-  let hour = timeFormat === "en-GB" ? +time.slice(0, time.indexOf(" ")) : +time; //+ operator removes 0 in beginning
+  let hour = timeFormat === "en-GB" ? +time.slice(0, time.indexOf(" ")) : +time;
   switch (timeFormat) {
     case "en-GB":
       if (time.slice(-2) === "PM" && hour < 12) hour += 12;
@@ -208,30 +204,7 @@ function convertTime(time, timeFormat) {
       break;
   }
 }
-// function convertTime(time, timeFormat) {
-//   // console.log("time before", time);
-//
-//     let hour = +time.slice(0, time.indexOf(":"));
-//     let minutes = time.slice(time.indexOf(":") + 1);
-//   // console.log(hour);
-//   if (timeFormat === "en-GB") {
-//     console.log(time.slice(-2));
-//     if (time.slice(-2) == "PM") hour += 12;
-//     if (time == "12 AM") hour = 0;
-//     time = time.slice(0, -2);
-//     return `${hour}:${minutes}`;
-//   } else {
-//     //en-US
-//     let timePeriod = "AM";
-//     if (hour > 12) {
-//       timePeriod = "PM";
-//       hour = +hour;
-//       hour -= 12;
-//     }
 
-//     return `${hour}:${minutes} ${timePeriod}`;
-//   }
-// }
 async function updateStoredFavLocations(savedFavLocations, configObject) {
   console.log(savedFavLocations);
   const updatedFavLocations = savedFavLocations.map((data) =>
@@ -246,17 +219,7 @@ async function updateStoredFavLocations(savedFavLocations, configObject) {
   console.log(updatedFavLocations);
   return Promise.all(updatedFavLocations).then((favLocations) => favLocations);
 }
-// function getTimeZone(lat, lon) {
-//   return fetch(
-//     `https://api.geoapify.com/v1/geocode/reverse?lat=${lat}&lon=${lon}&format=json&apiKey=${process.env.REACT_APP_GEOAPIFY_TIME_ZONE_API_KEY}`
-//   )
-//     .then((resp) => resp.json())
-//     .then(({ results }) => {
-//       if (results.length) {
-//         return results[0].timezone.name;
-//       }
-//     });
-// }
+
 function weatherCodeToIcon(weatherCode) {
   switch (weatherCode) {
     case 0:
@@ -272,13 +235,12 @@ function weatherCodeToIcon(weatherCode) {
     case 50:
       return "fa-cloud-sun-rain";
     case 60:
-      return "fa-cloud-sun-rain"; //fa-cloud-meatball
+      return "fa-cloud-sun-rain";
     case 70:
       return "fa-snowflake";
     case 80:
       return "fa-cloud-rain";
     default:
-      //invalid weatherCode or none of the above
       return "fa-sun";
   }
 }
@@ -357,9 +319,6 @@ const getOrCreateTooltip = (chart) => {
     tooltiParagraphWeather.classList.add("tooltipWeather");
     tooltipEl.appendChild(tooltiParagraphTime);
     tooltipEl.appendChild(tooltiParagraphWeather);
-    // const temp = bodyLines;
-    // tooltipLiTime.innerHTML = temp;
-    // console.log(bodyLines);
 
     console.log(tooltipEl);
   }
@@ -383,8 +342,6 @@ function externalTooltip(context) {
     console.log("time", time, weather.temp, weather.weathercode);
     tooltipEl.style.left = positionX + tooltip.caretX + "px";
     tooltipEl.style.top = positionY + tooltip.caretY + "px";
-
-    // tooltipEl.style.padding = tooltip.options.padding + "px";
 
     tooltipEl.querySelector(".tooltipTime").innerHTML = time + "<br>";
     tooltipEl.querySelector(".tooltipWeather").innerHTML =

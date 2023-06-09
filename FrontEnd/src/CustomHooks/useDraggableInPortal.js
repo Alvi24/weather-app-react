@@ -24,7 +24,7 @@ export default function useDraggableInPortal() {
     (provided, ...args) => {
       const element = render(provided, ...args);
       if (isUserOnMobile()) {
-        return element; //when on mobile return unchanged elements
+        return element;
       }
       if (provided.draggableProps.style.position === "fixed") {
         return createPortal(element, self.elt);

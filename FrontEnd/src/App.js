@@ -28,12 +28,12 @@ function App() {
   const [configObject, setConfigObject] = useState(
     JSON.parse(localStorage.getItem("configObject")) || {
       degree: "celsius",
-      timeFormat: "en-GB", //"en-GB"
+      timeFormat: "en-GB",
     }
   );
-  // localStorage.clear("configObject");
+
   const [favoriteLocations, setFavoriteLocations] = useState([]);
-  const currentWeatherData = useRef(null); //holds the current weather data if is needed do add to favorites
+  const currentWeatherData = useRef(null);
   const [clickedFavoriteLocationData, setClickedFavoriteLocationData] =
     useState(null);
   const [updatedCurrentWeather, setUpdatedCurrentWeather] = useState();
@@ -70,17 +70,15 @@ function App() {
       clickedFavLocationDataParam.coords.lat !==
         currentWeatherData.current.coords.lat
     ) {
-      //check if clickedFavLocationData is different from current weather data
       console.log("new favLocation", clickedFavLocationDataParam);
       setClickedFavoriteLocationData(clickedFavLocationDataParam);
     }
   }
 
   const setCurrentWeatherData = useCallback((weatherData) => {
-    //temporary
     console.log("w", weatherData);
     currentWeatherData.current = weatherData;
-    setClickedFavoriteLocationData(null); //clear the clickedFavoriteLocationData because its not needed anymore
+    setClickedFavoriteLocationData(null);
   }, []);
 
   const handleAddFavoriteWeatherData = useCallback(() => {
@@ -95,14 +93,6 @@ function App() {
       )
         isCurrentLocationInFavLocations = true;
     });
-    // const findDublicateFavLocation = favoriteLocations.findIndex(
-    //   //chech if currentLocation already exists in favLocations
-    //   (favoriteLocation) =>
-    //     favoriteLocation.locationName ===
-    //       currentWeatherData.current.locationName &&
-    //     favoriteLocation.coords.lon.toFixed(2) ===
-    //       currentWeatherData.current.coords.lon.toFixed(2)
-    // );
 
     if (!isCurrentLocationInFavLocations || favoriteLocations.length === 0) {
       //if value is -1 there are no duplicates
@@ -143,18 +133,6 @@ function App() {
     );
     setFavoriteLocations(updatedFavoriteLocations);
   }, [configObject]);
-  // const favoriteLocationsContextProviderValue = useMemo(() => {
-  //   return {
-  //     favLocationsUseState: [favoriteLocations, setFavoriteLocations],
-  //     onFavLocationClickAddToFavWeather: handleAddFavoriteWeatherData,
-  //     onFavLocationClickAddFavLocationData: handleClickFavoriteLocationData,
-  //   };
-  // }, [
-  //   favoriteLocations,
-  //   setFavoriteLocations,
-  //   handleAddFavoriteWeatherData,
-  //   handleClickFavoriteLocationData,
-  // ]);
 
   return (
     <div className="App">
@@ -172,15 +150,11 @@ function App() {
               handleClickFavoriteLocationData,
           }}
         >
-          {/* {currentWeatherData.current === null ? (
-            <div  style={{ background: "red" }}>hello</div>
-          ) : null} */}{" "}
           <MemoizedOptions />
           <MemoizedBody
             addCurrentWeather={setCurrentWeatherData}
             favLocationData={clickedFavoriteLocationData}
             updatedCurrentWeather={updatedCurrentWeather}
-            // addWeatherFromFavLocation={setFavLocationOnBody}
           />
         </favoriteLocationsContext.Provider>
       </configContext.Provider>

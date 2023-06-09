@@ -13,12 +13,11 @@
 .chart {
   width: 100% !important;
   height: 280px !important;
-  /* height: 35vh !important; */
 }
 :global(.tooltip) {
   position: absolute;
   display: flex;
-  /* width: 5%; */
+
   flex-direction: column;
   background: rgba(216, 216, 216, 0.9);
   box-shadow: 0 4px 30px rgba(0, 0, 0, 0.2);
@@ -33,7 +32,6 @@
 :global(.tooltip) p {
   text-align: center;
   font-size: clamp(10px, 0.7vw, 1vw);
-  /* font-size: 10px; */
 }
 :global(.tooltipTime) {
   font-size: 0.9em;
@@ -44,11 +42,11 @@
     width: 100%;
     background-color: white;
 
-    max-height: 60vh; /*use max-height instead of height because with height (when removing) the transition will not work*/
+    max-height: 60vh;
     position: fixed;
     left: 0;
-    bottom: 0; /*when transform is used*/
-    /* bottom: -100%; */
+    bottom: 0;
+
     transform: translateY(100%);
     border-bottom-right-radius: 0;
     border-bottom-left-radius: 0;
@@ -60,13 +58,10 @@
       background-color: rgba(235, 235, 235, 0.8);
       -webkit-backdrop-filter: blur(10px) !important;
       -moz-backdrop-filter: blur(10px) !important;
-      backdrop-filter: blur(
-        10px
-      ); /* Fallback background color (when backdrop-filter is ont supported (safari for example)) */
+      backdrop-filter: blur(10px);
     }
   }
   .HourlyContainer.visible {
-    /* bottom: 0; */
     transform: translateY(0);
   }
   .HourlyContainer .chart {

@@ -31,7 +31,7 @@ export default function ToggleSwitch({
           leftSide.configObjectPropertyValue
             ? styles.left
             : styles.right
-        } `} //${styles[configObject.degree]}
+        } `} 
       >
         <button
           className={styles.left}

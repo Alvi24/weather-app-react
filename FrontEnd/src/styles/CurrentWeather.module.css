@@ -2,7 +2,7 @@
   display: flex;
   align-items: center;
   width: 600px;
-  /* width: clamp(600px, 8vw, 200px); */
+ 
   transition: filter 0.5s;
   -webkit-transition: filter 0.5s;
   background: rgba(216, 216, 216, 0.3);
@@ -11,22 +11,19 @@
   backdrop-filter: blur(4.1px);
   -webkit-backdrop-filter: blur(4.1px);
   border: 1px solid rgba(216, 216, 216, 0.65);
-  /* transform: translateY(70%); */
   margin-block-start: 50px;
   margin-inline-start: auto;
   margin-inline-end: auto;
-  /* box-shadow: 0 0 8px 8px rgb(100, 189, 219) inset; */ /*faded edges*/
   cursor: pointer;
 }
 .currentWeather * {
   cursor: pointer;
 }
 .mainWeatherInfo {
-  width: calc(100% - 20%); /*operator + or - should always have space around*/
+  width: calc(100% - 20%); 
   display: inline-flex;
   min-height: 100px;
   align-items: center;
-  
 }
 .mainWeatherInfo p {
   display: inline-block;
@@ -43,7 +40,7 @@
     )
     2;
   border-right: 2.7px solid;
-  
+
   margin-inline-start: 8%;
 }
 .currentWeatherIcon {
@@ -51,7 +48,6 @@
   margin-inline-end: 10px;
 }
 .currentLocationAndTime {
-  /* flex-shrink: 0;  allow width to work (overflow the container)*/
   width: 65%;
   display: inline-flex;
   flex-direction: column;
@@ -61,7 +57,6 @@
   margin-inline-start: 20px;
 }
 .currentLocationAndTime p {
-  /* white-space: nowrap; */
   font-size: 1.3em;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -76,7 +71,7 @@
 }
 @media (max-width: 700px) {
   .currentWeather {
-    flex: 0 0 auto; /*display flex of parent(.Body) dictates the width of child width, adding this property removes its dependency*/
+    flex: 0 0 auto; 
     width: 90%;
   }
   .mainWeatherInfo {
@@ -86,18 +81,16 @@
   .currentWeatherTemp {
     margin-inline-start: 5%;
   }
-
 }
 @media (max-width: 580px) {
   .currentWeather {
-    flex: 0 0 auto; /*display flex of parent(.Body) dictates the width of child width, adding this property removes its dependency*/
+    flex: 0 0 auto; 
     width: 90%;
   }
   .currentWeatherTemp {
     font-size: 4rem;
   }
   .currentLocationAndTime p {
-   
     width: 210px;
   }
 }
@@ -114,7 +107,7 @@
   .currentLocationAndTime {
     justify-content: space-evenly;
   }
-  
+
   .currentWeatherTemp {
     font-size: 3em;
     margin-inline-start: 0;

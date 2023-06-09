@@ -6,7 +6,6 @@ export default function OptionsHamburger(props) {
   function handleKeyDown(event) {
     console.log(event.key);
     if (event.key === "Tab") {
-      // Handle the keyboard event
       props.onAppear();
     }
   }
@@ -15,9 +14,9 @@ export default function OptionsHamburger(props) {
       icon={faBars}
       className={styles.optionsHamburger}
       onClick={props.onAppear}
-      onKeyDown={handleKeyDown} //when clicking with keyboard
-      onKeyUp={handleKeyDown} //when clicking with keyboard
-      tabIndex="0" //to style when clicked with keyboard (Tab)
+      onKeyDown={handleKeyDown} 
+      onKeyUp={handleKeyDown}
+      tabIndex="0"
     />
   );
 }

@@ -37,12 +37,6 @@ export default function FavLocation({
           onClick={onFavoriteLocationClick}
           ref={provided.innerRef}
           {...provided.draggableProps}
-          // {...provided.dragHandleProps} add the handler to element itself
-          // style={{
-          //   ...provided.draggableProps.style,
-          //   left: snapshot.isDragging ? "" : null,
-          //   top: snapshot.isDragging ? "" : null,
-          // }}
         >
           <div className={styles.mainWeatherInfo}>
             <div className={styles.favWeatherTemp}>
@@ -68,7 +62,7 @@ export default function FavLocation({
           <button
             className={styles.sortButton}
             onMouseDown={onSortButtonMouseDown}
-            onClick={(e) => e.stopPropagation()} //not update weather when sortButton is clicked
+            onClick={(e) => e.stopPropagation()}
             disabled={isDragDisabled}
             {...provided.dragHandleProps} //custom handler
           >
@@ -81,7 +75,7 @@ export default function FavLocation({
             className={styles["favWeatherIcon"]}
           />
 
-          {/* <p>mintemp: {dailyWeather[0].minTemp + "°"} </p> */}
+    
           <button
             className={styles.deleteButton}
             onClickCapture={() => onDeleteButtonClick(favoriteLocationData)}

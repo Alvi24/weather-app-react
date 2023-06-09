@@ -1,28 +1,26 @@
-// npm run dev
 require("dotenv").config();
 
 const express = require("express");
 const axios = require("axios");
 const app = express();
-app.use(express.urlencoded({ extended: false })); //use this if you want to use data that comes from a Form(input)
-app.use(express.json()); //use this if you want to use data that comes as JSON or use both
+app.use(express.urlencoded({ extended: false }));
+app.use(express.json());
 console.log(process.env.PORT);
 const cors = require("cors");
 const { resolveObjectURL } = require("buffer");
 const { endianness } = require("os");
 const { rejects } = require("assert");
 const corsOptions = {
-  //use corsOptions an app.use(cors to fix the cost error)
   origin: "*",
-  credentials: true, //access-control-allow-credentials:true
+  credentials: true,
   optionSuccessStatus: 200,
 };
-app.use(cors(corsOptions)); // Use this after the variable declaration
+app.use(cors(corsOptions));
 app.post("/", (req, res) => {
   console.log("req", req.body);
   getLocations
     .then((returnedFunction) => returnedFunction(req.body.input))
-    .then((fetchedLocations) => res.json(fetchedLocations)) //req.body.searchText  alternate form res.send(JSON.stringify(fetchedLocations))
+    .then((fetchedLocations) => res.json(fetchedLocations))
     .catch((errorMessage) => {
       res.status(400).send(new Error("No location found with this input text"));
       console.log(errorMessage);
@@ -31,21 +29,15 @@ app.post("/", (req, res) => {
 
 app.post("/big-data-api", (req, res) => {
   const { lat, long } = req.body;
-  getLocationNameAndTimeZone(lat, long).then((data) =>
-    // res.send(JSON.stringify(data))
-    res.json(data)
-  );
+  getLocationNameAndTimeZone(lat, long).then((data) => res.json(data));
 });
 
 const getLocations = (async function () {
   const puppeteer = require("puppeteer");
-  const browser = await puppeteer.launch(
-    //remove (the headless,defaultViewport and the curly brackets)property if you want the chromium page to not open
-    {
-      headless: false, //to make the browser headless
-      defaultViewport: false, // not use the default but
-    }
-  );
+  const browser = await puppeteer.launch({
+    headless: false,
+    defaultViewport: false,
+  });
   const page = await browser.newPage();
   await page.goto(
     `https://www.meteoblue.com/en/weather/week/elbasan_albania_783263/`
@@ -71,26 +63,8 @@ const getLocations = (async function () {
           timeout: 1000,
         }
       );
-      // try {
-      //   const prevSearch = await page.$eval(
-      //     ".search-results",
-      //     (el) => el?.textContent
-      //   );
 
-      //   await page.waitForFunction(
-      //     //wait for search-results to change after typing
-      //     (prevSearch) => {
-      //       const locationsSearch =
-      //         document.querySelector(".search-results").textContent;
-      //       return locationsSearch !== prevSearch;
-      //     },
-      //     { timeout: 500 },
-      //     prevSearch
-      //   );
-      // } catch {}
-
-      // await page.waitForTimeout(500); deprecated version
-      await new Promise((r) => setTimeout(r, 500)); // allow the search results to be updated
+      await new Promise((r) => setTimeout(r, 500));
 
       const locationNames = await page.$$eval("tr.loc", (locations) => {
         let array = locations.map((location) => {
@@ -121,12 +95,12 @@ const getLocations = (async function () {
       return Promise.reject(err.message);
     }
   };
-})(); // self invoke the function to open the chromium an weather page
+})();
 
 async function getLocationNameAndTimeZone(lat, long) {
   return axios
     .get(
-      `https://api.bigdatacloud.net/data/reverse-geocode?localityLanguage=en&key=${process.env.API_KEY_BIG_DATA}`, //server-side big data
+      `https://api.bigdatacloud.net/data/reverse-geocode?localityLanguage=en&key=${process.env.API_KEY_BIG_DATA}`,
       {
         params: {
           latitude: lat,
@@ -140,7 +114,7 @@ async function getLocationNameAndTimeZone(lat, long) {
         if (dataSet.description === "time zone") timezone = dataSet.name;
       });
       return {
-        location: data.city, // .city not .location
+        location: data.city,
         region: data.principalSubdivision,
         timezone,
       };
@@ -169,15 +143,6 @@ async function bigDataLocationName(data) {
   });
 
   return Promise.all(promises).then(() => {
-    // data.sort((a, b) => {  //sort an array of objects
-    //   if (a.locationName < b.locationName) {
-    //     return -1;
-    //   }
-    //   if (a.locationName > b.locationName) {
-    //     return 1;
-    //   }
-    //   return 0;
-    // });
     console.log("final", filterDuplicateLocations(cloneLocations));
     return filterDuplicateLocations(cloneLocations);
   });
@@ -194,16 +159,7 @@ function filterDuplicateLocations(arrayOfLocations) {
       )
   );
 }
-//getLocations(); // opening the chromium (first time)
 
-// const API_KEY = process.env.API_KEY_BIG_DATA;
-// const URL = process.env.URL;
-// app.get("/environment-variables", (req, res) => {
-//   res.send({
-//     API_KEY,
-//     URL,
-//   });
-// });
 app.listen(process.env.PORT, () => {
   console.log(`server up and running at port ${process.env.PORT}`);
 });

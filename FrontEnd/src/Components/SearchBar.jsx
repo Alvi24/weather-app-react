@@ -1,4 +1,4 @@
-// npm run dev
+
 import React, { useState } from "react";
 import { fetchLocations } from "../Utilities.mjs";
 import styles from "../styles/App.module.css";
@@ -24,7 +24,6 @@ export default function SearchBar(props) {
       .then(({ weatherData, prevSearchText }) => {
         console.log("end", Date());
         if (isInputFilled && e.target.value === prevSearchText) {
-          //when the searched text and the current searched text are equal set data
           console.log("target value length", e.target.value.length);
           setLocations(weatherData);
         }

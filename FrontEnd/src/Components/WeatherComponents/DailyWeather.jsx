@@ -19,7 +19,7 @@ export default function DailyWeather({ dailyWeather, onWeatherClick }) {
       {dailyWeather
         .slice(1)
         .map(({ weatherCodeDaily, day, date, maxTemp, minTemp }) => (
-          //Converting clesius to fahrenheit if needed (the prop itself is not changed)
+      
           <div
             className={styles.daily}
             key={date}

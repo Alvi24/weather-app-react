@@ -1,12 +1,10 @@
-/*use position absolute and right,left,top,bottom to flow the element out of page*/
-/* #root and .App can be styled only inline not from a module */
+
 @import url("https://fonts.googleapis.com/css2?family=Golos+Text&display=swap");
 
 body {
   margin: 0;
   padding: 0;
   overflow-x: hidden;
-  
 }
 * {
   font-family: "Golos Text", sans-serif;
@@ -27,14 +25,8 @@ h6 {
 .Body {
   position: relative;
   top: 0;
-  /* min-width: 90%; */
-  min-height: 100dvh; /*remove min to disable scrollbar when hourlyWeather(mobile) is visible*/
+  min-height: 100dvh;
   margin: 0;
-  /* background-color: rgb(
-    100,
-    189,
-    189
-  ); fallback backgound if video doesn't work*/
   transition: 0.5s;
   -webkit-transition: 0.5s;
 }
@@ -44,10 +36,6 @@ h6 {
   color: black;
   transition: filter 0.5s;
 }
-/* .Body > :not(.currentWeather) {
-  align-self: auto;
-} */
-/*SearchBar.jsx*/
 
 .Background video {
   position: fixed;
@@ -64,7 +52,6 @@ h6 {
   width: 100vw;
   position: absolute;
   top: 0px;
-  /* z-index: 1000; */
   display: grid;
   place-items: center;
   background-color: rgb(76, 112, 181);
@@ -89,13 +76,12 @@ h6 {
   width: 300px;
   height: 35px;
   transform: translate(20%, 60%);
-  /* margin-inline-start: 10%; */
 }
 .searchBarAndLocationContainer .searchBar {
   display: flex;
   justify-content: center;
   align-items: center;
-  margin-right: auto; /*overide justify content on parent*/
+  margin-right: auto;
   width: 12%;
   height: 100%;
   background: rgba(216, 216, 216, 0.3);
@@ -132,14 +118,14 @@ table {
   position: absolute;
   display: none;
   top: 40px;
-  /* From https://css.glass */
+
   background: rgba(255, 255, 255, 0.7);
   border-radius: 10px;
   box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
   border: none;
-  border-spacing: 0; /*remove gaps between borders*/
+  border-spacing: 0;
   overflow: hidden;
 }
 table * {
@@ -147,7 +133,6 @@ table * {
 }
 .searchBar:has(input:focus) ~ table:has(.location),
 table:has(tr:active) {
-  /* tr:active when a location is clicked*/
   z-index: 2;
   display: inline-block;
 }
@@ -156,7 +141,6 @@ th {
   text-align: center;
 }
 td {
-  /* padding-block-end: 5px; */
   padding-block: 1%;
 }
 tr img {
@@ -179,13 +163,13 @@ td.countryFlag img {
 }
 
 :global(.blur) {
-  pointer-events: none; /*disable hovering selecting and other interactable things*/
+  pointer-events: none; 
   @supports (filter: blur(2px)) {
     filter: blur(2px);
   }
 }
 :global(.blur) * {
-  user-select: none; /*make the elements behind unselectable*/
+  user-select: none; 
 }
 .tempIcon {
   font-size: 3rem;
@@ -196,10 +180,9 @@ td.countryFlag img {
 
 @media (max-width: 520px) {
   :global(.blur) {
-    /* filter: blur(15px);
-    opacity: 0.4; */
+   
     overflow: hidden;
-    height: 100dvh; /*; use height 100vh and overflow hidden to disable scrolling when on side panel (mobile mostly)*/
+    height: 100dvh;
   }
   :global(.blur) * {
     z-index: -1;

@@ -4,10 +4,7 @@ import ToggleSwitch from "./ToggleSwitch.jsx";
 import styles from "../../styles/Options.module.css";
 
 export default function OptionsSidePanel({ appear, setIsElementDragged }) {
-  // let activeClassName = useMemo(() => {
-  //   return appearHandle ? styles.active : "";
-  // }, [appearHandle]);
-  //COMPONENT RE-RENDERS WHEN PROPS CHANGE
+
 
   return (
     <div className={`${styles.sidePanel} ${appear ? styles.active : ""}`}>
