@@ -1,6 +1,6 @@
-import React, { useContext } from "react";
-import FavLocationsComponent from "./FavLocationsComponent.jsx";
-import { configContext } from "../../App.js";
+import React from "react";
+import FavLocationsSection from "./FavLocationsSection.jsx";
+import ToggleSwitch from "./ToggleSwitch.jsx";
 import styles from "../../styles/Options.module.css";
 
 export default function OptionsSidePanel({ appear, setIsElementDragged }) {
@@ -8,74 +8,36 @@ export default function OptionsSidePanel({ appear, setIsElementDragged }) {
   //   return appearHandle ? styles.active : "";
   // }, [appearHandle]);
   //COMPONENT RE-RENDERS WHEN PROPS CHANGE
-  const [configObject, setConfigObject] = useContext(configContext);
-  const changeDegree = (degree) => {
-    const prevDegree = configObject.degree;
-    if (degree !== prevDegree)
-      setConfigObject((prevState) => ({
-        ...prevState,
-        degree: degree,
-      }));
-  };
-  const changeTimeFormat = (timeFormat) => {
-    const prevTimeFormat = configObject.timeFormat;
-    if (timeFormat !== prevTimeFormat)
-      setConfigObject((prevState) => ({
-        ...prevState,
-        timeFormat: timeFormat,
-      }));
-  };
+
   return (
     <div className={`${styles.sidePanel} ${appear ? styles.active : ""}`}>
       <section className={styles.configSection}>
-        <div className={styles.toggleContainer}>
-          <h3 className={styles.degreeTitle}>Degree</h3>
-          <div
-            className={`${styles.toggle} ${styles.degrees} ${
-              configObject.degree === "celsius" ? styles.left : styles.right
-            } `} //${styles[configObject.degree]}
-          >
-            <button
-              className={styles.left}
-              onClick={() => changeDegree("celsius")}
-            >
-              <p>°C</p>
-            </button>
-            <button
-              className={styles.right}
-              onClick={() => changeDegree("fahrenheit")}
-            >
-              <p>°F</p>
-            </button>
-
-            <div className={styles.switch}></div>
-          </div>
-        </div>
-        <div className={styles.toggleContainer}>
-          <h3 className={styles.degreeTitle}>Time format</h3>
-          <div
-            className={`${styles.toggle} ${styles.degrees} ${
-              configObject.timeFormat === "en-GB" ? styles.left : styles.right
-            }`}
-          >
-            <button
-              className={styles.left}
-              onClick={() => changeTimeFormat("en-GB")}
-            >
-              <p>24h</p>
-            </button>
-            <button
-              className={styles.right}
-              onClick={() => changeTimeFormat("en-US")}
-            >
-              <p>12h</p>
-            </button>
-
-            <div className={styles.switch}></div>
-          </div>
-        </div>
+        <ToggleSwitch
+          title="Degree"
+          configObjectPropertyName="degree"
+          leftSide={{
+            text: "°C",
+            configObjectPropertyValue: "celsius",
+          }}
+          rightSide={{
+            text: "°F",
+            configObjectPropertyValue: "fahrenheit",
+          }}
+        />
+        <ToggleSwitch
+          title="Time format"
+          configObjectPropertyName="timeFormat"
+          leftSide={{
+            text: "24h",
+            configObjectPropertyValue: "en-GB",
+          }}
+          rightSide={{
+            text: "12h",
+            configObjectPropertyValue: "en-US",
+          }}
+        />
       </section>
-      <FavLocationsComponent setIsElementDragged={setIsElementDragged} />
+      <FavLocationsSection setIsElementDragged={setIsElementDragged} />
       <section className={styles.poweredBy}>
         <svg
           xmlns="http://www.w3.org/2000/svg"

@@ -1,16 +1,12 @@
 import { useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
+import { isUserOnMobile } from "../Utilities.mjs";
 export default function useDraggableInPortal() {
   const self = useRef({}).current;
-  function isMobile() {
-    return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
-      navigator.userAgent
-    );
-  }
+
   useEffect(() => {
-    if (isMobile()) {
-      return;
-    }
+    if (isUserOnMobile()) return;
+
     const div = document.createElement("div");
     div.style.position = "absolute";
     div.style.pointerEvents = "none";
@@ -27,7 +23,7 @@ export default function useDraggableInPortal() {
   return (render) =>
     (provided, ...args) => {
       const element = render(provided, ...args);
-      if (isMobile()) {
+      if (isUserOnMobile()) {
         return element; //when on mobile return unchanged elements
       }
       if (provided.draggableProps.style.position === "fixed") {

@@ -12,7 +12,6 @@ async function fetchWeatherData(
   console.log(timeZone);
   console.log(configObject);
   return axios
-
     .get(
       `  https://api.open-meteo.com/v1/forecast?&hourly=temperature_2m,weathercode&daily=weathercode,temperature_2m_max,temperature_2m_min,sunrise,sunset&current_weather=true&timeformat=unixtime`,
       {
@@ -117,7 +116,7 @@ function handleDailyWeatherData({ daily }, timeFormat) {
   // console.log(dayOfWeek[0]);
   const dayOfWeekLength = Object.keys(dayOfWeek).length; //number of properties
   let days = [];
-  for (let i = 0; i < dayOfWeekLength; i++) {
+  for (let i = 0; i < dayOfWeekLength; ++i) {
     days[i] = {};
     days[i].day = convertUnixTimeToDay(time[i]);
     days[i].date = dates[i];
@@ -193,8 +192,7 @@ function convertTemperature(temp, degree) {
     : Math.round((temp * 9) / 5 + 32); //fahrenheit
 }
 function convertTime(time, timeFormat) {
-  let hour = timeFormat === "en-GB" ? +time.slice(0, time.indexOf(" ")) : +time;
-
+  let hour = timeFormat === "en-GB" ? +time.slice(0, time.indexOf(" ")) : +time; //+ operator removes 0 in beginning
   switch (timeFormat) {
     case "en-GB":
       if (time.slice(-2) === "PM" && hour < 12) hour += 12;
@@ -202,9 +200,10 @@ function convertTime(time, timeFormat) {
       if (time === "12 AM") hour = "00";
       return hour;
     case "en-US":
-      if (hour === +"00") return "12 AM";
-      if (hour === 12) return "12 PM";
-      return hour > 12 ? `${hour - 12} PM` : `${hour} AM`;
+      let timePeriod = "AM";
+      if (hour === 0) return "12 AM";
+      if (hour >= 12) timePeriod = "PM";
+      return `${hour > 12 ? hour - 12 : hour}  ${timePeriod}`;
     default:
       break;
   }
@@ -234,10 +233,6 @@ function convertTime(time, timeFormat) {
 //   }
 // }
 async function updateStoredFavLocations(savedFavLocations, configObject) {
-  // if (localStorage.getItem("favoriteLocations") === "undefined") return [];
-  // const savedFavLocations = [
-  //   ...JSON.parse(localStorage.getItem("favoriteLocations")),
-  // ];
   console.log(savedFavLocations);
   const updatedFavLocations = savedFavLocations.map((data) =>
     fetchWeatherData(
@@ -283,16 +278,13 @@ function weatherCodeToIcon(weatherCode) {
     case 80:
       return "fa-cloud-rain";
     default:
-      //invalid weatherCode
+      //invalid weatherCode or none of the above
       return "fa-sun";
   }
 }
 function updateWeatherDegreeChanged(weatherData, degree) {
   const { currentWeather, dailyWeather, hourlyWeather } = weatherData;
 
-  // for (const propName in configObject) {
-  //   console.log(propName);
-  // }
   const updatedCurrentWeather = {
     ...currentWeather,
     temperature: convertTemperature(currentWeather.temperature, degree),
@@ -311,7 +303,7 @@ function updateWeatherDegreeChanged(weatherData, degree) {
       temp: hour.temp.map((temp) => convertTemperature(temp, degree)),
     };
   });
-  console.log("weather updated");
+
   return {
     ...weatherData,
     currentWeather: updatedCurrentWeather,
@@ -343,11 +335,7 @@ function updateWeatherTimeFormatChanged(weatherData, timeFormat) {
 
 function updateWeather(weatherData, configObject, propertyChangedName) {
   const { degree, timeFormat } = configObject;
-  console.log(timeFormat);
-  // for (const propName in configObject) {
-  //   console.log(propName);
-  // }
-  console.log(propertyChangedName);
+  console.log("weatherUpdated");
   switch (propertyChangedName) {
     case "degree":
       return updateWeatherDegreeChanged(weatherData, degree);
@@ -404,6 +392,12 @@ function externalTooltip(context) {
   }
 }
 
+function isUserOnMobile() {
+  return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+    navigator.userAgent
+  );
+}
+
 export {
   fetchWeatherData,
   fetchLocations,
@@ -411,4 +405,5 @@ export {
   updateStoredFavLocations,
   weatherCodeToIcon,
   externalTooltip,
+  isUserOnMobile,
 };

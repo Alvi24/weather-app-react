@@ -1,13 +1,13 @@
 import { useContext, useEffect, useMemo, useState } from "react";
 import { configContext } from "../App";
 
-export default function Time({
-  timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone, //user (default) timezone
-}) {
+export default function useCurrentTime(
+  timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone //user (default) timezone
+) {
   const [configObject] = useContext(configContext);
-  console.log(configObject.timeFormat);
+  // console.log(configObject.timeFormat);
   const [time, setTime] = useState(new Date());
-
+  console.log("TIME RENDER");
   useEffect(() => {
     const timer = setInterval(() => {
       const currentTime = new Date();
@@ -31,5 +31,6 @@ export default function Time({
       time
     ); //"en-GB"
   }, [time, timeZone, configObject.timeFormat]);
-  return <>{formattedTime}</>;
+
+  return formattedTime;
 }

@@ -28,7 +28,7 @@ h6 {
   position: relative;
   top: 0;
   /* min-width: 90%; */
-  min-height: 100vh; /*remove min to disable scrollbar when hourlyWeather(mobile) is visible*/
+  min-height: 100dvh; /*remove min to disable scrollbar when hourlyWeather(mobile) is visible*/
   margin: 0;
   /* background-color: rgb(
     100,
@@ -60,12 +60,17 @@ h6 {
   transition: 0.5s;
 }
 .Loading {
-  height: 100vh;
+  height: 100dvh;
   width: 100vw;
   position: absolute;
   top: 0px;
-  z-index: 1000;
+  /* z-index: 1000; */
+  display: grid;
+  place-items: center;
   background-color: rgb(76, 112, 181);
+}
+.Loading h1 {
+  font-size: 3em;
 }
 .weatherCard {
   background: rgba(216, 216, 216, 0.3);
@@ -174,11 +179,10 @@ td.countryFlag img {
 }
 
 :global(.blur) {
+  pointer-events: none; /*disable hovering selecting and other interactable things*/
   @supports (filter: blur(2px)) {
     filter: blur(2px);
   }
-  pointer-events: none; /*disable hovering selecting and other interactable things*/
-  overflow: hidden;
 }
 :global(.blur) * {
   user-select: none; /*make the elements behind unselectable*/
@@ -191,14 +195,11 @@ td.countryFlag img {
 }
 
 @media (max-width: 520px) {
-  body:has(:global(#root .App:has(.blur))) {
-    overflow: hidden; /*disable scrolling when options panel is open*/
-    background-color: red;
-  }
   :global(.blur) {
     /* filter: blur(15px);
     opacity: 0.4; */
-    height: 100vh; /*; use height 100vh and overflow hidden to disable scrolling when on side panel (mobile mostly)*/
+    overflow: hidden;
+    height: 100dvh; /*; use height 100vh and overflow hidden to disable scrolling when on side panel (mobile mostly)*/
   }
   :global(.blur) * {
     z-index: -1;

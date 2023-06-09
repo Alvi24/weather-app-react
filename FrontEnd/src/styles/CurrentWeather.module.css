@@ -52,7 +52,7 @@
 }
 .currentLocationAndTime {
   /* flex-shrink: 0;  allow width to work (overflow the container)*/
-
+  width: 65%;
   display: inline-flex;
   flex-direction: column;
   align-items: flex-start;

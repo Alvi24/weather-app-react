@@ -10,7 +10,7 @@ import SearchBar from "./SearchBar.jsx";
 import CurrentWeather from "./WeatherComponents/CurrentWeather.jsx";
 import DailyWeather from "./WeatherComponents/DailyWeather.jsx";
 import HourlyWeather from "./WeatherComponents/HourlyWeather.jsx";
-import { fetchWeatherData, updateWeather } from "../Utilities.mjs";
+import { fetchWeatherData, isUserOnMobile } from "../Utilities.mjs";
 import styles from "../styles/App.module.css";
 import { configContext } from "../App.js";
 
@@ -157,7 +157,12 @@ export default function Body({
           </MobileViewContext.Provider>
         </>
       ) : (
-        <h1 className={styles.Loading}>Loading...</h1>
+        <div
+          className={styles.Loading}
+          style={!isUserOnMobile() ? { zIndex: "1000" } : null}
+        >
+          <h1>Loading...</h1>
+        </div>
       )}
 
       {/* {DailyWeatherMemo}  if useMemos is used*/}
