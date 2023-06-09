@@ -1,5 +1,10 @@
-#Added myself
+#Debugging files
 launch.json
+
+# firebase files
+FrontEnd/.firebaserc
+FrontEnd/.firebase/hosting.YnVpbGQ.cache
+FrontEnd/firebase.json
 
 # Logs
 logs
@@ -131,5 +136,4 @@ dist
 .yarn/build-state.yml
 .yarn/install-state.gz
 .pnp.*
-FrontEnd/.firebaserc
-FrontEnd/.firebase/hosting.YnVpbGQ.cache
+
