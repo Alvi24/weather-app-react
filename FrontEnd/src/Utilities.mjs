@@ -41,11 +41,12 @@ async function fetchWeatherData(
 
 async function getLocationNameAndTimeZone(latitude, longitude) {
   return axios
-    .post(process.env.REACT_APP_URL + "big-data-api", {
+    .post(process.env.REACT_APP_SERVER_URL + "big-data-api", {
       lat: latitude,
       long: longitude,
     })
-    .then(({ data }) => data.location);
+    .then(({ data }) => data.location)
+    .catch(() => console.log("locationError!!!"));
 }
 
 function handleCurrentWeatherData({ current_weather }) {
