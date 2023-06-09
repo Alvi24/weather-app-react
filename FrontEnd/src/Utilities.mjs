@@ -1,4 +1,3 @@
-
 import axios from "axios";
 console.log(process.env);
 
@@ -52,7 +51,7 @@ async function getLocationNameAndTimeZone(latitude, longitude) {
 function handleCurrentWeatherData({ current_weather }) {
   return {
     date: new Date(current_weather.time * 1000).getDate(),
-    weatherCode: Math.round(current_weather.weathercode / 10) * 10, 
+    weatherCode: Math.round(current_weather.weathercode / 10) * 10,
     temperature: Math.round(current_weather.temperature),
     windSpeed: Math.round(current_weather.windspeed),
     windDirection: current_weather.winddirection,
@@ -63,7 +62,6 @@ function convertUnixTimeToNormalTime(arrayOfUnixTime, timeFormat) {
   return arrayOfUnixTime.map((time) =>
     Intl.DateTimeFormat(timeFormat, options).format(time * 1000)
   );
- 
 }
 function roundTemperatureNumber(arrayOfTemperature) {
   arrayOfTemperature = arrayOfTemperature.map((el) => {
@@ -173,7 +171,7 @@ async function fetchLocations(e) {
   }
   const { value: input } = e.target;
   return axios
-    .post(process.env.REACT_APP_URL, {
+    .post(process.env.REACT_APP_SERVER_URL, {
       input,
     })
     .then((res) => res.data)
