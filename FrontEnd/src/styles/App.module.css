@@ -170,7 +170,7 @@ td.countryFlag {
   padding-inline-start: 5px;
 }
 td.countryFlag img {
-  background-color: red;
+  background-color: rgb(77, 175, 214);
   display: block;
 }
 .location:hover {
