@@ -55,6 +55,7 @@ h6 {
   display: grid;
   place-items: center;
   background-color: rgb(76, 112, 181);
+  background-color: red;
 }
 .Loading h1 {
   font-size: 3em;

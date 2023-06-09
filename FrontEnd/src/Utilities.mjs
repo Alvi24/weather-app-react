@@ -41,14 +41,15 @@ async function fetchWeatherData(
 
 async function getLocationNameAndTimeZone(latitude, longitude) {
   return axios
-    .post(process.env.REACT_APP_SERVER_URL + "big-data-api", {
-      lat: latitude,
-      long: longitude,
-    })
-    .then(({ data }) => data.location)
-    .catch(() => console.log("locationError!!!"));
+    .get(
+      `https://api.bigdatacloud.net/data/reverse-geocode?localityLanguage=en&key=${process.env.REACT_APP_BIG_DATA_API_KEY}`,
+      {
+        lat: latitude,
+        long: longitude,
+      }
+    )
+    .then(({ data }) => data.city);
 }
-
 function handleCurrentWeatherData({ current_weather }) {
   return {
     date: new Date(current_weather.time * 1000).getDate(),
@@ -186,6 +187,7 @@ function convertTemperature(temp, degree) {
     ? Math.round(((temp - 32) * 5) / 9)
     : Math.round((temp * 9) / 5 + 32);
 }
+console.log("UPDATED");
 function convertTime(time, timeFormat) {
   let hour = timeFormat === "en-GB" ? +time.slice(0, time.indexOf(" ")) : +time;
   switch (timeFormat) {
