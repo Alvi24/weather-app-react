@@ -1,5 +1,4 @@
 import axios from "axios";
-console.log(process.env);
 
 async function fetchWeatherData(
   latitude,
@@ -8,8 +7,6 @@ async function fetchWeatherData(
   timeZone,
   configObject
 ) {
-  console.log(timeZone);
-  console.log(configObject);
   return axios
     .get(
       `  https://api.open-meteo.com/v1/forecast?&hourly=temperature_2m,weathercode&daily=weathercode,temperature_2m_max,temperature_2m_min,sunrise,sunset&current_weather=true&timeformat=unixtime`,
@@ -167,7 +164,6 @@ const object = {
 };
 
 const { hello: value } = object;
-console.log("value " + value);
 
 async function fetchLocations(e) {
   if (e.target.value.length < 2) {
@@ -180,7 +176,6 @@ async function fetchLocations(e) {
     })
     .then((res) => res.data)
     .catch((error) => {
-      console.log(error.response);
       return Promise.reject("No location found");
     });
 }
@@ -189,7 +184,6 @@ function convertTemperature(temp, degree) {
     ? Math.round(((temp - 32) * 5) / 9)
     : Math.round((temp * 9) / 5 + 32);
 }
-console.log("UPDATED");
 function convertTime(time, timeFormat) {
   let hour = timeFormat === "en-GB" ? +time.slice(0, time.indexOf(" ")) : +time;
   switch (timeFormat) {
@@ -209,7 +203,6 @@ function convertTime(time, timeFormat) {
 }
 
 async function updateStoredFavLocations(savedFavLocations, configObject) {
-  console.log(savedFavLocations);
   const updatedFavLocations = savedFavLocations.map((data) =>
     fetchWeatherData(
       data.coords.lat,
@@ -219,7 +212,6 @@ async function updateStoredFavLocations(savedFavLocations, configObject) {
       configObject
     )
   );
-  console.log(updatedFavLocations);
   return Promise.all(updatedFavLocations).then((favLocations) => favLocations);
 }
 
@@ -300,7 +292,6 @@ function updateWeatherTimeFormatChanged(weatherData, timeFormat) {
 
 function updateWeather(weatherData, configObject, propertyChangedName) {
   const { degree, timeFormat } = configObject;
-  console.log("weatherUpdated");
   switch (propertyChangedName) {
     case "degree":
       return updateWeatherDegreeChanged(weatherData, degree);
@@ -322,8 +313,6 @@ const getOrCreateTooltip = (chart) => {
     tooltiParagraphWeather.classList.add("tooltipWeather");
     tooltipEl.appendChild(tooltiParagraphTime);
     tooltipEl.appendChild(tooltiParagraphWeather);
-
-    console.log(tooltipEl);
   }
   return tooltipEl;
 };
@@ -342,7 +331,6 @@ function externalTooltip(context) {
     const weather = tooltip.body[0].lines[0];
 
     const { offsetLeft: positionX, offsetTop: positionY } = chart.canvas;
-    console.log("time", time, weather.temp, weather.weathercode);
     tooltipEl.style.left = positionX + tooltip.caretX + "px";
     tooltipEl.style.top = positionY + tooltip.caretY + "px";
 

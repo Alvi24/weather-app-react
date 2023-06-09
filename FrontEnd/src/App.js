@@ -19,7 +19,6 @@ const MemoizedBody = React.memo(Body);
 const MemoizedOptions = React.memo(Options);
 
 function App() {
-  console.log("app render");
   function useMemoizeUseState(value, setValueFunction) {
     return useMemo(() => {
       return [value, setValueFunction];
@@ -51,7 +50,6 @@ function App() {
 
   useEffect(() => {
     if (!firstRender.current) {
-      console.log("fav Locations changed");
       localStorage.setItem(
         "favoriteLocations",
         JSON.stringify(favoriteLocations)
@@ -59,24 +57,18 @@ function App() {
     }
   }, [favoriteLocations]);
   function handleClickFavoriteLocationData(clickedFavLocationDataParam) {
-    console.log(
-      currentWeatherData.current,
-      clickedFavLocationDataParam,
-      clickedFavoriteLocationData
-    );
+  
 
     if (
       currentWeatherData.current !== clickedFavLocationDataParam &&
       clickedFavLocationDataParam.coords.lat !==
         currentWeatherData.current.coords.lat
     ) {
-      console.log("new favLocation", clickedFavLocationDataParam);
       setClickedFavoriteLocationData(clickedFavLocationDataParam);
     }
   }
 
   const setCurrentWeatherData = useCallback((weatherData) => {
-    console.log("w", weatherData);
     currentWeatherData.current = weatherData;
     setClickedFavoriteLocationData(null);
   }, []);
@@ -100,10 +92,8 @@ function App() {
         ...prevState,
         currentWeatherData.current,
       ]);
-      console.log("no duplicates");
       return "no duplicates";
     }
-    console.log("duplicates!!!");
     return "duplicate found";
   }, [favoriteLocations]);
   useEffect(() => {
@@ -113,13 +103,11 @@ function App() {
     }
     let propertyChangedName;
     localStorage.setItem("configObject", JSON.stringify(configObject));
-    console.log(configObject, prevConfigObject.current);
     for (const propName in configObject) {
       if (configObject[propName] !== prevConfigObject.current[propName])
         propertyChangedName = propName;
     }
     prevConfigObject.current = { ...configObject };
-    console.log("prop", propertyChangedName);
     const updatedFavoriteLocations = favoriteLocations.map(
       (favoriteLocationData) =>
         updateWeather(favoriteLocationData, configObject, propertyChangedName)

@@ -7,7 +7,6 @@ import { faMagnifyingGlass } from "@fortawesome/free-solid-svg-icons";
 export default function SearchBar(props) {
   let [locations, setLocations] = useState([]);
 
-  console.log("SearchBar rendered");
   const debounce = (callbackFunction, delay = 250) => {
     let timeout;
     return (...args) => {
@@ -18,13 +17,10 @@ export default function SearchBar(props) {
     };
   };
   const debouncedFetchLocation = debounce((e) => {
-    console.log("start", Date());
     const isInputFilled = e.target.value.trim().length >= 2;
     fetchLocations(e)
       .then(({ weatherData, prevSearchText }) => {
-        console.log("end", Date());
         if (isInputFilled && e.target.value === prevSearchText) {
-          console.log("target value length", e.target.value.length);
           setLocations(weatherData);
         }
       })
@@ -34,7 +30,6 @@ export default function SearchBar(props) {
   }, 150);
 
   function getLocations(e) {
-    console.log(e.target.value !== "" ? e.target.value : "empty");
     if (e.target.value.trim().length < 2) {
       if (locations.length !== 0) setLocations([]);
       return;
@@ -70,7 +65,6 @@ export default function SearchBar(props) {
                 className={styles.location}
                 key={location.latitude}
                 onClick={() => {
-                  console.log(location);
                   const {
                     latitude: lat,
                     longitude: long,

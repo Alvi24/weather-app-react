@@ -25,7 +25,7 @@ export default function FavLocation({
 }) {
   const currentTime = useCurrentTime(favoriteLocationData.timeZone);
   const renderDraggable = useDraggableInPortal();
-  console.log("favLocation render");
+ 
   return (
     <Draggable draggableId={id} index={index} isDragDisabled={isDragDisabled}>
       {renderDraggable((provided, snapshot) => (

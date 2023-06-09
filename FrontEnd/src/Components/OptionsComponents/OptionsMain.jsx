@@ -8,7 +8,6 @@ export default function Options() {
   const isElementDragged = useRef(false);
   const updateIsElementDragged = useCallback((isDragged) => {
     isElementDragged.current = isDragged;
-    console.log("DRAG", isElementDragged.current);
   }, []);
   const AppearSwap = useCallback(() => {
     setAppear((prevState) => !prevState);
@@ -28,8 +27,6 @@ export default function Options() {
 
     function effectClick(e) {
       if (!OptionsRef.current.contains(e.target) && !isElementDragged.current) {
-        console.log(e.target.nodeName);
-
         document
           .querySelector(`.App > :not(.${styles.Options})`)
           .classList.remove("blur");
@@ -38,7 +35,6 @@ export default function Options() {
     }
     document.addEventListener("click", effectClick, { capture: true });
     return () => {
-      console.log("event listener removed");
       document.removeEventListener("click", effectClick, { capture: true });
     };
   }, [appear]);

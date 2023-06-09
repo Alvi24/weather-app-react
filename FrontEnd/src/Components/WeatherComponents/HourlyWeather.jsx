@@ -29,7 +29,6 @@ export default function HourlyWeather({
         !document.querySelector(`.${styles.HourlyContainer}`).contains(e.target)
       ) {
         if (prevHourlyWeather.current !== hourlyWeather) {
-          console.log(e.target.nodeName);
           prevHourlyWeather.current = hourlyWeather;
         } else {
           prevHourlyWeather.current = {};
@@ -39,7 +38,6 @@ export default function HourlyWeather({
     }
     document.addEventListener("click", visible ? handleClick : null);
     return () => {
-      console.log("event listener removed Hourly");
       document.removeEventListener("click", handleClick);
     };
   }, [hourlyWeather, mobileView, visible, removeVisible]);

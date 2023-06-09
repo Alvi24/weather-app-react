@@ -7,7 +7,7 @@ export default function useCurrentTime(
   const [configObject] = useContext(configContext);
 
   const [time, setTime] = useState(new Date());
-  console.log("TIME RENDER");
+
   useEffect(() => {
     const timer = setInterval(() => {
       const currentTime = new Date();

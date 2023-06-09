@@ -52,7 +52,6 @@ export default function FavLocationsSection({ setIsElementDragged }) {
     const deletedFavLocationIndex = favoriteLocations.indexOf(
       deletedFavoriteLocation
     );
-    console.log("delete button", deletedFavLocationIndex);
     const favLocationContainer = document.querySelector(
       `.${styles.favLocationContainer}`
     );

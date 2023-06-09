@@ -4,7 +4,6 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faBars } from "@fortawesome/free-solid-svg-icons";
 export default function OptionsHamburger(props) {
   function handleKeyDown(event) {
-    console.log(event.key);
     if (event.key === "Tab") {
       props.onAppear();
     }

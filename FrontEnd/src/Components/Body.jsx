@@ -24,7 +24,6 @@ export default function Body({
   favLocationData,
   updatedCurrentWeather,
 }) {
-  console.log("body");
 
   const [configObject] = useContext(configContext);
 
@@ -42,7 +41,6 @@ export default function Body({
 
     function handleResize() {
       const onMobileView = mediaQuery.matches;
-      console.log(onMobileView);
       setMobileView(onMobileView);
       if (!onMobileView) setIsVisible(false);
     }
@@ -54,7 +52,6 @@ export default function Body({
 
   const setFetchedWeatherData = useCallback(
     (data) => {
-      console.log(data);
       setWeatherData(data);
       setHourlyWeatherProp(data?.hourlyWeather[0]);
       setLocationName(data?.locationName);
@@ -64,14 +61,12 @@ export default function Body({
   );
   useEffect(() => {
     if (favLocationData) {
-      console.log("fav location", favLocationData);
       setFetchedWeatherData(favLocationData);
     }
   }, [favLocationData, setFetchedWeatherData]);
 
   const callFetchWeatherData = useCallback(
     async ({ lat, long, locationName, timeZone }) => {
-      console.log(timeZone, weatherData?.coords.lat);
       if (lat !== weatherData?.coords.lat) {
         const data = await fetchWeatherData(
           lat,
@@ -110,7 +105,6 @@ export default function Body({
           }
         }
       }
-      console.log(mobileView, !isVisible);
       if (mobileView && !isVisible) setIsVisible(true);
     },
     [hourlyWeather, currentWeather?.date, mobileView, isVisible]
