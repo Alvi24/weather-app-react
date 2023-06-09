@@ -44,8 +44,10 @@ async function getLocationNameAndTimeZone(latitude, longitude) {
     .get(
       `https://api.bigdatacloud.net/data/reverse-geocode?localityLanguage=en&key=${process.env.REACT_APP_BIG_DATA_API_KEY}`,
       {
-        lat: latitude,
-        long: longitude,
+        params: {
+          latitude,
+          longitude,
+        },
       }
     )
     .then(({ data }) => data.city);

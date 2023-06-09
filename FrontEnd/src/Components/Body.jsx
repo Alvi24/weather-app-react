@@ -91,7 +91,7 @@ export default function Body({
 
     function defaultCoords(position) {
       const { latitude: lat, longitude: long } = position.coords;
-      const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+      const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone; 
       callFetchWeatherData({ lat, long, timeZone });
     }
   }, []);
@@ -149,7 +149,7 @@ export default function Body({
           className={styles.Loading}
           style={!isUserOnMobile() ? { zIndex: "1000" } : null}
         >
-          <h1>FIXED!!</h1>
+          <h1>Loading...</h1>
         </div>
       )}
     </div>
